@@ -1,0 +1,79 @@
+{
+  "current": {
+    "name": "oi",
+    "knowledgeLevel": 3,
+    "ageGroup": "Menos de 18",
+    "gender": "Feminino",
+    "location": "Sul de Minas",
+    "occupation": "Estudante",
+    "avatar": "bertha",
+    "updatedAt": "2026-03-17T23:07:10.885Z"
+  },
+  "users": [
+    {
+      "name": "Aline Fernanda de Oliveira",
+      "knowledgeLevel": 3,
+      "updatedAt": "2026-02-17T19:17:34.127Z"
+    },
+    {
+      "name": "Aline ",
+      "knowledgeLevel": 3,
+      "updatedAt": "2026-02-17T20:06:51.557Z"
+    },
+    {
+      "name": "alinefxz",
+      "knowledgeLevel": 5,
+      "updatedAt": "2026-02-17T20:50:40.790Z"
+    },
+    {
+      "name": "Aline",
+      "knowledgeLevel": 3,
+      "updatedAt": "2026-03-17T23:04:27.378Z",
+      "ageGroup": "Menos de 18",
+      "gender": "Feminino",
+      "location": "Sul de Minas",
+      "occupation": "Estudante",
+      "avatar": "mietta"
+    },
+    {
+      "name": "a",
+      "knowledgeLevel": 4,
+      "ageGroup": "25 a 34",
+      "gender": "Feminino",
+      "location": "Outro",
+      "occupation": "Outros",
+      "avatar": "leolinda",
+      "updatedAt": "2026-02-17T21:06:49.308Z"
+    },
+    {
+      "name": "k",
+      "knowledgeLevel": 4,
+      "ageGroup": "Menos de 18",
+      "gender": "Feminino",
+      "location": "Sul de Minas",
+      "occupation": "Estudante",
+      "avatar": "leolinda",
+      "updatedAt": "2026-02-17T22:48:44.010Z"
+    },
+    {
+      "name": "aline :)",
+      "knowledgeLevel": 4,
+      "ageGroup": "Menos de 18",
+      "gender": "Feminino",
+      "location": "Sul de Minas",
+      "occupation": "Estudante",
+      "avatar": "antonieta",
+      "updatedAt": "2026-02-19T10:09:55.312Z"
+    },
+    {
+      "name": "oi",
+      "knowledgeLevel": 3,
+      "ageGroup": "Menos de 18",
+      "gender": "Feminino",
+      "location": "Sul de Minas",
+      "occupation": "Estudante",
+      "avatar": "bertha",
+      "updatedAt": "2026-03-17T23:07:10.885Z"
+    }
+  ]
+}

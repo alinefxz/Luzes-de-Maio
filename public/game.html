@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mesa de Investigação | Luzes de Maio</title>
+  
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="game.css">
+</head>
+<body>
+
+  <div id="sceneTransition" class="scene-fade black-screen"></div>
+
+  <header class="glass-header game-header">
+    <div class="logo-area">
+      <a href="index.html" class="btn-return" id="btnReturnIndex">← Abandonar Arquivo</a>
+      <div class="header-titles" style="margin-left: 20px;">
+        <span class="header-kicker">Etapa 01</span>
+        <span class="header-title">Mesa de Investigação</span>
+      </div>
+    </div>
+    <div class="nav-controls">
+      <div class="user-badge" id="userBadge">
+        <div class="avatar-display" id="headerAvatar"></div>
+        <div class="badge-texts">
+          <span class="badge-label">Credencial</span>
+          <span class="badge-name typewriter" id="playerName">Investigador</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="game-board">
+    <div class="wooden-desk">
+      <div class="map-document">
+        <div class="map-watermark">Muzambinho & Brasil • 1933</div>
+        
+        <div class="pin-container" style="top: 25%; left: 40%;">
+          <button class="tactical-pin active" id="pinNacional" onclick="GamePlay.selectPhase(1, 'Âmbito Nacional')">
+            <span class="pin-pulse"></span>
+            <div class="pin-head"></div>
+          </button>
+          <span class="pin-label">01. Âmbito Nacional</span>
+        </div>
+
+        <div class="pin-container" style="top: 50%; left: 65%;">
+          <button class="tactical-pin locked" onclick="GamePlay.checkLocked('O Código de 1932')">
+            <div class="pin-head">🔒</div>
+          </button>
+          <span class="pin-label">02. O Código de 1932</span>
+        </div>
+
+        <div class="pin-container" style="top: 75%; left: 30%;">
+          <button class="tactical-pin locked" onclick="GamePlay.checkLocked('O Caso Muzambinho')">
+            <div class="pin-head">🔒</div>
+          </button>
+          <span class="pin-label">03. Caso Muzambinho</span>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <div id="vnSystem" class="vn-overlay">
+    <div class="vn-container" id="vnContainer">
+      <div class="vn-character">
+        <div class="sufragista-art"></div>
+        </div>
+      
+      <div class="vn-dialogue-box">
+        <div class="vn-name-plate">A Sufragista</div>
+        <div class="vn-text-area">
+          <p id="vnText" class="typewriter"></p>
+        </div>
+        <div class="vn-controls">
+          <span class="vn-hint" id="vnHint">Clique em qualquer lugar para continuar ▼</span>
+          <button id="vnActionBtn" class="btn-primary" style="display: none;">Iniciar Investigação →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>

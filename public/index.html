@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luzes de Maio | Muzambinho 1933</title>
+  
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <svg width="0" height="0" style="position: absolute;">
+    <defs>
+      <linearGradient id="halfGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="50%" stop-color="#93585E" />
+        <stop offset="50%" stop-color="#F9F6F0" />
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <div class="noise-bg"></div>
+
+  <header class="glass-header">
+    <div class="logo-area">
+      <img src="assets/logo.png" alt="Logo Luzes de Maio" class="main-logo" onerror="this.src='assets/logo.jpg'; if(this.onerror) this.style.display='none';">
+      <div class="header-titles">
+        <span class="header-kicker">Muzambinho, MG</span>
+        <span class="header-title">Luzes de Maio</span>
+      </div>
+    </div>
+    <div class="nav-controls">
+      <div class="user-badge" id="userBadge">
+        <div class="avatar-display" id="headerAvatar" style="display: none;"></div>
+        <div class="badge-texts">
+          <span class="badge-label">Credencial de Acesso</span>
+          <span class="badge-name typewriter" id="playerName">Não Identificado</span>
+        </div>
+        <button id="logoutBtn" class="logout-btn" style="display: none;" title="Devolver Credencial">Sair ✕</button>
+      </div>
+      <button class="menu-btn" id="menuBtn" aria-label="Abrir Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <nav class="fullscreen-menu" id="fullMenu">
+    <div class="menu-content">
+      <button class="close-menu" id="closeMenuBtn" aria-label="Fechar Menu">✕</button>
+      <h2 class="menu-title">Índice do Dossiê</h2>
+      <ul class="menu-links">
+        <li><button onclick="Game.openModal('profile')">01. Identificação (Perfil)</button></li>
+        <li><button onclick="Game.openModal('review')">02. Relatório Final (Avaliar)</button></li>
+        <li><button onclick="Game.openModal('about')">03. Contexto Histórico (Sobre)</button></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="hero-section">
+    <div class="town-silhouette"></div> 
+    
+    <div class="hero-content">
+      <div class="text-column">
+        <span class="kicker">ARQUIVO CONFIDENCIAL • 1933</span>
+        <h1>Luzes<br>de Maio</h1>
+        <h2 class="subtitle">O Primeiro Voto.</h2>
+        
+        <p class="impact-text">
+          Maio de 1933. O Brasil vota e, pela primeira vez, a voz feminina chega às urnas. Mas em Muzambinho, os registros desse momento histórico acabaram fragmentados. Sua tarefa é cruzar dados em jornais e atas da época para reconstruir os eventos e dar nome a essas pioneiras. 
+          <strong>Acesse o dossiê e assuma a investigação.</strong>
+        </p>
+
+        <div class="actions">
+          <button class="btn-primary" id="startBtn">
+            <span class="btn-text">Iniciar Investigação</span>
+            <span class="btn-icon">→</span>
+          </button>
+          <button class="btn-secondary" id="testCompleteBtn">Modo Teste: Concluir</button>
+        </div>
+      </div>
+
+      <div class="visual-column">
+        <div class="dossier-card" id="dossier3d">
+          <div class="tape top-tape"></div>
+          <div class="paperclip"></div>
+          <div class="dossier-content">
+            <div class="dossier-header">
+              <span class="typewriter">REF: VOTO-FEM-001</span>
+              <span class="status-stamp" id="statusStamp">PENDENTE</span>
+            </div>
+            <div class="clipping">
+              <h3 class="news-title">"As novas eleitoras..."</h3>
+              <p class="news-body">A cidade amanheceu agitada. Mulheres de todas as partes dirigem-se aos locais de votação...</p>
+            </div>
+            <div class="polaroid">
+              <div class="polaroid-img"></div>
+              <span class="polaroid-caption">Praça principal, '33</span>
+            </div>
+          </div>
+          <button class="interactive-stamp" id="stampBtn">Carimbar Visto</button>
+          <div class="stamp-mark" id="stampMark">VISTO<br><small id="stampDate"></small></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="paper-divider"></div>
+
+  <section class="context-section">
+    <div class="section-container">
+      <h2 class="section-title">As Páginas da História</h2>
+      
+      <div class="history-cards">
+        <article class="board-card straight-card card-right-polaroid" tabindex="0">
+          <div class="tape card-tape"></div> 
+          <div class="polaroid-mini pin-right">
+            <div class="polaroid-img"></div>
+            <span class="polaroid-caption">Urnas, '33</span>
+          </div>
+          <div class="card-text-safe-zone">
+            <h3>O Voto Feminino</h3>
+            <p>Após décadas de intensa mobilização social, o Código Eleitoral de 1932 garantiu o direito de voto às mulheres brasileiras. Contudo, a primeira vez que elas realmente foram às urnas ocorreu em <strong>maio de 1933</strong>.</p>
+          </div>
+        </article>
+
+        <article class="board-card straight-card card-left-polaroid" tabindex="0">
+          <div class="tape card-tape"></div>
+          <div class="polaroid-mini pin-left polaroid-alt">
+            <div class="polaroid-img bg-stamp"></div>
+            <span class="polaroid-caption">Muzambinho</span>
+          </div>
+          <div class="card-text-safe-zone">
+            <h3>O Cenário Local</h3>
+            <p>Muzambinho, no sul de Minas, foi palco desse momento transformador. Longe das capitais, o interior guardou seus segredos. Atas e recortes revelam os desafios das primeiras eleitoras da cidade.</p>
+          </div>
+        </article>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="wave-divider"></div>
+
+  <section class="mechanics-section">
+    <div class="section-container">
+      <h2 class="section-title dark-mode-title text-center">Como Investigar?</h2>
+      <div class="cards-grid">
+        <div class="mechanic-card" tabindex="0">
+          <div class="card-number">01</div>
+          <h3>Analise Documentos</h3>
+          <p>Leia recortes de jornal da época, atas de votação e correspondências reais para encontrar pistas escondidas.</p>
+        </div>
+        <div class="mechanic-card highlighted-card" tabindex="0">
+          <div class="card-number">02</div>
+          <h3>Conecte os Fatos</h3>
+          <p>Use a lógica para ligar nomes, datas e locais de Muzambinho. Monte seu dossiê para entender quem foram as pioneiras.</p>
+        </div>
+        <div class="mechanic-card" tabindex="0">
+          <div class="card-number">03</div>
+          <h3>Desvende a História</h3>
+          <p>Preencha os espaços em branco da história oficial. Sua investigação revelará como o sufrágio mudou a cidade.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="paper-divider-bottom"></div>
+
+  <footer class="site-footer">
+    <div class="section-container footer-content">
+      
+      <div class="footer-col brand-col">
+        <div class="footer-logo-wrap">
+          <img src="assets/logo.png" alt="Logo Luzes de Maio" class="footer-logo" onerror="this.src='assets/logo.jpg'; if(this.onerror) this.style.display='none';">
+          <h2>Luzes de Maio</h2>
+        </div>
+        <p class="typewriter footer-desc">Transformando os arquivos esquecidos de 1933 em uma experiência viva de cidadania e memória.</p>
+      </div>
+
+      <div class="footer-col links-col">
+        <h4>Arquivo Central</h4>
+        <ul>
+          <li><button onclick="Game.openModal('profile')">Registrar Credencial</button></li>
+          <li><button onclick="Game.openModal('about')">Projeto e Pesquisa</button></li>
+          <li><button onclick="Game.openModal('review')">Avaliar Experiência</button></li>
+        </ul>
+      </div>
+
+      <div class="footer-col stamp-col">
+        <div class="footer-stamp-svg-wrap">
+          <svg viewBox="0 0 100 100" class="circular-stamp">
+            <defs>
+              <path id="circlePath" d="M 50, 50 m -40, 0 a 40,40 0 1,1 80,0 a 40,40 0 1,1 -80,0" />
+            </defs>
+            <text font-family="'Outfit', sans-serif" font-size="11" font-weight="900" fill="#C09189" letter-spacing="2">
+              <textPath href="#circlePath" startOffset="50%" text-anchor="middle">MUZAMBINHO • MINAS GERAIS •</textPath>
+            </text>
+          </svg>
+          <div class="stamp-center-icon">1933</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <p>&copy; 2026 Luzes de Maio. Preservar a memória é o primeiro passo para garantir o futuro.</p>
+    </div>
+  </footer>
+
+  <div class="modal-overlay" id="modalOverlay">
+    
+    <div class="modal scrollable-modal" id="modal-profile" role="dialog" aria-modal="true">
+      <button class="close-modal" aria-label="Fechar Modal">✕</button>
+      <h2 class="modal-title">Ficha de Registro</h2>
+      <p class="modal-desc">Identifique-se para assinar os relatórios e criar seu perfil de investigação.</p>
+      
+      <form id="profileForm">
+        <div class="input-group">
+          <label>Selecione sua Pioneira de Inspiração</label>
+          <div class="avatar-selection-grid" role="radiogroup" aria-label="Seleção de Avatar">
+            
+            <label class="avatar-option">
+              <input type="radio" name="p_avatar" value="bertha" checked>
+              <div class="avatar-box" title="A Cientista">
+                <img src="assets/bertha.png" alt="A Cientista" class="avatar-img" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\'0 0 100 100\' xmlns=\'http://www.w3.org/2000/svg\'><circle cx=\'50\' cy=\'50\' r=\'50\' fill=\'%23F2CFCD\'/></svg>'">
+                <span class="avatar-nickname">A Cientista</span>
+              </div>
+            </label>
+
+            <label class="avatar-option">
+              <input type="radio" name="p_avatar" value="celina">
+              <div class="avatar-box" title="A Primeira">
+                <img src="assets/celina.png" alt="A Primeira" class="avatar-img" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\'0 0 100 100\' xmlns=\'http://www.w3.org/2000/svg\'><circle cx=\'50\' cy=\'50\' r=\'50\' fill=\'%23F2CFCD\'/></svg>'">
+                <span class="avatar-nickname">A Primeira</span>
+              </div>
+            </label>
+
+            <label class="avatar-option">
+              <input type="radio" name="p_avatar" value="leolinda">
+              <div class="avatar-box" title="A Professora">
+                <img src="assets/leolinda.png" alt="A Professora" class="avatar-img" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\'0 0 100 100\' xmlns=\'http://www.w3.org/2000/svg\'><circle cx=\'50\' cy=\'50\' r=\'50\' fill=\'%23F2CFCD\'/></svg>'">
+                <span class="avatar-nickname">A Professora</span>
+              </div>
+            </label>
+
+            <label class="avatar-option">
+              <input type="radio" name="p_avatar" value="mietta">
+              <div class="avatar-box" title="A Escritora">
+                <img src="assets/mietta.png" alt="A Escritora" class="avatar-img" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\'0 0 100 100\' xmlns=\'http://www.w3.org/2000/svg\'><circle cx=\'50\' cy=\'50\' r=\'50\' fill=\'%23F2CFCD\'/></svg>'">
+                <span class="avatar-nickname">A Escritora</span>
+              </div>
+            </label>
+
+          </div>
+        </div>
+
+        <div class="input-group"><label for="p_name">Nome ou Pseudônimo</label><input type="text" id="p_name" required placeholder="Ex: Investigador(a) Silva"></div>
+        <div class="form-row">
+          <div class="input-group"><label for="p_age">Faixa Etária</label><select id="p_age"><option value="Menos de 18">Menos de 18</option><option value="18 a 24">18 a 24</option><option value="25 a 34" selected>25 a 34</option><option value="35 a 44">35 a 44</option><option value="45 a 54">45 a 54</option><option value="55+">55+</option></select></div>
+          <div class="input-group"><label for="p_gender">Gênero</label><select id="p_gender"><option value="Feminino" selected>Feminino</option><option value="Masculino">Masculino</option><option value="Não-binário">Não-binário</option><option value="Prefiro não informar">Prefiro não informar</option></select></div>
+        </div>
+        <div class="form-row">
+          <div class="input-group"><label for="p_location">Localização</label><select id="p_location"><option value="Muzambinho">Moro em Muzambinho</option><option value="Sul de Minas">Moro no Sul de Minas</option><option value="MG">Moro em outra cidade de MG</option><option value="Outro" selected>Moro em outro estado</option></select></div>
+          <div class="input-group"><label for="p_occupation">Ocupação</label><select id="p_occupation"><option value="Estudante">Estudante do Ensino Médio</option><option value="Universitário">Universitário(a)</option><option value="Professor">Professor(a)</option><option value="Pesquisador">Pesquisador(a)</option><option value="Outros" selected>Outros</option></select></div>
+        </div>
+        <div class="input-group"><label for="p_level">Conhecimento sobre Voto Feminino</label><select id="p_level"><option value="1">1 - Curiosa(o), conheço muito pouco</option><option value="2">2 - Conheço o básico da escola</option><option value="3" selected>3 - Intermediário (sei as datas)</option><option value="4">4 - Avançado</option><option value="5">5 - Pesquisadora(or) da área</option></select></div>
+        <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">Salvar Credencial</button>
+      </form>
+    </div>
+
+    <div class="modal scrollable-modal" id="modal-review" role="dialog" aria-modal="true">
+      <button class="close-modal" aria-label="Fechar Modal">✕</button>
+      
+      <div id="reviewLocked" class="locked-state">
+        <div class="locked-stamp-icon">CONFIDENCIAL</div>
+        <h3>Arquivo Fechado</h3>
+        <p>Acesso negado. Conclua a investigação antes de emitir um parecer oficial.</p>
+      </div>
+      
+      <div id="reviewUnlocked" style="display:none;">
+        <h2 class="modal-title">Parecer de Investigação</h2>
+        <p class="modal-desc typewriter" style="border-bottom: 1px dashed var(--olive); padding-bottom: 15px;">FORMULÁRIO OFICIAL • REF: 002/33</p>
+        
+        <form id="reviewForm" class="vintage-evaluation">
+          <div class="rating-box">
+            <label id="ratingLabel">Classificação do Arquivo</label>
+            <div class="stars-container" id="starRating" tabindex="0" aria-labelledby="ratingLabel" role="slider" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0"></div>
+            <div class="rating-badge" id="starValue">Nota: 0,0 / 5</div>
+          </div>
+          
+          <div class="evaluation-question">
+            <label for="r_mechanics">01. Clareza e Mecânicas</label>
+            <p class="evaluation-desc">As pistas (jornais, atas) foram lógicas e fáceis de conectar? Cite se alguma etapa do dossiê ficou confusa ou travou seu progresso.</p>
+            <textarea id="r_mechanics" placeholder="Escreva suas anotações aqui..." class="typewriter-input" required></textarea>
+          </div>
+          
+          <div class="evaluation-question">
+            <label for="r_immersion">02. Narrativa e Tema</label>
+            <p class="evaluation-desc">O formato de "dossiê confidencial" ajudou a entender o contexto do voto feminino em 1933? Qual momento gerou mais impacto para você?</p>
+            <textarea id="r_immersion" placeholder="Escreva suas anotações aqui..." class="typewriter-input" required></textarea>
+          </div>
+
+          <div class="evaluation-question">
+            <label for="r_improvements">03. Melhorias e Expansão</label>
+            <p class="evaluation-desc">Pensando no público alvo, o que faltou no web jogo? Sinta-se livre para sugerir novos recursos, documentos ou interações.</p>
+            <textarea id="r_improvements" placeholder="Escreva suas anotações aqui..." class="typewriter-input"></textarea>
+          </div>
+
+          <button type="submit" class="btn-primary" style="width:100%; justify-content:center; margin-top: 10px;">Carimbar e Anexar aos Arquivos</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal" id="modal-about" role="dialog" aria-modal="true">
+      <button class="close-modal" aria-label="Fechar Modal">✕</button>
+      <h2 class="modal-title">Sobre o Arquivo</h2>
+      <div class="typewriter-box" tabindex="0">
+        <p><strong>Missão:</strong> "Luzes de Maio" é um webjogo investigativo focado na conquista do sufrágio feminino no Brasil, usando Muzambinho (MG) como cenário base (1933).</p>
+        <p><strong>Mecânica:</strong> Analise recortes de jornal, atas eleitorais e relatos de época para desvendar a história e o impacto dessa mudança cívica.</p>
+        <p><em>Preservar a memória é o primeiro passo para garantir o futuro.</em></p>
+      </div>
+    </div>
+  </div>
+
+  <div id="toastContainer"></div>
+  <script src="app.js"></script>
+</body>
+</html>
