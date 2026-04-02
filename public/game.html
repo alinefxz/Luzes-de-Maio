@@ -4,8 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mesa de Investigação | Luzes de Maio</title>
-  
-  <link rel="icon" type="image/png" href="assets/logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
@@ -13,78 +11,202 @@
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="game.css">
 </head>
-<body>
+<body class="game-body">
 
-  <div id="sceneTransition" class="scene-fade black-screen"></div>
-
-  <header class="glass-header game-header">
+  <header class="glass-header game-header-dark">
     <div class="logo-area">
-      <a href="index.html" class="btn-return" id="btnReturnIndex">← Abandonar Arquivo</a>
-      <div class="header-titles" style="margin-left: 20px;">
-        <span class="header-kicker">Etapa 01</span>
+      <img src="assets/logo.png" alt="Logo" class="main-logo" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\\'0 0 50 50\\' xmlns=\\'http://www.w3.org/2000/svg\\'><rect width=\\'50\\' height=\\'50\\' fill=\\'%2393585E\\'/></svg>';">
+      <div class="header-titles">
+        <span class="header-kicker">Arquivo Central</span>
         <span class="header-title">Mesa de Investigação</span>
       </div>
     </div>
+    
     <div class="nav-controls">
-      <div class="user-badge" id="userBadge">
-        <div class="avatar-display" id="headerAvatar"></div>
+      <div class="user-badge game-badge" id="userBadge">
+        <div class="avatar-display" id="headerAvatar" style="display: none;"></div>
         <div class="badge-texts">
           <span class="badge-label">Credencial</span>
-          <span class="badge-name typewriter" id="playerName">Investigador</span>
+          <span class="badge-name typewriter" id="playerName">Não Identificado</span>
         </div>
       </div>
+      <button class="menu-btn" id="menuBtn" aria-label="Abrir Menu">
+        <span></span><span></span><span></span>
+      </button>
     </div>
   </header>
 
-  <main class="game-board">
-    <div class="wooden-desk">
-      <div class="map-document">
-        <div class="map-watermark">Muzambinho & Brasil • 1933</div>
-        
-        <div class="pin-container" style="top: 25%; left: 40%;">
-          <button class="tactical-pin active" id="pinNacional" onclick="GamePlay.selectPhase(1, 'Âmbito Nacional')">
-            <span class="pin-pulse"></span>
-            <div class="pin-head"></div>
-          </button>
-          <span class="pin-label">01. Âmbito Nacional</span>
-        </div>
+  <nav class="fullscreen-menu" id="fullMenu" style="z-index: 9999;">
+    <div class="menu-content">
+      <button class="close-menu" id="closeMenuBtn" aria-label="Fechar Menu">✕</button>
+      <h2 class="menu-title">Índice do Dossiê</h2>
+      <ul class="menu-links">
+        <li><button onclick="Game.openModal('profile')">01. Identificação (Perfil)</button></li>
+        <li><button onclick="Game.openModal('review')">02. Relatório Final (Avaliar)</button></li>
+        <li><button onclick="Game.openModal('about')">03. Contexto Histórico (Sobre)</button></li>
+        <li><button onclick="window.location.href='index.html'">04. Abandonar Arquivo (Sair)</button></li>
+      </ul>
+    </div>
+  </nav>
 
-        <div class="pin-container" style="top: 50%; left: 65%;">
-          <button class="tactical-pin locked" onclick="GamePlay.checkLocked('O Código de 1932')">
-            <div class="pin-head">🔒</div>
-          </button>
-          <span class="pin-label">02. O Código de 1932</span>
-        </div>
+  <main class="game-board" id="gameBoard">
+    <div class="steel-cabinet">
+      <div class="cabinet-shadow-top"></div>
+      <div class="cabinet-label">REF: MUZ-1933 <br><small>CONFIDENCIAL</small></div>
+      
+      <div class="drawer-inside">
+        <button class="file-folder folder-active" id="phase1" onclick="GameLogic.clickPhase(1, 'O Movimento Nacional')">
+          <div class="folder-tab">01. NACIONAL</div>
+          <div class="folder-paper">
+            <div class="paper-clip"></div>
+            <h4>Pistas Abertas</h4>
+            <p>O início da luta sufragista no Brasil e o impacto nacional.</p>
+            <span class="confidential-stamp">LIVRE</span>
+          </div>
+        </button>
 
-        <div class="pin-container" style="top: 75%; left: 30%;">
-          <button class="tactical-pin locked" onclick="GamePlay.checkLocked('O Caso Muzambinho')">
-            <div class="pin-head">🔒</div>
-          </button>
-          <span class="pin-label">03. Caso Muzambinho</span>
-        </div>
+        <button class="file-folder folder-locked" id="phase2" onclick="GameLogic.checkLocked('O Código de 1932')">
+          <div class="folder-tab tab-center">02. 1932</div>
+          <div class="folder-paper">
+            <div class="paper-clip"></div>
+            <h4>Arquivo Selado</h4>
+            <p>Conclua a etapa 01 para romper o lacre.</p>
+            <span class="confidential-stamp locked">SIGILO</span>
+          </div>
+        </button>
 
+        <button class="file-folder folder-locked" id="phase3" onclick="GameLogic.checkLocked('Caso Muzambinho')">
+          <div class="folder-tab tab-right">03. LOCAL</div>
+          <div class="folder-paper">
+            <div class="paper-clip"></div>
+            <h4>Arquivo Selado</h4>
+            <p>Conclua a etapa 02 para investigar Muzambinho.</p>
+            <span class="confidential-stamp locked">SIGILO</span>
+          </div>
+        </button>
       </div>
     </div>
   </main>
 
-  <div id="vnSystem" class="vn-overlay">
-    <div class="vn-container" id="vnContainer">
-      <div class="vn-character">
-        <div class="sufragista-art"></div>
-        </div>
-      
-      <div class="vn-dialogue-box">
-        <div class="vn-name-plate">A Sufragista</div>
-        <div class="vn-text-area">
-          <p id="vnText" class="typewriter"></p>
-        </div>
-        <div class="vn-controls">
-          <span class="vn-hint" id="vnHint">Clique em qualquer lugar para continuar ▼</span>
-          <button id="vnActionBtn" class="btn-primary" style="display: none;">Iniciar Investigação →</button>
-        </div>
+  <footer class="game-footer">
+    <div class="footer-line"></div>
+    <p class="typewriter">&copy; 1933-2026 Luzes de Maio. Propriedade do Arquivo Central de Muzambinho.</p>
+  </footer>
+
+  <button id="inventoryBtn" class="inventory-side-tab">
+    🗂️ INVENTÁRIO
+  </button>
+
+  <div class="inventory-overlay" id="inventoryOverlay">
+    <div class="inventory-dossier">
+      <button class="close-dossier" id="closeInvBtn">✕</button>
+      <div class="dossier-header">
+        <span class="typewriter">INVENTÁRIO DO INVESTIGADOR</span>
+        <h2>Documentos Recolhidos</h2>
+      </div>
+      <div class="dossier-body">
+        <p class="empty-inv typewriter" id="emptyInvText">Sua pasta está vazia. Explore os arquivos da gaveta para coletar evidências.</p>
       </div>
     </div>
   </div>
+
+  <div id="npcOverlay" class="npc-overlay">
+    <div class="npc-wrapper">
+      <div class="npc-portrait"><div class="npc-image-placeholder"></div></div>
+      <div class="npc-dialogue-box">
+        <div class="npc-name-tag">A Sufragista</div>
+        <p class="npc-text" id="npcDialogueText"></p>
+        <div class="npc-hint" id="npcHint">Espaço ou Enter para avançar ▼</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modalOverlay">
+    
+    <div class="modal scrollable-modal" id="modal-profile" role="dialog" aria-modal="true">
+      <button class="close-modal" aria-label="Fechar Modal">✕</button>
+      <h2 class="modal-title">Acesso ao Arquivo</h2>
+      
+      <style>
+        .auth-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid var(--charcoal); }
+        .auth-tab { flex: 1; background: transparent; border: none; padding: 10px; font-family: var(--font-ui); font-weight: bold; font-size: 1.1rem; color: var(--olive); cursor: pointer; opacity: 0.6; transition: 0.2s; }
+        .auth-tab.active { opacity: 1; color: var(--wine); border-bottom: 4px solid var(--wine); }
+        .auth-tab:hover { opacity: 1; color: var(--rose); }
+        .avatar-option:focus-visible { outline: none; }
+        .avatar-option:focus-visible .avatar-box { outline: 3px solid var(--wine); outline-offset: 4px; border-color: var(--wine); transform: translateY(-3px); }
+      </style>
+
+      <div class="auth-tabs">
+        <button id="tabLogin" class="auth-tab active" type="button">Entrar</button>
+        <button id="tabRegister" class="auth-tab" type="button">Nova Credencial</button>
+      </div>
+
+      <form id="loginForm">
+        <p class="modal-desc">Insira suas credenciais para continuar a investigação.</p>
+        <div class="input-group"><label for="l_name">Nome de Usuário</label><input type="text" id="l_name" required placeholder="Ex: mariasilva"></div>
+        <div class="input-group"><label for="l_password">Senha de Acesso</label><input type="password" id="l_password" required placeholder="Sua senha confidencial"></div>
+        <button type="submit" class="btn-primary" style="width:100%; justify-content:center; margin-top: 15px;">Acessar Dossiê</button>
+      </form>
+      
+      <form id="profileForm" style="display: none;">
+        <p class="modal-desc">Crie ou edite seu perfil de investigação.</p>
+        <div class="input-group">
+          <label>Selecione sua Pioneira de Inspiração (Use Tab e Espaço)</label>
+          <div class="avatar-selection-grid" role="radiogroup" aria-label="Seleção de Avatar">
+            <label class="avatar-option" tabindex="0"><input type="radio" name="p_avatar" value="bertha" checked tabindex="-1"><div class="avatar-box" title="A Cientista"><img src="assets/bertha.png" alt="A Cientista" class="avatar-img" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\\'0 0 100 100\\' xmlns=\\'http://www.w3.org/2000/svg\\'><circle cx=\\'50\\' cy=\\'50\\' r=\\'50\\' fill=\\'%23F2CFCD\\'/></svg>'"><span class="avatar-nickname">A Cientista</span></div></label>
+            <label class="avatar-option" tabindex="0"><input type="radio" name="p_avatar" value="celina" tabindex="-1"><div class="avatar-box" title="A Primeira"><img src="assets/celina.png" alt="A Primeira" class="avatar-img" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\\'0 0 100 100\\' xmlns=\\'http://www.w3.org/2000/svg\\'><circle cx=\\'50\\' cy=\\'50\\' r=\\'50\\' fill=\\'%23F2CFCD\\'/></svg>'"><span class="avatar-nickname">A Primeira</span></div></label>
+            <label class="avatar-option" tabindex="0"><input type="radio" name="p_avatar" value="leolinda" tabindex="-1"><div class="avatar-box" title="A Professora"><img src="assets/leolinda.png" alt="A Professora" class="avatar-img" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\\'0 0 100 100\\' xmlns=\\'http://www.w3.org/2000/svg\\'><circle cx=\\'50\\' cy=\\'50\\' r=\\'50\\' fill=\\'%23F2CFCD\\'/></svg>'"><span class="avatar-nickname">A Professora</span></div></label>
+            <label class="avatar-option" tabindex="0"><input type="radio" name="p_avatar" value="mietta" tabindex="-1"><div class="avatar-box" title="A Escritora"><img src="assets/mietta.png" alt="A Escritora" class="avatar-img" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\\'0 0 100 100\\' xmlns=\\'http://www.w3.org/2000/svg\\'><circle cx=\\'50\\' cy=\\'50\\' r=\\'50\\' fill=\\'%23F2CFCD\\'/></svg>'"><span class="avatar-nickname">A Escritora</span></div></label>
+          </div>
+        </div>
+
+        <div class="input-group"><label for="p_fullname">Nome Completo</label><input type="text" id="p_fullname" required placeholder="Ex: Maria da Silva"></div>
+        <div class="form-row">
+          <div class="input-group"><label for="p_name">Nome de Usuário (Único)</label><input type="text" id="p_name" required placeholder="Ex: mariasilva"></div>
+          <div class="input-group"><label for="p_password">Crie uma Senha</label><input type="password" id="p_password" required placeholder="Mínimo 4 caracteres" minlength="4"></div>
+        </div>
+
+        <div class="form-row">
+          <div class="input-group"><label for="p_age">Faixa Etária</label><select id="p_age"><option value="Menos de 18">Menos de 18</option><option value="18 a 24">18 a 24</option><option value="25 a 34" selected>25 a 34</option><option value="35 a 44">35 a 44</option><option value="45 a 54">45 a 54</option><option value="55+">55+</option></select></div>
+          <div class="input-group"><label for="p_gender">Gênero</label><select id="p_gender"><option value="Feminino" selected>Feminino</option><option value="Masculino">Masculino</option><option value="Não-binário">Não-binário</option><option value="Prefiro não informar">Prefiro não informar</option></select></div>
+        </div>
+        <div class="form-row">
+          <div class="input-group"><label for="p_location">Localização</label><select id="p_location"><option value="Muzambinho">Moro em Muzambinho</option><option value="Sul de Minas">Moro no Sul de Minas</option><option value="MG">Moro em outra cidade de MG</option><option value="Outro" selected>Moro em outro estado</option></select></div>
+          <div class="input-group"><label for="p_occupation">Ocupação</label><select id="p_occupation"><option value="Estudante">Estudante do Ensino Médio</option><option value="Universitário">Universitário(a)</option><option value="Professor">Professor(a)</option><option value="Pesquisador">Pesquisador(a)</option><option value="Outros" selected>Outros</option></select></div>
+        </div>
+        <div class="input-group"><label for="p_level">Conhecimento sobre Voto Feminino</label><select id="p_level"><option value="1">1 - Curiosa(o), conheço muito pouco</option><option value="2">2 - Conheço o básico da escola</option><option value="3" selected>3 - Intermediário (sei as datas)</option><option value="4">4 - Avançado</option><option value="5">5 - Pesquisadora(or) da área</option></select></div>
+        <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">Salvar Credencial</button>
+      </form>
+    </div>
+
+    <div class="modal scrollable-modal" id="modal-review" role="dialog" aria-modal="true">
+      <button class="close-modal" aria-label="Fechar Modal">✕</button>
+      <div id="reviewLocked" class="locked-state"><div class="locked-stamp-icon">CONFIDENCIAL</div><h3>Arquivo Fechado</h3><p>Acesso negado. Conclua a investigação antes de emitir um parecer oficial.</p></div>
+      <div id="reviewUnlocked" style="display:none;">
+        <h2 class="modal-title">Parecer de Investigação</h2>
+        <p class="modal-desc typewriter" style="border-bottom: 1px dashed var(--olive); padding-bottom: 15px;">FORMULÁRIO OFICIAL • REF: 002/33</p>
+        <form id="reviewForm" class="vintage-evaluation">
+          <div class="rating-box"><label id="ratingLabel">Classificação do Arquivo</label><div class="stars-container" id="starRating" tabindex="0" aria-labelledby="ratingLabel" role="slider" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0"></div><div class="rating-badge" id="starValue">Nota: 0,0 / 5</div></div>
+          <div class="evaluation-question"><label for="r_mechanics">01. Clareza e Mecânicas</label><textarea id="r_mechanics" placeholder="Escreva suas anotações aqui..." class="typewriter-input" required></textarea></div>
+          <div class="evaluation-question"><label for="r_immersion">02. Narrativa e Tema</label><textarea id="r_immersion" placeholder="Escreva suas anotações aqui..." class="typewriter-input" required></textarea></div>
+          <div class="evaluation-question"><label for="r_improvements">03. Melhorias e Expansão</label><textarea id="r_improvements" placeholder="Escreva suas anotações aqui..." class="typewriter-input"></textarea></div>
+          <button type="submit" class="btn-primary" style="width:100%; justify-content:center; margin-top: 10px;">Carimbar e Anexar aos Arquivos</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal" id="modal-about" role="dialog" aria-modal="true">
+      <button class="close-modal" aria-label="Fechar Modal">✕</button>
+      <h2 class="modal-title">Sobre o Arquivo</h2>
+      <div class="typewriter-box" tabindex="0">
+        <p><strong>Missão:</strong> "Luzes de Maio" é um webjogo investigativo focado na conquista do sufrágio feminino no Brasil, usando Muzambinho (MG) como cenário base (1933).</p>
+        <p><strong>Mecânica:</strong> Analise recortes de jornal, atas eleitorais e relatos de época para desvendar a história e o impacto dessa mudança cívica.</p>
+        <p><em>Preservar a memória é o primeiro passo para garantir o futuro.</em></p>
+      </div>
+    </div>
+  </div>
+
+  <div id="toastContainer"></div>
 
   <script src="app.js"></script>
   <script src="game.js"></script>

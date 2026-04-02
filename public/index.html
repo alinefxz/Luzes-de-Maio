@@ -12,6 +12,15 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
   
   <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Estilos apenas para as abas do modal não quebrarem seu design */
+    .auth-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid var(--charcoal); }
+    .auth-tab { flex: 1; background: transparent; border: none; padding: 10px; font-family: var(--font-ui); font-weight: bold; font-size: 1.1rem; color: var(--olive); cursor: pointer; opacity: 0.6; transition: 0.2s; }
+    .auth-tab.active { opacity: 1; color: var(--wine); border-bottom: 4px solid var(--wine); }
+    .auth-tab:hover { opacity: 1; color: var(--rose); }
+    .avatar-option:focus-visible { outline: none; }
+    .avatar-option:focus-visible .avatar-box { outline: 3px solid var(--wine); outline-offset: 4px; border-color: var(--wine); transform: translateY(-3px); }
+  </style>
 </head>
 <body>
   <svg width="0" height="0" style="position: absolute;">
@@ -212,44 +221,72 @@
 
   <div class="modal-overlay" id="modalOverlay">
     
-    <div class="modal scrollable-modal" id="modal-profile" role="dialog" aria-modal="true">
+<div class="modal scrollable-modal" id="modal-profile" role="dialog" aria-modal="true">
       <button class="close-modal" aria-label="Fechar Modal">✕</button>
-      <h2 class="modal-title">Ficha de Registro</h2>
-      <p class="modal-desc">Identifique-se para assinar os relatórios e criar seu perfil de investigação.</p>
+      <h2 class="modal-title">Acesso ao Arquivo</h2>
       
-      <form id="profileForm">
+      <style>
+        .auth-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid var(--charcoal); }
+        .auth-tab { flex: 1; background: transparent; border: none; padding: 10px; font-family: var(--font-ui); font-weight: bold; font-size: 1.1rem; color: var(--olive); cursor: pointer; opacity: 0.6; transition: 0.2s; }
+        .auth-tab.active { opacity: 1; color: var(--wine); border-bottom: 4px solid var(--wine); }
+        .auth-tab:hover { opacity: 1; color: var(--rose); }
+        .avatar-option:focus-visible { outline: none; }
+        .avatar-option:focus-visible .avatar-box { outline: 3px solid var(--wine); outline-offset: 4px; border-color: var(--wine); transform: translateY(-3px); }
+      </style>
+
+      <div class="auth-tabs">
+        <button id="tabLogin" class="auth-tab active" type="button">Entrar</button>
+        <button id="tabRegister" class="auth-tab" type="button">Nova Credencial</button>
+      </div>
+
+      <form id="loginForm">
+        <p class="modal-desc">Insira suas credenciais para continuar a investigação.</p>
         <div class="input-group">
-          <label>Selecione sua Pioneira de Inspiração</label>
+          <label for="l_name">Nome de Usuário</label>
+          <input type="text" id="l_name" required placeholder="Ex: mariasilva">
+        </div>
+        <div class="input-group">
+          <label for="l_password">Senha de Acesso</label>
+          <input type="password" id="l_password" required placeholder="Sua senha confidencial">
+        </div>
+        <button type="submit" class="btn-primary" style="width:100%; justify-content:center; margin-top: 15px;">Acessar Dossiê</button>
+      </form>
+      
+      <form id="profileForm" style="display: none;">
+        <p class="modal-desc">Crie ou edite seu perfil de investigação.</p>
+        
+        <div class="input-group">
+          <label>Selecione sua Pioneira de Inspiração (Use Tab e Espaço)</label>
           <div class="avatar-selection-grid" role="radiogroup" aria-label="Seleção de Avatar">
             
-            <label class="avatar-option">
-              <input type="radio" name="p_avatar" value="bertha" checked>
+            <label class="avatar-option" tabindex="0">
+              <input type="radio" name="p_avatar" value="bertha" checked tabindex="-1">
               <div class="avatar-box" title="A Cientista">
-                <img src="assets/bertha.png" alt="A Cientista" class="avatar-img" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\'0 0 100 100\' xmlns=\'http://www.w3.org/2000/svg\'><circle cx=\'50\' cy=\'50\' r=\'50\' fill=\'%23F2CFCD\'/></svg>'">
+                <img src="assets/bertha.png" alt="A Cientista" class="avatar-img" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\\'0 0 100 100\\' xmlns=\\'http://www.w3.org/2000/svg\\'><circle cx=\\'50\\' cy=\\'50\\' r=\\'50\\' fill=\\'%23F2CFCD\\'/></svg>'">
                 <span class="avatar-nickname">A Cientista</span>
               </div>
             </label>
 
-            <label class="avatar-option">
-              <input type="radio" name="p_avatar" value="celina">
+            <label class="avatar-option" tabindex="0">
+              <input type="radio" name="p_avatar" value="celina" tabindex="-1">
               <div class="avatar-box" title="A Primeira">
-                <img src="assets/celina.png" alt="A Primeira" class="avatar-img" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\'0 0 100 100\' xmlns=\'http://www.w3.org/2000/svg\'><circle cx=\'50\' cy=\'50\' r=\'50\' fill=\'%23F2CFCD\'/></svg>'">
+                <img src="assets/celina.png" alt="A Primeira" class="avatar-img" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\\'0 0 100 100\\' xmlns=\\'http://www.w3.org/2000/svg\\'><circle cx=\\'50\\' cy=\\'50\\' r=\\'50\\' fill=\\'%23F2CFCD\\'/></svg>'">
                 <span class="avatar-nickname">A Primeira</span>
               </div>
             </label>
 
-            <label class="avatar-option">
-              <input type="radio" name="p_avatar" value="leolinda">
+            <label class="avatar-option" tabindex="0">
+              <input type="radio" name="p_avatar" value="leolinda" tabindex="-1">
               <div class="avatar-box" title="A Professora">
-                <img src="assets/leolinda.png" alt="A Professora" class="avatar-img" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\'0 0 100 100\' xmlns=\'http://www.w3.org/2000/svg\'><circle cx=\'50\' cy=\'50\' r=\'50\' fill=\'%23F2CFCD\'/></svg>'">
+                <img src="assets/leolinda.png" alt="A Professora" class="avatar-img" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\\'0 0 100 100\\' xmlns=\\'http://www.w3.org/2000/svg\\'><circle cx=\\'50\\' cy=\\'50\\' r=\\'50\\' fill=\\'%23F2CFCD\\'/></svg>'">
                 <span class="avatar-nickname">A Professora</span>
               </div>
             </label>
 
-            <label class="avatar-option">
-              <input type="radio" name="p_avatar" value="mietta">
+            <label class="avatar-option" tabindex="0">
+              <input type="radio" name="p_avatar" value="mietta" tabindex="-1">
               <div class="avatar-box" title="A Escritora">
-                <img src="assets/mietta.png" alt="A Escritora" class="avatar-img" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\'0 0 100 100\' xmlns=\'http://www.w3.org/2000/svg\'><circle cx=\'50\' cy=\'50\' r=\'50\' fill=\'%23F2CFCD\'/></svg>'">
+                <img src="assets/mietta.png" alt="A Escritora" class="avatar-img" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\\'0 0 100 100\\' xmlns=\\'http://www.w3.org/2000/svg\\'><circle cx=\\'50\\' cy=\\'50\\' r=\\'50\\' fill=\\'%23F2CFCD\\'/></svg>'">
                 <span class="avatar-nickname">A Escritora</span>
               </div>
             </label>
@@ -257,7 +294,22 @@
           </div>
         </div>
 
-        <div class="input-group"><label for="p_name">Nome ou Pseudônimo</label><input type="text" id="p_name" required placeholder="Ex: Investigador(a) Silva"></div>
+        <div class="input-group">
+          <label for="p_fullname">Nome Completo</label>
+          <input type="text" id="p_fullname" required placeholder="Ex: Maria da Silva">
+        </div>
+        
+        <div class="form-row">
+          <div class="input-group">
+            <label for="p_name">Nome de Usuário (Único)</label>
+            <input type="text" id="p_name" required placeholder="Ex: mariasilva">
+          </div>
+          <div class="input-group">
+            <label for="p_password">Crie uma Senha</label>
+            <input type="password" id="p_password" required placeholder="Mínimo 4 caracteres" minlength="4">
+          </div>
+        </div>
+
         <div class="form-row">
           <div class="input-group"><label for="p_age">Faixa Etária</label><select id="p_age"><option value="Menos de 18">Menos de 18</option><option value="18 a 24">18 a 24</option><option value="25 a 34" selected>25 a 34</option><option value="35 a 44">35 a 44</option><option value="45 a 54">45 a 54</option><option value="55+">55+</option></select></div>
           <div class="input-group"><label for="p_gender">Gênero</label><select id="p_gender"><option value="Feminino" selected>Feminino</option><option value="Masculino">Masculino</option><option value="Não-binário">Não-binário</option><option value="Prefiro não informar">Prefiro não informar</option></select></div>
@@ -326,6 +378,7 @@
   </div>
 
   <div id="toastContainer"></div>
+  
   <script src="app.js"></script>
 </body>
 </html>

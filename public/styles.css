@@ -463,3 +463,55 @@ h1 { font-family: var(--font-serif); font-size: clamp(4rem, 8vw, 7.5rem); line-h
 .npc-text { font-family: var(--font-mono); font-size: 1.3rem; line-height: 1.6; color: var(--charcoal); margin-bottom: 20px; }
 .npc-footer { display: flex; justify-content: flex-end; align-items: center; }
 .npc-hint { font-size: 0.9rem; font-family: var(--font-ui); color: var(--rose); text-transform: uppercase; animation: blink 1.5s infinite; font-weight: bold;}
+
+
+/* Estilos das Abas de Autenticação */
+.auth-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid var(--charcoal); }
+.auth-tab { flex: 1; background: transparent; border: none; padding: 10px; font-family: var(--font-ui); font-weight: bold; font-size: 1.1rem; color: var(--olive); cursor: pointer; opacity: 0.6; transition: 0.2s; }
+.auth-tab.active { opacity: 1; color: var(--wine); border-bottom: 4px solid var(--wine); }
+.auth-tab:hover { opacity: 1; color: var(--rose); }
+
+/* Foco de teclado (Tab) nos Avatares */
+.avatar-option:focus-visible { outline: none; }
+.avatar-option:focus-visible .avatar-box { outline: 3px solid var(--wine); outline-offset: 4px; border-color: var(--wine); transform: translateY(-3px); }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ========================================================= */
+/* TRANSIÇÃO: VIAGEM NO TEMPO (2026 -> 1933)                 */
+/* ========================================================= */
+#timeTravelOverlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: #0b0b0a; display: flex; justify-content: center; align-items: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.5s ease;
+  overflow: hidden;
+}
+#timeTravelOverlay.active { opacity: 1; pointer-events: all; }
+
+.time-tunnel {
+  position: absolute; inset: -50%;
+  background: repeating-radial-gradient(circle at center, transparent 0, transparent 20px, rgba(147, 88, 94, 0.15) 21px, rgba(242, 207, 205, 0.05) 40px);
+  transform: scale(1); opacity: 0;
+  transition: transform 3s cubic-bezier(0.5, 0, 0.1, 1), opacity 1s, filter 2s;
+}
+#timeTravelOverlay.active .time-tunnel { transform: scale(5) rotate(45deg); opacity: 1; filter: blur(5px); }
+
+.year-counter {
+  font-family: var(--font-serif); font-size: 8rem; font-weight: bold;
+  color: var(--cream); text-shadow: 0 0 30px rgba(147, 88, 94, 0.8), 5px 5px 0 var(--charcoal);
+  position: relative; z-index: 2; transition: transform 0.1s;
+}
+#timeTravelOverlay.blackout { background: #000; transition: background 0.8s; }
+#timeTravelOverlay.blackout .year-counter, #timeTravelOverlay.blackout .time-tunnel { opacity: 0; transition: opacity 0.3s; }

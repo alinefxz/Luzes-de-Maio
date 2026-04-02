@@ -1,0 +1,154 @@
+/* ========================================================= */
+/* HEADER E FOOTER COMBINANDO COM A MESA                     */
+/* ========================================================= */
+.game-header-dark { 
+  background: rgba(26, 17, 11, 0.95); /* Madeira escura translúcida */
+  border-bottom: 2px solid var(--charcoal); 
+  padding: 10px 40px !important;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+  position: relative;
+  z-index: 100;
+}
+.game-header-dark .header-title, .game-header-dark .header-kicker { color: var(--cream); text-shadow: 1px 1px 0 #000;}
+.game-badge { background: transparent; border-color: var(--olive); color: var(--cream); }
+.game-badge .badge-name { color: var(--cream); }
+
+.game-footer { 
+  background: transparent; 
+  color: rgba(255, 255, 255, 0.4); 
+  text-align: center; 
+  padding: 20px; 
+  position: relative; 
+  z-index: 10; 
+  margin-top: auto; 
+}
+.game-footer .typewriter { font-size: 0.85rem; letter-spacing: 1px;}
+.footer-line { width: 80px; height: 1px; background: rgba(255, 255, 255, 0.2); margin: 0 auto 10px auto; }
+
+/* ========================================================= */
+/* FUNDO DA MESA DE MADEIRA ENVELHECIDA                      */
+/* ========================================================= */
+.game-body { 
+  background-color: #23160e;
+  background-image: 
+    linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px), 
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px), 
+    radial-gradient(circle at 50% 50%, #302015, #140d08);
+  background-size: 40px 40px, 40px 40px, 100% 100%;
+  min-height: 100vh; display: flex; flex-direction: column; 
+}
+
+/* ========================================================= */
+/* ABA LATERAL DO INVENTÁRIO                                 */
+/* ========================================================= */
+.inventory-side-tab {
+  position: fixed; top: 50%; right: 0; transform: translateY(-50%);
+  background: var(--charcoal); color: var(--cream);
+  padding: 15px 8px; writing-mode: vertical-rl; text-orientation: mixed;
+  font-family: var(--font-mono); font-weight: bold; letter-spacing: 2px;
+  border: 2px solid var(--olive); border-right: none; border-radius: 8px 0 0 8px;
+  cursor: pointer; box-shadow: -4px 4px 10px rgba(0,0,0,0.5);
+  z-index: 9000; transition: 0.2s ease;
+}
+.inventory-side-tab:hover { background: var(--wine); padding-right: 15px; }
+.inventory-side-tab.highlight-pulse { animation: tabPulse 1.5s infinite; background: var(--wine); }
+@keyframes tabPulse { 
+  0% { box-shadow: -4px 4px 10px rgba(0,0,0,0.5), 0 0 0 0 rgba(147, 88, 94, 0.8); } 
+  70% { box-shadow: -4px 4px 10px rgba(0,0,0,0.5), 0 0 0 15px rgba(147, 88, 94, 0); } 
+  100% { box-shadow: -4px 4px 10px rgba(0,0,0,0.5), 0 0 0 0 transparent; } 
+}
+
+/* ========================================================= */
+/* GAVETA DE AÇO REALISTA                                    */
+/* ========================================================= */
+.game-board { flex: 1; display: flex; justify-content: center; align-items: center; padding: 20px; transition: filter 0.8s; }
+.game-board.blurred { filter: blur(8px) brightness(0.4); pointer-events: none; }
+
+.steel-cabinet { 
+  width: 100%; max-width: 900px; height: 420px; 
+  background: linear-gradient(180deg, #444738 0%, #2b2c21 100%); 
+  border: 6px solid #1a1b14; border-bottom: none; border-radius: 8px 8px 0 0; 
+  position: relative; 
+  box-shadow: inset 0 40px 60px rgba(0,0,0,0.7), 0 30px 50px rgba(0,0,0,0.9); 
+  display: flex; flex-direction: column; overflow: hidden;
+}
+
+/* Sombra e Placa do Arquivo */
+.cabinet-shadow-top { position: absolute; top: 0; left: 0; width: 100%; height: 60px; background: linear-gradient(to bottom, rgba(0,0,0,0.6), transparent); pointer-events: none; z-index: 5;}
+.cabinet-label { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); background: #d0c8b6; border: 2px solid #111; padding: 4px 15px; text-align: center; font-family: var(--font-mono); font-weight: bold; color: #333; box-shadow: inset 0 0 10px rgba(0,0,0,0.1), 2px 2px 4px rgba(0,0,0,0.5); border-radius: 2px; z-index: 6;}
+.drawer-inside { flex: 1; display: flex; justify-content: center; align-items: flex-end; gap: 10px; padding: 20px 40px 0; perspective: 800px; }
+
+/* ========================================================= */
+/* PASTAS DE ARQUIVO PARDAS (MANILA FOLDERS)                 */
+/* ========================================================= */
+.file-folder { 
+  width: 250px; height: 260px; 
+  background: transparent; border: none; outline: none; cursor: pointer; 
+  position: relative; transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); 
+  transform-origin: bottom center; z-index: 10;
+}
+.file-folder:hover, .file-folder:focus-visible { z-index: 20; transform: translateY(-40px) rotate(-1deg); }
+
+/* A Aba da Pasta */
+.folder-tab { 
+  background: #d4b886; height: 35px; width: 100px; 
+  border: 1px solid rgba(0,0,0,0.3); border-bottom: none; border-radius: 6px 6px 0 0; 
+  position: absolute; top: -34px; left: 10px; 
+  font-family: var(--font-ui); font-weight: 900; font-size: 0.85rem; color: #4a3c26; 
+  display: flex; justify-content: center; align-items: center; 
+  box-shadow: inset 0 4px 5px rgba(255,255,255,0.3); 
+}
+.tab-center { left: 50%; transform: translateX(-50%); }
+.tab-right { left: auto; right: 10px; }
+
+/* Corpo de Papel saindo da Pasta */
+.folder-paper { 
+  background: #fdfbf7; width: 100%; height: 100%; 
+  border: 1px solid #ccc; border-radius: 0 4px 0 0; 
+  padding: 30px 20px; text-align: left; 
+  box-shadow: -10px 0 25px rgba(0,0,0,0.6); 
+  display: flex; flex-direction: column; gap: 8px; 
+  position: relative;
+}
+.paper-clip { position: absolute; top: 15px; right: -5px; width: 15px; height: 45px; border: 3px solid #888; border-radius: 8px; transform: rotate(15deg); z-index: 5;}
+
+/* Pasta Destrancada */
+.folder-active .folder-paper { border-left: 10px solid var(--wine); }
+.folder-active h4 { color: var(--wine); font-family: var(--font-serif); font-size: 1.6rem; border-bottom: 1px solid var(--wine); padding-bottom: 5px; margin-bottom: 5px;}
+.folder-active p { font-family: var(--font-mono); font-size: 0.95rem; color: var(--charcoal); font-weight: bold;}
+.confidential-stamp { position: absolute; bottom: 20px; right: 20px; font-family: var(--font-ui); font-weight: 900; border: 3px solid var(--sage); color: var(--sage); padding: 5px 10px; transform: rotate(-15deg); border-radius: 4px; letter-spacing: 1px;}
+
+/* Pasta Trancada */
+.folder-locked { opacity: 0.9; }
+.folder-locked .folder-tab { background: #a4a599; color: #222; }
+.folder-locked .folder-paper { background: #e0e2d8; border-left: 10px solid var(--charcoal); }
+.folder-locked h4 { font-family: var(--font-serif); font-size: 1.4rem; color: var(--charcoal); }
+.folder-locked p { color: #555; }
+.locked { border-color: var(--charcoal); color: var(--charcoal); }
+
+/* ========================================================= */
+/* MODAL DO DOSSIÊ (INVENTÁRIO)                              */
+/* ========================================================= */
+.inventory-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 9500; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: 0.3s; backdrop-filter: blur(4px); }
+.inventory-overlay.active { opacity: 1; pointer-events: all; }
+.inventory-dossier { background: var(--cream); width: 90%; max-width: 650px; height: 80vh; border-radius: 4px; border: 2px solid var(--charcoal); box-shadow: 20px 20px 0 rgba(0,0,0,0.5); position: relative; display: flex; flex-direction: column; transform: translateY(50px); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); background-image: linear-gradient(90deg, rgba(147,88,94,0.15) 5%, transparent 5%); }
+.inventory-overlay.active .inventory-dossier { transform: translateY(0); }
+.close-dossier { position: absolute; top: 15px; right: 20px; background: none; border: none; font-size: 1.8rem; color: var(--wine); cursor: pointer; transition: 0.2s; }
+.close-dossier:hover { transform: scale(1.2); color: var(--rose); }
+.dossier-header { padding: 30px 40px; border-bottom: 2px dashed var(--charcoal); }
+.dossier-header .typewriter { color: var(--rose); font-weight: bold; font-size: 0.9rem; }
+.dossier-header h2 { font-family: var(--font-serif); font-size: 2.2rem; color: var(--wine); margin-top: 5px; }
+.dossier-body { padding: 30px 40px; flex: 1; overflow-y: auto; }
+.empty-inv { font-size: 1rem; color: var(--olive); font-style: italic; }
+
+/* NPC */
+.npc-overlay { position: fixed; inset: 0; z-index: 8000; display: none; align-items: flex-end; justify-content: center; padding-bottom: 20px; opacity: 0; transition: opacity 0.3s; }
+.npc-overlay.active { display: flex; opacity: 1; pointer-events: none;} 
+.npc-wrapper { width: 90%; max-width: 1000px; display: flex; align-items: flex-end; gap: 30px; pointer-events: none; }
+.npc-portrait { width: 300px; display: flex; justify-content: center; animation: slideUp 0.6s ease-out; }
+@keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.npc-image-placeholder { width: 250px; height: 400px; background: var(--wine); border-radius: 120px 120px 10px 10px; box-shadow: inset 0 -20px 50px rgba(0,0,0,0.2); }
+.npc-dialogue-box { flex: 1; background: var(--cream); border: 4px solid var(--charcoal); border-radius: 12px; padding: 40px; box-shadow: 12px 12px 0 var(--wine); position: relative; min-height: 220px; pointer-events: all; cursor: pointer; }
+.npc-name-tag { position: absolute; top: -25px; left: 30px; background: var(--charcoal); color: var(--cream); padding: 8px 30px; font-family: var(--font-serif); font-size: 1.6rem; font-weight: bold; border-radius: 6px; box-shadow: 4px 4px 0 var(--wine); }
+.npc-text { font-family: var(--font-mono); font-size: 1.3rem; line-height: 1.6; color: var(--charcoal); margin-bottom: 20px; }
+.npc-hint { position: absolute; bottom: 20px; right: 30px; font-size: 0.85rem; font-family: var(--font-ui); color: var(--rose); font-weight: bold; animation: blink 1.5s infinite; }

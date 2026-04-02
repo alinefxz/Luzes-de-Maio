@@ -13,7 +13,7 @@ const REVIEWS_PATH = path.join(DATA_DIR, "reviews.json");
 app.use(express.json());
 app.use(express.static(PUBLIC_DIR));
 
-//inicializa os arquivos JSON
+// inicializa os arquivos JSON
 async function initDB() {
   try { await fs.mkdir(DATA_DIR, { recursive: true }); } catch (e) {}
   try { await fs.access(USERS_PATH); } catch { await fs.writeFile(USERS_PATH, JSON.stringify({ current: null, users: [] })); }
@@ -26,7 +26,7 @@ async function readJSON(filePath) {
   return JSON.parse(data);
 }
 
-//usuário
+// usuário
 app.get("/api/user", async (req, res) => {
   const data = await readJSON(USERS_PATH);
   res.json(data);
@@ -34,15 +34,18 @@ app.get("/api/user", async (req, res) => {
 
 app.post("/api/user", async (req, res) => {
   const body = req.body;
-  if (!body.name) return res.status(400).json({ error: "Nome é obrigatório." });
+  // Agora exige Nome de Usuário e Senha
+  if (!body.name || !body.password) return res.status(400).json({ error: "Nome de usuário e senha são obrigatórios." });
 
   let data = await readJSON(USERS_PATH);
   let existingIndex = data.users.findIndex(u => u.name.toLowerCase() === body.name.toLowerCase());
 
   let user = existingIndex >= 0 ? { ...data.users[existingIndex] } : {};
 
-  // Forçando o salvamento de todos os campos
+  // Salvando todos os campos, incluindo a Senha e o Nome Completo
   user.name = body.name;
+  user.fullName = body.fullName || user.fullName || "";
+  user.password = body.password;
   user.knowledgeLevel = Number(body.knowledgeLevel) || 3;
   user.ageGroup = body.ageGroup || "";
   user.gender = body.gender || "";
