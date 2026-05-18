@@ -44,10 +44,25 @@
         <li><button onclick="Game.openModal('profile')">01. Identificação (Perfil)</button></li>
         <li><button onclick="Game.openModal('review')">02. Relatório Final (Avaliar)</button></li>
         <li><button onclick="Game.openModal('about')">03. Contexto Histórico (Sobre)</button></li>
-        <li><button onclick="window.location.href='index.html'">04. Abandonar Arquivo (Sair)</button></li>
       </ul>
     </div>
   </nav>
+
+  <div class="top-actions-area">
+    <a href="index.html" class="vintage-plate-btn" title="Abandonar Investigação">
+      <span class="plate-screw screw-left"></span>
+      ABANDONAR ARQUIVO
+      <span class="plate-screw screw-right"></span>
+    </a>
+  </div>
+
+  <div class="top-actions-area-right">
+    <button id="inventoryBtn" class="vintage-plate-btn" title="Abrir Pasta de Campo">
+      <span class="plate-screw screw-left"></span>
+      INVENTÁRIO
+      <span class="plate-screw screw-right"></span>
+    </button>
+  </div>
 
   <main class="game-board" id="gameBoard">
     <div class="steel-cabinet">
@@ -93,20 +108,62 @@
     <p class="typewriter">&copy; 1933-2026 Luzes de Maio. Propriedade do Arquivo Central de Muzambinho.</p>
   </footer>
 
-  <button id="inventoryBtn" class="inventory-side-tab">
-    🗂️ INVENTÁRIO
-  </button>
+  <style>
+    .inventory-side-tab { position: fixed; top: 50%; right: 0; transform: translateY(-50%); background: var(--charcoal); color: var(--cream); padding: 15px 10px; writing-mode: vertical-rl; text-orientation: mixed; font-family: var(--font-mono); font-weight: bold; letter-spacing: 2px; border: 2px solid var(--olive); border-right: none; border-radius: 8px 0 0 8px; cursor: pointer; box-shadow: -4px 4px 10px rgba(0,0,0,0.5); z-index: 9000; transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); display: flex; align-items: center; gap: 10px; }
+    .inventory-side-tab:hover { background: var(--wine); padding-right: 20px; }
+    .inventory-side-tab.highlight-pulse { animation: tabPulse 1.5s infinite; background: var(--wine); }
+    @keyframes tabPulse { 0% { box-shadow: -4px 4px 10px rgba(0,0,0,0.5), 0 0 0 0 rgba(147, 88, 94, 0.8); } 70% { box-shadow: -4px 4px 10px rgba(0,0,0,0.5), 0 0 0 15px rgba(147, 88, 94, 0); } 100% { box-shadow: -4px 4px 10px rgba(0,0,0,0.5), 0 0 0 0 transparent; } }
+
+    .inventory-overlay { position: fixed; inset: 0; background: rgba(15, 10, 7, 0.85); z-index: 9500; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; backdrop-filter: blur(5px); }
+    .inventory-overlay.active { opacity: 1; pointer-events: all; }
+    .inventory-dossier-wrapper { display: flex; width: 90%; max-width: 900px; height: 75vh; background: #e6dfcd; border-radius: 6px; box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 0 60px rgba(100, 80, 60, 0.2); position: relative; transform: translateX(100px); transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1); }
+    .inventory-overlay.active .inventory-dossier-wrapper { transform: translateX(0); }
+    
+    .dossier-page { flex: 1; padding: 40px; position: relative; }
+    .left-page { border-right: 2px solid rgba(0,0,0,0.1); box-shadow: inset -10px 0 20px rgba(0,0,0,0.05); background: linear-gradient(90deg, #e6dfcd 90%, #d8cfba 100%); display: flex; flex-direction: column; }
+    .right-page { box-shadow: inset 10px 0 20px rgba(0,0,0,0.05); background: linear-gradient(90deg, #d8cfba 0%, #e6dfcd 10%); background-image: linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px); background-size: 20px 20px; display: flex; flex-direction: column; }
+    
+    .dossier-header-new { z-index: 2; position: relative; }
+    .secret-tag { color: var(--wine); font-weight: bold; font-size: 0.85rem; letter-spacing: 1px; }
+    .dossier-header-new h2 { font-family: var(--font-serif); font-size: 2.8rem; color: var(--charcoal); margin: 10px 0; line-height: 1.1; }
+    .header-divider { width: 50px; height: 3px; background: var(--rose); margin-bottom: 20px; }
+    .dossier-desc { font-family: var(--font-mono); font-size: 1rem; color: #444; line-height: 1.6; }
+    .vintage-stamp-large { position: absolute; bottom: 40px; left: 30px; font-family: var(--font-ui); font-size: 2.5rem; font-weight: 900; color: rgba(147, 88, 94, 0.15); border: 5px solid rgba(147, 88, 94, 0.15); padding: 10px 20px; transform: rotate(-15deg); letter-spacing: 3px; pointer-events: none; }
+    
+    .close-dossier-new { position: absolute; top: 15px; right: 20px; background: none; border: none; font-size: 1.8rem; color: var(--charcoal); cursor: pointer; transition: all 0.2s; z-index: 100; }
+    .close-dossier-new:hover { color: var(--wine); transform: scale(1.1) rotate(90deg); }
+
+    /* Estado Vazio do Inventário (lado direito) */
+    .empty-inv-state { text-align: center; background-color: rgba(60, 50, 40, 0.05); border: 1px solid rgba(60, 50, 40, 0.3); outline: 1px solid rgba(60, 50, 40, 0.1); outline-offset: -5px; padding: 60px 40px 40px; max-width: 380px; box-shadow: inset 0 0 30px rgba(0,0,0,0.03), 5px 5px 15px rgba(0,0,0,0.05); }
+    .empty-icon-box svg { width: 50px; height: 50px; color: var(--charcoal); opacity: 0.3; margin-bottom: 15px; }
+    .empty-title { font-family: var(--font-serif); font-size: 1.3rem; color: var(--charcoal); font-weight: bold; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 2px; }
+    .empty-subtitle { font-family: var(--font-mono); font-size: 0.95rem; color: #333; line-height: 1.8; text-shadow: 0px 0px 1px rgba(0,0,0,0.1); }
+  </style>
+
+
 
   <div class="inventory-overlay" id="inventoryOverlay">
-    <div class="inventory-dossier">
-      <button class="close-dossier" id="closeInvBtn">✕</button>
-      <div class="dossier-header">
-        <span class="typewriter">INVENTÁRIO DO INVESTIGADOR</span>
-        <h2>Documentos Recolhidos</h2>
+    <div class="inventory-dossier-wrapper">
+      
+      <div class="dossier-page left-page">
+        <div class="dossier-header-new">
+          <span class="typewriter secret-tag">ARQUIVO MORTO • REF: 004/33</span>
+          <h2>Documentos<br>Recolhidos</h2>
+          <div class="header-divider"></div>
+          <p class="dossier-desc">Esta pasta armazena apenas evidências verificadas. Os registros aqui contidos provam o avanço cívico do sufrágio na região de Muzambinho.</p>
+        </div>
+        <div class="vintage-stamp-large">CONFIDENCIAL</div>
       </div>
-      <div class="dossier-body">
-        <p class="empty-inv typewriter" id="emptyInvText">Sua pasta está vazia. Explore os arquivos da gaveta para coletar evidências.</p>
+
+      <div class="dossier-page right-page" style="position: relative; padding: 0;">
+        
+        <button class="close-dossier-new" id="closeInvBtn" title="Fechar Arquivo">✕</button>
+        
+        <div id="inventoryBody" style="width: 100%; height: 100%; padding: 40px; overflow-y: auto;">
+          </div>
+
       </div>
+
     </div>
   </div>
 
@@ -124,21 +181,12 @@
   <div class="modal-overlay" id="modalOverlay">
     
     <div class="modal scrollable-modal" id="modal-profile" role="dialog" aria-modal="true">
-      <button class="close-modal" aria-label="Fechar Modal">✕</button>
-      <h2 class="modal-title">Acesso ao Arquivo</h2>
+      <button class="close-modal" id="closeProfileBtn" aria-label="Fechar Modal">✕</button>
+      <h2 class="modal-title" id="profileModalTitle">Acesso ao Arquivo</h2>
       
-      <style>
-        .auth-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid var(--charcoal); }
-        .auth-tab { flex: 1; background: transparent; border: none; padding: 10px; font-family: var(--font-ui); font-weight: bold; font-size: 1.1rem; color: var(--olive); cursor: pointer; opacity: 0.6; transition: 0.2s; }
-        .auth-tab.active { opacity: 1; color: var(--wine); border-bottom: 4px solid var(--wine); }
-        .auth-tab:hover { opacity: 1; color: var(--rose); }
-        .avatar-option:focus-visible { outline: none; }
-        .avatar-option:focus-visible .avatar-box { outline: 3px solid var(--wine); outline-offset: 4px; border-color: var(--wine); transform: translateY(-3px); }
-      </style>
-
-      <div class="auth-tabs">
-        <button id="tabLogin" class="auth-tab active" type="button">Entrar</button>
-        <button id="tabRegister" class="auth-tab" type="button">Nova Credencial</button>
+      <div class="auth-tabs" id="authTabsContainer">
+        <button id="tabLogin" class="auth-tab active" type="button" onclick="GameLogic.switchAuthTab('login')">Entrar</button>
+        <button id="tabRegister" class="auth-tab" type="button" onclick="GameLogic.switchAuthTab('register')">Nova Credencial</button>
       </div>
 
       <form id="loginForm">
@@ -149,7 +197,8 @@
       </form>
       
       <form id="profileForm" style="display: none;">
-        <p class="modal-desc">Crie ou edite seu perfil de investigação.</p>
+        <p class="modal-desc" id="profileFormDesc">Crie ou edite seu perfil de investigação.</p>
+        
         <div class="input-group">
           <label>Selecione sua Pioneira de Inspiração (Use Tab e Espaço)</label>
           <div class="avatar-selection-grid" role="radiogroup" aria-label="Seleção de Avatar">
@@ -163,7 +212,7 @@
         <div class="input-group"><label for="p_fullname">Nome Completo</label><input type="text" id="p_fullname" required placeholder="Ex: Maria da Silva"></div>
         <div class="form-row">
           <div class="input-group"><label for="p_name">Nome de Usuário (Único)</label><input type="text" id="p_name" required placeholder="Ex: mariasilva"></div>
-          <div class="input-group"><label for="p_password">Crie uma Senha</label><input type="password" id="p_password" required placeholder="Mínimo 4 caracteres" minlength="4"></div>
+          <div class="input-group" id="pwdContainer"><label for="p_password">Crie uma Senha</label><input type="password" id="p_password" required placeholder="Mínimo 4 caracteres" minlength="4"></div>
         </div>
 
         <div class="form-row">
@@ -175,8 +224,16 @@
           <div class="input-group"><label for="p_occupation">Ocupação</label><select id="p_occupation"><option value="Estudante">Estudante do Ensino Médio</option><option value="Universitário">Universitário(a)</option><option value="Professor">Professor(a)</option><option value="Pesquisador">Pesquisador(a)</option><option value="Outros" selected>Outros</option></select></div>
         </div>
         <div class="input-group"><label for="p_level">Conhecimento sobre Voto Feminino</label><select id="p_level"><option value="1">1 - Curiosa(o), conheço muito pouco</option><option value="2">2 - Conheço o básico da escola</option><option value="3" selected>3 - Intermediário (sei as datas)</option><option value="4">4 - Avançado</option><option value="5">5 - Pesquisadora(or) da área</option></select></div>
-        <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">Salvar Credencial</button>
+        <button type="submit" class="btn-primary" style="width:100%; justify-content:center;" id="submitProfileBtn">Salvar Credencial</button>
       </form>
+      
+      <div id="logoutContainer" style="display:none; margin-top: 20px; border-top: 1px dashed var(--charcoal); padding-top: 20px;">
+          <button onclick="GameLogic.logout()" class="vintage-plate-btn" style="width:100%; justify-content:center; background: linear-gradient(180deg, #5c2c31 0%, #3d1c20 100%); color: #f2cfcd; box-shadow: inset 0 0 0 2px #93585E, 2px 2px 5px rgba(0,0,0,0.5);">
+            <span class="plate-screw screw-left"></span>
+            ENCERRAR SESSÃO (SAIR)
+            <span class="plate-screw screw-right"></span>
+          </button>
+      </div>
     </div>
 
     <div class="modal scrollable-modal" id="modal-review" role="dialog" aria-modal="true">

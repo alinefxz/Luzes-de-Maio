@@ -1,15 +1,21 @@
 {
   "current": {
-    "name": "alinefkka",
-    "fullName": "Aline fernanda de oliveira",
-    "password": "12345",
+    "name": "alinehjabjdvaj",
+    "fullName": "alinef",
+    "password": "123456",
     "knowledgeLevel": 3,
     "ageGroup": "25 a 34",
     "gender": "Feminino",
     "location": "Outro",
     "occupation": "Outros",
-    "avatar": "leolinda",
-    "updatedAt": "2026-04-02T19:49:38.999Z"
+    "avatar": "mietta",
+    "progress": {
+      "tutorialCompleted": false,
+      "unlockedPhases": [
+        1
+      ]
+    },
+    "updatedAt": "2026-05-18T22:45:30.444Z"
   },
   "users": [
     {
@@ -109,7 +115,61 @@
       "location": "Outro",
       "occupation": "Outros",
       "avatar": "leolinda",
-      "updatedAt": "2026-04-02T19:49:38.999Z"
+      "updatedAt": "2026-04-05T12:46:41.613Z"
+    },
+    {
+      "name": "alinefernanda",
+      "fullName": "Aline Oliveira",
+      "password": "12345678",
+      "knowledgeLevel": 3,
+      "ageGroup": "Menos de 18",
+      "gender": "Feminino",
+      "location": "Sul de Minas",
+      "occupation": "Estudante",
+      "avatar": "mietta",
+      "progress": {
+        "tutorialCompleted": false,
+        "unlockedPhases": [
+          1
+        ]
+      },
+      "updatedAt": "2026-04-05T21:19:55.905Z"
+    },
+    {
+      "name": "kdhak",
+      "fullName": "aline",
+      "password": "1234",
+      "knowledgeLevel": 3,
+      "ageGroup": "25 a 34",
+      "gender": "Feminino",
+      "location": "Outro",
+      "occupation": "Outros",
+      "avatar": "celina",
+      "progress": {
+        "tutorialCompleted": false,
+        "unlockedPhases": [
+          1
+        ]
+      },
+      "updatedAt": "2026-05-11T01:42:50.029Z"
+    },
+    {
+      "name": "alinehjabjdvaj",
+      "fullName": "alinef",
+      "password": "123456",
+      "knowledgeLevel": 3,
+      "ageGroup": "25 a 34",
+      "gender": "Feminino",
+      "location": "Outro",
+      "occupation": "Outros",
+      "avatar": "mietta",
+      "progress": {
+        "tutorialCompleted": false,
+        "unlockedPhases": [
+          1
+        ]
+      },
+      "updatedAt": "2026-05-18T22:45:30.444Z"
     }
   ]
 }

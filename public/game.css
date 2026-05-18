@@ -152,3 +152,618 @@
 .npc-name-tag { position: absolute; top: -25px; left: 30px; background: var(--charcoal); color: var(--cream); padding: 8px 30px; font-family: var(--font-serif); font-size: 1.6rem; font-weight: bold; border-radius: 6px; box-shadow: 4px 4px 0 var(--wine); }
 .npc-text { font-family: var(--font-mono); font-size: 1.3rem; line-height: 1.6; color: var(--charcoal); margin-bottom: 20px; }
 .npc-hint { position: absolute; bottom: 20px; right: 30px; font-size: 0.85rem; font-family: var(--font-ui); color: var(--rose); font-weight: bold; animation: blink 1.5s infinite; }
+
+
+/* ========================================================= */
+/* ÁREA DE AÇÕES NO TOPO (Abaixo do Header)                  */
+/* ========================================================= */
+.top-actions-area {
+  position: absolute;
+  top: 90px; /* Ajuste se necessário para não colar no header */
+  left: 40px; 
+  z-index: 50;
+}
+
+/* O Design da Plaqueta de Metal (Baseado na imagem enviada) */
+.vintage-plate-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  
+  /* Cor de fundo: Metal escuro (militar/carvão) */
+  background: linear-gradient(180deg, #3a3b34 0%, #2b2c26 100%);
+  
+  /* A bordinha dupla: uma escura por fora e uma clara por dentro */
+  border: 2px solid #111;
+  box-shadow: 
+    inset 0 0 0 2px #d4ccb9, /* Borda interna clara/bege */
+    inset 0 4px 10px rgba(0,0,0,0.5), /* Profundidade */
+    4px 4px 0 rgba(0,0,0,0.6); /* Sombra externa projetada na mesa */
+  
+  /* Formato da plaqueta */
+  border-radius: 6px;
+  padding: 8px 30px; /* Espaço extra para os parafusos */
+  
+  /* Tipografia vintage (relembrando máquina de escrever/chancela) */
+  color: #d4ccb9; /* A cor clara da borda interna */
+  font-family: var(--font-mono), monospace;
+  font-weight: 900;
+  font-size: 0.85rem;
+  letter-spacing: 2px;
+  text-decoration: none;
+  text-transform: uppercase;
+  
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Efeito de interatividade (clicando na plaqueta) */
+.vintage-plate-btn:hover {
+  background: linear-gradient(180deg, #4a4b43 0%, #3a3b34 100%);
+  color: #fff;
+  box-shadow: 
+    inset 0 0 0 2px #e5decb, 
+    inset 0 4px 10px rgba(0,0,0,0.5), 
+    6px 6px 0 rgba(0,0,0,0.6);
+  transform: translate(-2px, -2px);
+}
+
+.vintage-plate-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 
+    inset 0 0 0 2px #d4ccb9, 
+    inset 0 6px 15px rgba(0,0,0,0.8), 
+    0px 0px 0 rgba(0,0,0,0.8);
+}
+
+/* Os "Parafusos" da Plaqueta */
+.plate-screw {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  background: radial-gradient(circle at 30% 30%, #888, #333);
+  border: 1px solid #111;
+  border-radius: 50%;
+  box-shadow: inset 0 -1px 2px rgba(255,255,255,0.2), 1px 1px 2px rgba(0,0,0,0.8);
+}
+
+/* A fenda do parafuso (um pequeno traço escuro no meio) */
+.plate-screw::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 6px; height: 1px;
+  background: #111;
+  transform: translate(-50%, -50%) rotate(45deg); /* Parafusos meio tortos, bem vintage */
+}
+
+/* Posição de cada parafuso */
+.screw-left { left: 8px; }
+.screw-right { right: 8px; transform: translateY(-50%) rotate(-20deg); }
+
+/* ========================================================= */
+/* ANIMAÇÕES DA ABA DO INVENTÁRIO                            */
+/* ========================================================= */
+
+/* 1. Efeito ao passar o mouse (Hover) */
+.inventory-side-tab {
+  /* ... suas outras propriedades (position, background, etc) ... */
+  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); /* Deixa o movimento muito suave */
+}
+
+.inventory-side-tab:hover { 
+  background: var(--wine); /* Muda para a cor vinho */
+  padding-right: 20px; /* Faz a aba "deslizar" um pouco mais para a esquerda */
+}
+
+/* 2. Classe de destaque acionada pelo JavaScript (game.js) */
+.inventory-side-tab.highlight-pulse { 
+  animation: tabPulse 1.5s infinite; /* Chama a animação infinita */
+  background: var(--wine); 
+}
+
+/* 3. A animação tabPulse propriamente dita */
+@keyframes tabPulse { 
+  0% { 
+    /* Estado inicial: sombra escura padrão + aura vinho invisível colada no botão */
+    box-shadow: -4px 4px 10px rgba(0,0,0,0.5), 0 0 0 0 rgba(147, 88, 94, 0.8); 
+  } 
+  70% { 
+    /* A aura expande 15px ao redor do botão e vai ficando transparente */
+    box-shadow: -4px 4px 10px rgba(0,0,0,0.5), 0 0 0 15px rgba(147, 88, 94, 0); 
+  } 
+  100% { 
+    /* A aura some completamente para reiniciar o ciclo */
+    box-shadow: -4px 4px 10px rgba(0,0,0,0.5), 0 0 0 0 transparent; 
+  } 
+}
+
+/* ========================================================= */
+    /* PARTE INTERNA DO INVENTÁRIO (Área das Provas)             */
+    /* ========================================================= */
+    .dossier-body-new { 
+      flex: 1; 
+      overflow-y: auto; 
+      position: relative; 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      padding: 30px;
+    }
+
+    /* O Novo Estado Vazio: Visual de "Ficha de Anexos" */
+    .empty-inv-state { 
+      position: relative;
+      text-align: center; 
+      /* Fundo levemente mais escuro para contrastar com o papel pardo */
+      background-color: rgba(60, 50, 40, 0.05); 
+      /* Borda dupla imitando um quadro de avisos/formulário */
+      border: 1px solid rgba(60, 50, 40, 0.3);
+      outline: 1px solid rgba(60, 50, 40, 0.1);
+      outline-offset: -5px;
+      padding: 60px 40px 40px; 
+      max-width: 380px;
+      box-shadow: 
+        inset 0 0 30px rgba(0,0,0,0.03), /* Sombra interna de desgaste */
+        5px 5px 15px rgba(0,0,0,0.05); /* Sombra projetada na página */
+    }
+
+    /* O "Clipe de Papel" no topo do quadro (Feito com CSS puro) */
+    .empty-inv-state::before {
+      content: '';
+      position: absolute;
+      top: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 16px;
+      height: 40px;
+      border: 3px solid #7a7a7a;
+      border-radius: 10px;
+      box-shadow: 2px 2px 3px rgba(0,0,0,0.2);
+      z-index: 5;
+    }
+    
+    /* Detalhe do clipe para dar realismo */
+    .empty-inv-state::after {
+      content: '';
+      position: absolute;
+      top: 5px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 4px;
+      height: 15px;
+      background: #7a7a7a;
+      border-radius: 2px;
+      z-index: 6;
+    }
+
+    .empty-icon-box {
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    /* Ícone mais integrado ao fundo */
+    .empty-icon-box svg { 
+      width: 50px; 
+      height: 50px; 
+      color: var(--charcoal); 
+      opacity: 0.3; /* Mais apagado, como uma marca d'água */
+    }
+
+    .empty-title { 
+      font-family: var(--font-serif); 
+      font-size: 1.3rem; 
+      color: var(--charcoal); 
+      font-weight: bold; 
+      margin-bottom: 15px; 
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      position: relative;
+      display: inline-block;
+    }
+
+    /* Linhas decorativas ao lado do título */
+    .empty-title::before,
+    .empty-title::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        width: 30px;
+        height: 1px;
+        background-color: var(--charcoal);
+        opacity: 0.4;
+    }
+    .empty-title::before { right: 100%; margin-right: 15px; }
+    .empty-title::after { left: 100%; margin-left: 15px; }
+
+    .empty-subtitle { 
+      font-family: var(--font-mono); 
+      font-size: 0.95rem; 
+      color: #333; 
+      line-height: 1.8; 
+      /* Efeito de texto datilografado levemente "borrado" */
+      text-shadow: 0px 0px 1px rgba(0,0,0,0.1);
+    }
+
+/* ========================================================= */
+/* EVIDÊNCIAS NA MESA (MECÂNICA DRAGGABLE COM QUIZ)          */
+/* ========================================================= */
+.evidence-paper {
+  position: absolute; 
+  width: 380px; /* Um pouco mais largo para acomodar o texto */
+  min-height: 400px;
+  
+  /* Força a cor do papel envelhecido para resolver o bug de transparência */
+  background-color: #f4ebd8 !important; 
+  
+  /* Textura de papel pardo/quadriculado sutil */
+  background-image: 
+    linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px);
+  background-size: 20px 20px;
+  
+  /* Sombras realistas do papel flutuando na mesa */
+  box-shadow: 5px 15px 30px rgba(0,0,0,0.8), inset 0 0 40px rgba(100, 80, 60, 0.1);
+  border: 1px solid #d4c8b6;
+  
+  padding: 40px 30px; 
+  border-radius: 2px; 
+  cursor: grab; 
+  z-index: 1000;
+  
+  font-family: var(--font-mono, monospace); 
+  color: #1a1a1a !important; /* Força o texto escuro (Carvão) */
+  transition: transform 0.1s ease-out;
+}
+
+.evidence-paper:active { 
+  cursor: grabbing; 
+  box-shadow: 8px 20px 35px rgba(0,0,0,0.9); 
+}
+
+.evidence-header { 
+  border-bottom: 2px solid #1a1a1a; 
+  padding-bottom: 10px; 
+  margin-bottom: 20px; 
+  font-family: var(--font-serif, serif); 
+  font-size: 1.6rem; 
+  font-weight: bold; 
+  text-align: center; 
+  text-transform: uppercase; 
+  color: var(--wine, #93585E); /* Título na cor vinho do projeto */
+}
+
+.evidence-content { 
+  font-size: 1rem; 
+  line-height: 1.6; 
+  color: #2c2c2c;
+  text-shadow: 0px 0px 1px rgba(0,0,0,0.1); /* Efeito sutil de tinta de máquina */
+}
+
+/* ========================================================= */
+/* SISTEMA DE Q&A (QUIZ DENTRO DO PAPEL)                     */
+/* ========================================================= */
+.evidence-quiz { 
+  margin-top: 25px; 
+  padding-top: 20px; 
+  border-top: 2px dashed rgba(0,0,0,0.2); 
+}
+
+.quiz-question { 
+  font-family: var(--font-serif, serif); 
+  font-size: 1.15rem; 
+  font-weight: bold; 
+  color: #1a1a1a; 
+  margin-bottom: 15px; 
+  line-height: 1.4; 
+}
+
+.quiz-options { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 10px; 
+}
+
+/* O Design das Alternativas */
+.quiz-btn { 
+  background: #e8dfc9; /* Tom levemente mais escuro que o papel */
+  border: 1px solid #bbaea0; 
+  padding: 12px 15px; 
+  font-family: var(--font-mono, monospace); 
+  font-size: 0.95rem; 
+  font-weight: bold;
+  color: #2c2c2c; 
+  text-align: left; 
+  cursor: pointer; 
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+  border-radius: 4px; 
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+}
+
+/* Efeito ao passar o mouse: Fica Vinho e desliza pro lado */
+.quiz-btn:hover:not(:disabled) { 
+  background: var(--wine, #93585E); 
+  color: #f4ebd8; /* Texto claro */
+  border-color: var(--wine, #93585E); 
+  transform: translateX(6px); 
+  box-shadow: 2px 4px 10px rgba(0,0,0,0.3);
+}
+
+.quiz-btn:disabled { 
+  cursor: not-allowed; 
+  opacity: 0.5; 
+}
+
+/* Os Carimbos de Feedback */
+.quiz-feedback { 
+  margin-top: 15px; 
+  text-align: center; 
+  min-height: 40px; 
+}
+
+.stamp-correct, .stamp-wrong {
+  display: inline-block; 
+  font-family: var(--font-ui, sans-serif); 
+  font-size: 1.5rem; 
+  font-weight: 900;
+  padding: 5px 15px; 
+  border: 4px solid; 
+  border-radius: 4px; 
+  text-transform: uppercase;
+  letter-spacing: 2px; 
+  animation: stampDown 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; 
+  opacity: 0;
+}
+
+.stamp-correct { color: #3b5336; border-color: #3b5336; }
+.stamp-wrong { color: #8a3333; border-color: #8a3333; }
+
+@keyframes stampDown { 
+  100% { transform: rotate(var(--rot)) scale(1); opacity: 0.9; } 
+}
+
+/* Animação de Erro (Papel tremendo) */
+.shake-error { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+
+@keyframes shake { 
+  10%, 90% { transform: translate3d(-2px, 0, 0) rotate(var(--base-rot)); } 
+  20%, 80% { transform: translate3d(4px, 0, 0) rotate(var(--base-rot)); } 
+  30%, 50%, 70% { transform: translate3d(-6px, 0, 0) rotate(var(--base-rot)); } 
+  40%, 60% { transform: translate3d(6px, 0, 0) rotate(var(--base-rot)); } 
+}
+
+/* ========================================================= */
+/* DOSSIÊ DE INVESTIGAÇÃO (MODAL DUPLO - ESQUERDA/DIREITA)   */
+/* ========================================================= */
+.investigation-overlay {
+  position: fixed; inset: 0;
+  background: rgba(15, 10, 7, 0.9); /* Fundo bem escuro para focar na pasta */
+  z-index: 9000;
+  display: flex; justify-content: center; align-items: center;
+  backdrop-filter: blur(8px);
+  animation: fadeIn 0.3s ease;
+}
+
+.investigation-dossier {
+  display: flex;
+  width: 90%; max-width: 950px; height: 75vh; min-height: 500px;
+  background: #e6dfcd; /* Cor do papel velho */
+  border-radius: 6px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.8), inset 0 0 60px rgba(100, 80, 60, 0.15);
+  position: relative;
+  animation: openFolder 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+@keyframes openFolder {
+  0% { transform: scale(0.95) translateY(40px); opacity: 0; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+/* O botão de fechar */
+.close-investigation {
+  position: absolute; top: -40px; right: 0;
+  background: none; border: none; font-size: 2rem;
+  color: var(--cream); cursor: pointer; opacity: 0.7; transition: 0.2s;
+}
+.close-investigation:hover { opacity: 1; transform: scale(1.1); color: var(--rose); }
+
+/* As Páginas da Pasta */
+.dossier-page { flex: 1; padding: 40px 50px; position: relative; overflow-y: auto; }
+
+/* Página Esquerda (A Prova Anexada) */
+.page-left {
+  border-right: 2px solid rgba(0,0,0,0.1);
+  box-shadow: inset -15px 0 20px rgba(0,0,0,0.04); /* Sombra da dobra central */
+  background: linear-gradient(90deg, #e6dfcd 90%, #d8cfba 100%);
+}
+
+/* Falso clipe de papel segurando o documento na página esquerda */
+.page-left::before {
+  content: ''; position: absolute; top: 20px; left: 40px;
+  width: 15px; height: 50px; border: 3px solid #7a7a7a; border-radius: 10px;
+  box-shadow: 2px 2px 3px rgba(0,0,0,0.2); transform: rotate(-5deg); z-index: 10;
+}
+.page-left::after {
+  content: ''; position: absolute; top: 40px; left: 42px;
+  width: 5px; height: 20px; background: #7a7a7a; border-radius: 2px;
+  transform: rotate(-5deg); z-index: 11;
+}
+
+.evidence-title { font-family: var(--font-serif); font-size: 1.8rem; color: var(--wine); margin-bottom: 10px; font-weight: bold; padding-left: 30px;}
+.evidence-text { font-family: var(--font-mono); font-size: 1rem; color: #2c2c2c; line-height: 1.7; text-shadow: 0px 0px 1px rgba(0,0,0,0.1); background: rgba(255,255,255,0.2); padding: 20px; border: 1px solid rgba(0,0,0,0.05); border-radius: 2px; margin-top: 15px;}
+
+/* Página Direita (O Questionário) */
+.page-right {
+  box-shadow: inset 15px 0 20px rgba(0,0,0,0.04);
+  background: linear-gradient(90deg, #d8cfba 0%, #e6dfcd 10%);
+}
+
+.form-header { border-bottom: 2px solid var(--charcoal); padding-bottom: 10px; margin-bottom: 25px; }
+.form-tag { font-family: var(--font-mono); font-size: 0.8rem; font-weight: bold; letter-spacing: 2px; color: var(--olive); text-transform: uppercase; }
+.form-title { font-family: var(--font-serif); font-size: 2.2rem; color: var(--charcoal); line-height: 1.1; margin-top: 5px;}
+
+.quiz-question { font-family: var(--font-serif); font-size: 1.2rem; font-weight: bold; color: var(--charcoal); margin-bottom: 20px; }
+.quiz-options { display: flex; flex-direction: column; gap: 15px; }
+
+/* As opções estilo Checkbox de Formulário Antigo */
+.quiz-checkbox-btn {
+  display: flex; align-items: center; gap: 15px;
+  background: transparent; border: none; padding: 5px 0;
+  font-family: var(--font-mono); font-size: 1rem; color: var(--charcoal);
+  cursor: pointer; text-align: left; transition: 0.2s;
+  border-bottom: 1px dotted rgba(0,0,0,0.3); /* Linha pontilhada do formulário */
+}
+
+/* O quadradinho do Checkbox [ ] */
+.check-box {
+  display: inline-flex; justify-content: center; align-items: center;
+  width: 20px; height: 20px; border: 2px solid var(--charcoal);
+  font-weight: bold; font-family: sans-serif; color: transparent; /* O 'X' fica invisível por padrão */
+  transition: 0.2s;
+}
+
+.quiz-checkbox-btn:hover .check-box { background: rgba(0,0,0,0.05); }
+
+/* Quando o botão é clicado (estado ativo/selecionado via JS) */
+.quiz-checkbox-btn.selected .check-box { color: var(--wine); border-color: var(--wine); }
+.quiz-checkbox-btn.selected { font-weight: bold; color: var(--wine); border-bottom-color: var(--wine); }
+
+/* Carimbos e Animações */
+.quiz-feedback { margin-top: 30px; text-align: center; min-height: 60px; }
+.stamp-correct, .stamp-wrong {
+  display: inline-block; font-family: var(--font-ui); font-size: 1.8rem; font-weight: 900;
+  padding: 5px 20px; border: 5px solid; border-radius: 4px; text-transform: uppercase;
+  letter-spacing: 2px; opacity: 0;
+  animation: stampDown 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+.stamp-correct { color: #3b5336; border-color: #3b5336; }
+.stamp-wrong { color: #8a3333; border-color: #8a3333; }
+
+@keyframes stampDown { 100% { transform: rotate(var(--rot)) scale(1); opacity: 0.9; } }
+
+.shake-error { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+@keyframes shake { 10%, 90% { transform: translate3d(-2px, 0, 0); } 20%, 80% { transform: translate3d(4px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-6px, 0, 0); } 40%, 60% { transform: translate3d(6px, 0, 0); } }
+
+#inventoryBody {
+    display: block;
+    padding: 40px !important;
+    background-color: #e6dfcd; /* Cor da pasta manila */
+    background-image: 
+        linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px),
+        linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px);
+    background-size: 20px 20px; /* Textura leve de papel quadriculado */
+    overflow-y: auto;
+    height: 100%;
+}
+
+.inventory-item:hover {
+    transform: rotate(0deg) scale(1.02) !important;
+    z-index: 10;
+    box-shadow: 10px 10px 25px rgba(0,0,0,0.2);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* =========================================================
+   NOVO BOTÃO DE INVENTÁRIO FLUTUANTE (FAB)
+   ========================================================= */
+.inventory-fab {
+    position: fixed;
+    bottom: 35px;
+    right: 40px;
+    background: var(--wine);
+    color: var(--cream);
+    border: 2px solid #d4b886;
+    padding: 15px 30px;
+    border-radius: 50px;
+    font-family: var(--font-serif);
+    font-size: 1.3rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.6), inset 0 0 10px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 9000;
+    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    text-transform: uppercase;
+}
+
+.inventory-fab:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+    background: #7a464c;
+}
+
+.inventory-fab.highlight-pulse {
+    animation: fabPulse 1.5s infinite;
+}
+
+@keyframes fabPulse {
+    0% { box-shadow: 0 5px 15px rgba(0,0,0,0.6), 0 0 0 0 rgba(147, 88, 94, 0.8); }
+    70% { box-shadow: 0 5px 15px rgba(0,0,0,0.6), 0 0 0 20px rgba(147, 88, 94, 0); }
+    100% { box-shadow: 0 5px 15px rgba(0,0,0,0.6), 0 0 0 0 transparent; }
+}
+
+/* =========================================================
+   AJUSTES DO MODAL (GRAMPO E BOTÃO FECHAR)
+   ========================================================= */
+.close-investigation:hover { transform: scale(1.1); color: var(--wine); }
+
+/* Novo Grampo Realista (Para Fora do Modal) */
+.dossier-clip {
+    position: absolute;
+    top: -25px; /* Fica metade para fora */
+    left: 60px;
+    width: 25px;
+    height: 70px;
+    border: 4px solid #7a7a7a;
+    border-radius: 12px;
+    background: transparent;
+    box-shadow: 2px 5px 10px rgba(0,0,0,0.5), inset 1px 2px 2px rgba(255,255,255,0.4);
+    transform: rotate(-4deg);
+    z-index: 100;
+    pointer-events: none;
+}
+
+/* IMPORTANTE: Remova os clipes antigos do CSS se eles existirem */
+.page-left::before, .page-left::after { display: none !important; }
+
+
+
+/* Posicionamento do Botão de Inventário no Topo Direito */
+.top-actions-area-right {
+  position: absolute;
+  top: 90px;
+  right: 40px; 
+  z-index: 50;
+}
+
+/* Efeito de piscar (pulso) para o tutorial na plaqueta vintage */
+#inventoryBtn.highlight-pulse {
+  animation: platePulse 1.5s infinite;
+  color: #fff;
+  border-color: var(--wine);
+}
+
+@keyframes platePulse {
+  0% { box-shadow: inset 0 0 0 2px #d4ccb9, inset 0 4px 10px rgba(0,0,0,0.5), 4px 4px 0 rgba(0,0,0,0.6), 0 0 0 0 rgba(147, 88, 94, 0.8); }
+  70% { box-shadow: inset 0 0 0 2px #d4ccb9, inset 0 4px 10px rgba(0,0,0,0.5), 4px 4px 0 rgba(0,0,0,0.6), 0 0 0 20px rgba(147, 88, 94, 0); }
+  100% { box-shadow: inset 0 0 0 2px #d4ccb9, inset 0 4px 10px rgba(0,0,0,0.5), 4px 4px 0 rgba(0,0,0,0.6), 0 0 0 0 transparent; }
+}
+
+/* IMPORTANTE: Pode remover a classe .inventory-fab e .inventory-side-tab se ainda estiverem no seu CSS, pois não usaremos mais */

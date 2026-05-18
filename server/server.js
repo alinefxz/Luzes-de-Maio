@@ -34,7 +34,7 @@ app.get("/api/user", async (req, res) => {
 
 app.post("/api/user", async (req, res) => {
   const body = req.body;
-  // Agora exige Nome de Usuário e Senha
+  // Exige Nome de Usuário e Senha
   if (!body.name || !body.password) return res.status(400).json({ error: "Nome de usuário e senha são obrigatórios." });
 
   let data = await readJSON(USERS_PATH);
@@ -52,6 +52,12 @@ app.post("/api/user", async (req, res) => {
   user.location = body.location || "";
   user.occupation = body.occupation || "";
   user.avatar = body.avatar || "leolinda";
+  
+  // ========================================================
+  // SALVANDO O PROGRESSO DO JOGO
+  // ========================================================
+  user.progress = body.progress || { tutorialCompleted: false, unlockedPhases: [1] };
+  
   user.updatedAt = new Date().toISOString();
 
   if (existingIndex >= 0) data.users[existingIndex] = user;
