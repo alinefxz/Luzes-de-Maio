@@ -11,16 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
   
-  <link rel="stylesheet" href="styles.css">
-  <style>
-    /* Estilos apenas para as abas do modal não quebrarem seu design */
-    .auth-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid var(--charcoal); }
-    .auth-tab { flex: 1; background: transparent; border: none; padding: 10px; font-family: var(--font-ui); font-weight: bold; font-size: 1.1rem; color: var(--olive); cursor: pointer; opacity: 0.6; transition: 0.2s; }
-    .auth-tab.active { opacity: 1; color: var(--wine); border-bottom: 4px solid var(--wine); }
-    .auth-tab:hover { opacity: 1; color: var(--rose); }
-    .avatar-option:focus-visible { outline: none; }
-    .avatar-option:focus-visible .avatar-box { outline: 3px solid var(--wine); outline-offset: 4px; border-color: var(--wine); transform: translateY(-3px); }
-  </style>
+  <link rel="stylesheet" href="styles.css?v=20260527">
 </head>
 <body>
   <svg width="0" height="0" style="position: absolute;">
@@ -47,8 +38,9 @@
         <div class="avatar-display" id="headerAvatar" style="display: none;"></div>
         <div class="badge-texts">
           <span class="badge-label">Credencial de Acesso</span>
-          <span class="badge-name typewriter" id="playerName">Não Identificado</span>
+          <span class="badge-name typewriter" id="playerName">Credencial não registrada</span>
         </div>
+        <button id="headerAuthBtn" class="header-auth-btn" type="button" title="Entrar ou criar credencial">Entrar / Cadastro</button>
         <button id="logoutBtn" class="logout-btn" style="display: none;" title="Devolver Credencial">Sair ✕</button>
       </div>
       <button class="menu-btn" id="menuBtn" aria-label="Abrir Menu">
@@ -223,24 +215,19 @@
     
 <div class="modal scrollable-modal" id="modal-profile" role="dialog" aria-modal="true">
       <button class="close-modal" aria-label="Fechar Modal">✕</button>
-      <h2 class="modal-title">Acesso ao Arquivo</h2>
-      
-      <style>
-        .auth-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid var(--charcoal); }
-        .auth-tab { flex: 1; background: transparent; border: none; padding: 10px; font-family: var(--font-ui); font-weight: bold; font-size: 1.1rem; color: var(--olive); cursor: pointer; opacity: 0.6; transition: 0.2s; }
-        .auth-tab.active { opacity: 1; color: var(--wine); border-bottom: 4px solid var(--wine); }
-        .auth-tab:hover { opacity: 1; color: var(--rose); }
-        .avatar-option:focus-visible { outline: none; }
-        .avatar-option:focus-visible .avatar-box { outline: 3px solid var(--wine); outline-offset: 4px; border-color: var(--wine); transform: translateY(-3px); }
-      </style>
+      <h2 class="modal-title" id="profileModalTitle">Acesso ao Arquivo</h2>
 
-      <div class="auth-tabs">
+      <div class="auth-tabs" id="authTabsContainer">
         <button id="tabLogin" class="auth-tab active" type="button">Entrar</button>
         <button id="tabRegister" class="auth-tab" type="button">Nova Credencial</button>
+        <button id="tabProfile" class="auth-tab" type="button" style="display:none;">Perfil</button>
       </div>
 
       <form id="loginForm">
-        <p class="modal-desc">Insira suas credenciais para continuar a investigação.</p>
+        <div class="auth-paper-note">
+          <strong>Entrada do arquivo</strong>
+          <p>Use sua credencial para continuar a investigação de onde parou.</p>
+        </div>
         <div class="input-group">
           <label for="l_name">Nome de Usuário</label>
           <input type="text" id="l_name" required placeholder="Ex: mariasilva">
@@ -253,7 +240,10 @@
       </form>
       
       <form id="profileForm" style="display: none;">
-        <p class="modal-desc">Crie ou edite seu perfil de investigação.</p>
+        <div class="auth-paper-note">
+          <strong id="profileFormHeading">Credencial de campo</strong>
+          <p id="profileFormDesc">Crie ou edite seu perfil de investigação.</p>
+        </div>
         
         <div class="input-group">
           <label>Selecione sua Pioneira de Inspiração (Use Tab e Espaço)</label>
@@ -292,6 +282,7 @@
             </label>
 
           </div>
+          <div class="avatar-bio" id="avatarBio" aria-live="polite"></div>
         </div>
 
         <div class="input-group">
@@ -304,7 +295,7 @@
             <label for="p_name">Nome de Usuário (Único)</label>
             <input type="text" id="p_name" required placeholder="Ex: mariasilva">
           </div>
-          <div class="input-group">
+          <div class="input-group" id="pwdContainer">
             <label for="p_password">Crie uma Senha</label>
             <input type="password" id="p_password" required placeholder="Mínimo 4 caracteres" minlength="4">
           </div>
@@ -319,8 +310,25 @@
           <div class="input-group"><label for="p_occupation">Ocupação</label><select id="p_occupation"><option value="Estudante">Estudante do Ensino Médio</option><option value="Universitário">Universitário(a)</option><option value="Professor">Professor(a)</option><option value="Pesquisador">Pesquisador(a)</option><option value="Outros" selected>Outros</option></select></div>
         </div>
         <div class="input-group"><label for="p_level">Conhecimento sobre Voto Feminino</label><select id="p_level"><option value="1">1 - Curiosa(o), conheço muito pouco</option><option value="2">2 - Conheço o básico da escola</option><option value="3" selected>3 - Intermediário (sei as datas)</option><option value="4">4 - Avançado</option><option value="5">5 - Pesquisadora(or) da área</option></select></div>
-        <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">Salvar Credencial</button>
+        <button type="submit" class="btn-primary" style="width:100%; justify-content:center;" id="submitProfileBtn">Salvar Credencial</button>
       </form>
+
+      <section class="profile-dashboard" id="profileDashboard" style="display:none;">
+        <div class="profile-summary-card">
+          <div class="profile-summary-avatar" id="profileSummaryAvatar"></div>
+          <div>
+            <span class="profile-summary-label">Perfil ativo</span>
+            <strong id="profileSummaryName">Investigadora</strong>
+            <small id="profileSummaryMeta">Arquivo em andamento</small>
+          </div>
+        </div>
+        <div class="badge-panel" id="badgePanel"></div>
+        <div class="account-actions">
+          <button type="button" class="btn-secondary" id="editProfileBtn">Editar perfil</button>
+          <button type="button" class="btn-secondary danger-soft" id="resetProgressBtn">Restaurar progresso</button>
+          <button type="button" class="btn-secondary danger-strong" id="deleteAccountBtn">Excluir conta</button>
+        </div>
+      </section>
     </div>
 
     <div class="modal scrollable-modal" id="modal-review" role="dialog" aria-modal="true">
@@ -366,19 +374,47 @@
       </div>
     </div>
 
-    <div class="modal" id="modal-about" role="dialog" aria-modal="true">
+    <div class="modal scrollable-modal" id="modal-about" role="dialog" aria-modal="true">
       <button class="close-modal" aria-label="Fechar Modal">✕</button>
-      <h2 class="modal-title">Sobre o Arquivo</h2>
-      <div class="typewriter-box" tabindex="0">
-        <p><strong>Missão:</strong> "Luzes de Maio" é um webjogo investigativo focado na conquista do sufrágio feminino no Brasil, usando Muzambinho (MG) como cenário base (1933).</p>
-        <p><strong>Mecânica:</strong> Analise recortes de jornal, atas eleitorais e relatos de época para desvendar a história e o impacto dessa mudança cívica.</p>
-        <p><em>Preservar a memória é o primeiro passo para garantir o futuro.</em></p>
+      <div class="about-dossier">
+        <div class="about-stamp">REF: 1933</div>
+        <p class="about-kicker typewriter">Arquivo Central de Muzambinho</p>
+        <h2 class="modal-title about-title">Sobre o Arquivo</h2>
+        <p class="about-lead">Luzes de Maio nasceu como uma mesa de investigação sobre o voto feminino, mas também como um cuidado com as histórias que quase sempre ficam guardadas em silêncio.</p>
+
+        <div class="about-project">
+          <h3>O que este projeto guarda</h3>
+          <p>Este arquivo mistura pesquisa, jogo e memória local. A ideia não é só dizer que o direito ao voto foi conquistado, mas deixar o jogador sentir o caminho: abrir fichas, desconfiar de versões, ler jornais, comparar pistas e montar uma linha do tempo com as próprias mãos.</p>
+          <p>Muzambinho aparece como território vivo dessa história. Quando uma lei nacional chega ao município, ela passa por cartórios, conversas, atas, jornais e pessoas reais. O jogo tenta cuidar desses rastros como quem organiza uma caixa antiga de documentos com atenção e carinho.</p>
+        </div>
+
+        <div class="about-grid">
+          <article>
+            <span>nota de pesquisa</span>
+            <h3>Por que investigar?</h3>
+            <p>Porque a memória não aparece pronta. Ela precisa ser lida, conferida, discutida e, às vezes, recuperada de pequenos detalhes.</p>
+          </article>
+          <article>
+            <span>pista local</span>
+            <h3>Por que Muzambinho?</h3>
+            <p>Porque uma conquista brasileira também ganha rosto quando olhamos para a cidade, para seus registros e para quem viveu essa mudança de perto.</p>
+          </article>
+          <article>
+            <span>gesto de arquivo</span>
+            <h3>Por que jogar?</h3>
+            <p>Porque mexer nas fichas, errar, receber uma pista e tentar de novo faz a história deixar de ser só data e virar descoberta.</p>
+          </article>
+        </div>
+
+        <div class="about-note">
+          Preservar a memória é o primeiro passo para garantir o futuro.
+        </div>
       </div>
     </div>
   </div>
 
   <div id="toastContainer"></div>
   
-  <script src="app.js"></script>
+  <script src="app.js?v=20260527"></script>
 </body>
 </html>
