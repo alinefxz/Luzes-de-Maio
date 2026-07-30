@@ -3743,3 +3743,677 @@ html {
     font-size: clamp(1.05rem, 4.4vw, 1.4rem);
   }
 }
+
+/* ========================================================= */
+/* AJUSTE FINAL DOS BOTOES SUPERIORES                        */
+/* ========================================================= */
+.top-actions-area,
+.top-actions-area-right {
+  top: 132px;
+}
+
+.top-actions-area {
+  left: 48px;
+}
+
+.top-actions-area-right {
+  right: 48px;
+}
+
+.back-arrow-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 42px;
+  border: 2px solid #111;
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.08), transparent),
+    linear-gradient(180deg, #3a3b34 0%, #24251f 100%);
+  color: #efe5cf;
+  text-decoration: none;
+  box-shadow:
+    inset 0 0 0 2px #d4ccb9,
+    inset 0 4px 10px rgba(0,0,0,0.48),
+    4px 4px 0 rgba(0,0,0,0.56);
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease,
+    color 0.18s ease;
+}
+
+.back-arrow-btn::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 1px solid rgba(239,229,207,0.45);
+  border-radius: 5px;
+  pointer-events: none;
+}
+
+.back-arrow-symbol {
+  position: relative;
+  z-index: 1;
+  display: block;
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+  transform: translateY(-2px);
+}
+
+.back-arrow-btn:hover,
+.back-arrow-btn:focus-visible {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.12), transparent),
+    linear-gradient(180deg, #4a4b43 0%, #303129 100%);
+  color: #fff7e6;
+  box-shadow:
+    inset 0 0 0 2px #e5decb,
+    inset 0 4px 10px rgba(0,0,0,0.48),
+    5px 5px 0 rgba(0,0,0,0.56);
+  transform: translate(-1px, -1px);
+}
+
+.back-arrow-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow:
+    inset 0 0 0 2px #d4ccb9,
+    inset 0 6px 14px rgba(0,0,0,0.72),
+    0 0 0 rgba(0,0,0,0);
+}
+
+@media (max-width: 720px) {
+  .top-actions-area,
+  .top-actions-area-right {
+    top: 118px;
+  }
+
+  .top-actions-area {
+    left: 18px;
+  }
+
+  .top-actions-area-right {
+    right: 18px;
+  }
+
+  .back-arrow-btn {
+    width: 48px;
+    height: 38px;
+  }
+}
+
+/* ========================================================= */
+/* CADERNO COM LAYOUT DE DOSSIE                              */
+/* ========================================================= */
+.notebook-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 10, 7, 0.85);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+  backdrop-filter: blur(5px);
+}
+
+.notebook-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.notebook-dossier-wrapper {
+  width: 90%;
+  max-width: 900px;
+  height: 75vh;
+  overflow: hidden;
+  background: #e6dfcd;
+  border-radius: 6px;
+  box-shadow:
+    0 20px 50px rgba(0,0,0,0.8),
+    inset 0 0 60px rgba(100,80,60,0.2);
+  transform: translateX(100px);
+  transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.notebook-overlay.active .notebook-dossier-wrapper {
+  transform: translateX(0);
+}
+
+.notebook-overlay.fullscreen-mode .notebook-dossier-wrapper {
+  width: calc(100vw - 28px);
+  max-width: none;
+  height: calc(100vh - 28px);
+}
+
+.notebook-left-page {
+  overflow: hidden;
+}
+
+.notebook-left-page .dossier-header-new h2 {
+  color: var(--wine);
+}
+
+.notebook-stamp {
+  color: rgba(73,75,57,0.13);
+  border-color: rgba(73,75,57,0.13);
+}
+
+.notebook-right-page {
+  position: relative;
+  padding: 0;
+}
+
+.notebook-fullscreen-toggle {
+  position: absolute;
+  top: 17px;
+  right: 68px;
+  z-index: 100;
+}
+
+.notebook-body {
+  width: 100%;
+  height: 100%;
+  padding: 40px;
+  overflow-y: auto;
+}
+
+.notebook-paper-sheet {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 38px 34px 32px;
+  background:
+    repeating-linear-gradient(transparent, transparent 31px, rgba(147,88,94,0.18) 31px, rgba(147,88,94,0.18) 32px),
+    linear-gradient(90deg, rgba(147,88,94,0.18) 0 7px, transparent 7px),
+    #fdfbf7;
+  border: 1px solid rgba(40,41,34,0.22);
+  border-left: 9px solid rgba(147,88,94,0.72);
+  box-shadow:
+    8px 8px 18px rgba(0,0,0,0.12),
+    inset 0 0 34px rgba(73,75,57,0.06);
+}
+
+.notebook-paper-kicker {
+  margin: 0 0 16px;
+  color: var(--wine);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.notebook-textarea {
+  flex: 1;
+  min-height: 300px;
+  margin: 0 0 24px;
+  padding: 10px 14px;
+  border: 1px solid rgba(73,75,57,0.34);
+  border-radius: 3px;
+  background: rgba(255,255,255,0.28);
+  color: var(--charcoal);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  line-height: 2;
+  resize: vertical;
+  box-shadow: inset 0 0 18px rgba(40,41,34,0.05);
+}
+
+.notebook-textarea:focus {
+  outline: 2px solid rgba(147,88,94,0.42);
+  outline-offset: 2px;
+}
+
+.notebook-save-btn {
+  align-self: center;
+  min-width: 230px;
+  margin: 0;
+}
+
+.notebook-overlay.fullscreen-mode .notebook-body {
+  padding: 56px 64px;
+}
+
+.notebook-overlay.fullscreen-mode .notebook-paper-sheet {
+  padding: 46px 48px 40px;
+}
+
+#notesBtn.highlight-pulse {
+  animation: platePulse 1.5s infinite;
+  color: #fff;
+  border-color: var(--wine);
+}
+
+@media (max-width: 760px) {
+  .notebook-dossier-wrapper {
+    flex-direction: column;
+    width: calc(100vw - 24px);
+    height: calc(100vh - 96px);
+  }
+
+  .notebook-left-page {
+    flex: 0 0 auto;
+    min-height: 180px;
+  }
+
+  .notebook-left-page .dossier-header-new h2 {
+    font-size: 2rem;
+  }
+
+  .notebook-stamp {
+    display: none;
+  }
+
+  .notebook-body {
+    padding: 32px 22px 24px;
+  }
+
+  .notebook-paper-sheet {
+    padding: 32px 20px 24px;
+  }
+
+  .notebook-textarea {
+    min-height: 240px;
+  }
+}
+
+/* ========================================================= */
+/* CADERNINHO FINAL - MODAL UNICO COM FONTES VISUAIS         */
+/* ========================================================= */
+.notebook-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 26px;
+  background: rgba(15, 10, 7, 0.82);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+  backdrop-filter: blur(5px);
+}
+
+.notebook-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.notebook-card {
+  position: relative;
+  width: min(900px, 92vw);
+  max-height: 86vh;
+  overflow-y: auto;
+  padding: 44px 48px 40px;
+  background:
+    linear-gradient(90deg, rgba(147,88,94,0.11) 1px, transparent 1px),
+    linear-gradient(rgba(147,88,94,0.08) 1px, transparent 1px),
+    linear-gradient(180deg, #f1e4c9, #dcc9a7);
+  background-size: 34px 34px, 100% 32px, auto;
+  border: 1px solid rgba(44,44,44,0.42);
+  border-left: 12px solid rgba(147,88,94,0.52);
+  border-radius: 4px;
+  box-shadow:
+    14px 14px 0 rgba(40,41,34,0.58),
+    inset 0 0 46px rgba(147,88,94,0.08);
+}
+
+.notebook-heading {
+  margin: 0 88px 22px 0;
+}
+
+.notebook-kicker {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--wine);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.notebook-card h2 {
+  margin: 0 0 12px;
+  color: var(--charcoal);
+  font-family: var(--font-serif);
+  font-size: clamp(2.3rem, 5vw, 3.45rem);
+  line-height: 0.96;
+  letter-spacing: 0;
+}
+
+.notebook-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 190px;
+  gap: 26px;
+  align-items: start;
+}
+
+.notebook-writing-area {
+  min-width: 0;
+}
+
+.notebook-textarea {
+  width: 100%;
+  min-height: 330px;
+  margin: 0 0 24px;
+  padding: 14px 16px;
+  border: 1px solid rgba(73,75,57,0.42);
+  border-left: 6px solid rgba(147,88,94,0.46);
+  border-radius: 3px;
+  background:
+    repeating-linear-gradient(transparent, transparent 31px, rgba(147,88,94,0.18) 31px, rgba(147,88,94,0.18) 32px),
+    rgba(253,251,247,0.62);
+  color: var(--charcoal);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  line-height: 2;
+  resize: vertical;
+  box-shadow: inset 0 0 22px rgba(40,41,34,0.06);
+}
+
+.notebook-textarea:focus {
+  outline: 2px solid rgba(147,88,94,0.45);
+  outline-offset: 2px;
+}
+
+.notebook-save-btn {
+  display: flex;
+  width: fit-content;
+  min-width: 230px;
+  margin: 0 auto;
+  align-items: center;
+  justify-content: center;
+  padding: 15px 30px;
+  border: 2px solid var(--charcoal);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.08), transparent),
+    linear-gradient(180deg, #93585e, #6f3b43);
+  color: var(--cream);
+  font-family: var(--font-mono);
+  font-size: 0.92rem;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow:
+    inset 0 0 0 2px rgba(242,228,200,0.58),
+    5px 5px 0 rgba(40,41,34,0.72);
+  transition: var(--transition);
+}
+
+.notebook-save-btn:hover,
+.notebook-save-btn:focus-visible {
+  transform: translate(-2px, -2px);
+  box-shadow:
+    inset 0 0 0 2px rgba(242,228,200,0.72),
+    7px 7px 0 rgba(40,41,34,0.72);
+}
+
+.notebook-polaroids {
+  position: relative;
+  min-height: 330px;
+}
+
+.notebook-polaroid {
+  position: absolute;
+  width: 142px;
+  margin: 0;
+  padding: 9px 9px 26px;
+  background: #fdfbf7;
+  border: 1px solid rgba(44,44,44,0.68);
+  box-shadow: 5px 7px 0 rgba(40,41,34,0.18);
+}
+
+.notebook-polaroid::before {
+  content: "";
+  position: absolute;
+  top: -9px;
+  left: 50%;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #eadfbd, #93585e);
+  border: 1px solid rgba(44,44,44,0.42);
+  transform: translateX(-50%);
+  box-shadow: 1px 2px 0 rgba(0,0,0,0.22);
+}
+
+.notebook-polaroid-img {
+  height: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(44,44,44,0.55);
+  background:
+    radial-gradient(circle at 28% 24%, rgba(255,255,255,0.32), transparent 32%),
+    linear-gradient(135deg, #5d6348, #b99a71);
+  color: rgba(253,251,247,0.88);
+  font-family: var(--font-mono);
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+
+.polaroid-women .notebook-polaroid-img {
+  background:
+    radial-gradient(circle at 70% 22%, rgba(255,255,255,0.28), transparent 34%),
+    linear-gradient(135deg, #93585e, #c6908d);
+}
+
+.notebook-polaroid figcaption {
+  display: block;
+  margin-top: 7px;
+  color: var(--charcoal);
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  font-weight: 700;
+  line-height: 1.25;
+  text-align: center;
+}
+
+.polaroid-muzambinho {
+  top: 6px;
+  right: 16px;
+  transform: rotate(6deg);
+}
+
+.polaroid-women {
+  top: 176px;
+  right: 38px;
+  transform: rotate(-7deg);
+}
+
+.notebook-fullscreen-toggle {
+  position: absolute;
+  top: 18px;
+  right: 70px;
+  z-index: 20;
+}
+
+.notebook-overlay.fullscreen-mode .notebook-card {
+  width: calc(100vw - 28px);
+  max-width: none;
+  height: calc(100vh - 28px);
+  max-height: none;
+}
+
+.notebook-overlay.fullscreen-mode .notebook-layout {
+  grid-template-columns: minmax(0, 1fr) 230px;
+}
+
+.notebook-overlay.fullscreen-mode .notebook-textarea {
+  min-height: calc(100vh - 315px);
+}
+
+@media (max-width: 760px) {
+  .notebook-overlay {
+    padding: 18px;
+  }
+
+  .notebook-card {
+    width: calc(100vw - 28px);
+    max-height: calc(100vh - 36px);
+    padding: 40px 24px 30px;
+  }
+
+  .notebook-heading {
+    margin-right: 76px;
+  }
+
+  .notebook-card h2 {
+    font-size: clamp(2rem, 11vw, 2.75rem);
+  }
+
+  .notebook-layout,
+  .notebook-overlay.fullscreen-mode .notebook-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .notebook-polaroids {
+    min-height: 162px;
+  }
+
+  .notebook-polaroid {
+    width: 124px;
+  }
+
+  .notebook-polaroid-img {
+    height: 78px;
+  }
+
+  .polaroid-muzambinho {
+    top: 0;
+    left: 12px;
+    right: auto;
+  }
+
+  .polaroid-women {
+    top: 26px;
+    right: 18px;
+  }
+}
+
+/* ========================================================= */
+/* PADRAO FINAL: FECHAR E EXPANDIR                           */
+/* ========================================================= */
+body .close-menu,
+body .close-modal,
+body .close-dossier-new,
+body .close-investigation,
+body .profile-decision-close,
+body .fullscreen-toggle {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  box-shadow: none;
+  color: var(--rose);
+  font-family: inherit;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0;
+  opacity: 1;
+  cursor: pointer;
+  transition:
+    color 0.18s ease,
+    background 0.18s ease,
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+body .close-menu,
+body .close-modal,
+body .close-dossier-new,
+body .close-investigation,
+body .profile-decision-close {
+  font-size: 1.45rem;
+}
+
+body .fullscreen-toggle {
+  font-size: 1.42rem;
+}
+
+body .close-menu:hover,
+body .close-menu:focus-visible,
+body .close-modal:hover,
+body .close-modal:focus-visible,
+body .close-dossier-new:hover,
+body .close-dossier-new:focus-visible,
+body .close-investigation:hover,
+body .close-investigation:focus-visible,
+body .profile-decision-close:hover,
+body .profile-decision-close:focus-visible,
+body .fullscreen-toggle:hover,
+body .fullscreen-toggle:focus-visible {
+  background: var(--wine);
+  color: var(--cream);
+  box-shadow: 0 0 0 1px rgba(242,228,200,0.55), 0 7px 16px rgba(0,0,0,0.24);
+}
+
+body .close-menu:hover,
+body .close-menu:focus-visible,
+body .close-modal:hover,
+body .close-modal:focus-visible,
+body .close-dossier-new:hover,
+body .close-dossier-new:focus-visible,
+body .close-investigation:hover,
+body .close-investigation:focus-visible,
+body .profile-decision-close:hover,
+body .profile-decision-close:focus-visible {
+  transform: rotate(90deg) scale(1.04);
+}
+
+body .fullscreen-toggle:hover,
+body .fullscreen-toggle:focus-visible {
+  transform: scale(1.08);
+}
+
+body .close-modal {
+  top: 16px;
+  right: 18px;
+}
+
+body .close-menu {
+  top: -48px;
+  right: 0;
+}
+
+body .profile-decision-close {
+  top: 14px;
+  right: 16px;
+}
+
+body .inventory-overlay .close-dossier-new,
+body .notebook-overlay .close-dossier-new,
+body .investigation-overlay .close-investigation {
+  top: 18px;
+  right: 18px;
+  z-index: 110;
+}
+
+body .inventory-overlay .inventory-fullscreen-toggle,
+body .notebook-overlay .notebook-fullscreen-toggle,
+body .investigation-overlay .investigation-fullscreen-toggle {
+  top: 18px;
+  right: 62px;
+  z-index: 110;
+}
+
+body .close-investigation .plate-screw {
+  display: none;
+}

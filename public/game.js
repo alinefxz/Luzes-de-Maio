@@ -675,7 +675,7 @@ const GameLogic = {
 
         document.querySelectorAll('.modal').forEach(modal => modal.classList.remove('active'));
         if(m && o) { m.classList.add('active'); o.classList.add('active'); }
-        if(authTabs) authTabs.style.display = 'flex';
+        if(authTabs) authTabs.style.display = isLoggedIn ? 'none' : 'flex';
 
         const tabLogin = document.getElementById('tabLogin');
         const tabRegister = document.getElementById('tabRegister');
@@ -700,7 +700,7 @@ const GameLogic = {
         if(logoutContainer) logoutContainer.style.display = 'none';
         if(tabLogin) tabLogin.style.display = 'none';
         if(tabRegister) tabRegister.style.display = 'none';
-        if(tabProfile) tabProfile.style.display = 'block';
+        if(tabProfile) tabProfile.style.display = 'none';
         if(tabAnswers) tabAnswers.style.display = 'block';
         if(pwdContainer) pwdContainer.style.display = 'none';
         document.getElementById('p_password').required = false;
@@ -1823,9 +1823,13 @@ GameLogic.closeTopLayer = function() {
     return true;
   }
 
+  if(this.notebookOverlay && this.notebookOverlay.classList.contains('active')) {
+    this.closeNotebook();
+    return true;
+  }
+
   if(this.invOverlay && this.invOverlay.classList.contains('active')) {
-    this.invOverlay.classList.remove('active');
-    this.setFullscreenMode(this.invOverlay, false, this.inventoryExpandBtn, 'Inventário');
+    this.closeInventoryPanel();
     return true;
   }
 
@@ -3277,6 +3281,7 @@ GameLogic.bindEvents = function() {
   this.notebookOverlay = document.getElementById('notebookOverlay');
   this.closeNotesBtn = document.getElementById('closeNotesBtn');
   this.saveNotesBtn = document.getElementById('saveNotesBtn');
+  this.notebookExpandBtn = document.getElementById('notebookExpandBtn');
 
   if (this.notesBtn) {
     this.notesBtn.onclick = () => this.openNotebook();
@@ -3288,6 +3293,20 @@ GameLogic.bindEvents = function() {
 
   if (this.saveNotesBtn) {
     this.saveNotesBtn.onclick = () => this.saveNotebookNotes();
+  }
+
+  if (this.notebookExpandBtn) {
+    this.notebookExpandBtn.onclick = () => {
+      this.setFullscreenMode(this.notebookOverlay, !this.notebookOverlay.classList.contains('fullscreen-mode'), this.notebookExpandBtn, 'Caderno');
+    };
+  }
+
+  if (this.invBtn) {
+    this.invBtn.onclick = () => this.openInventoryPanel();
+  }
+
+  if (this.closeInvBtn) {
+    this.closeInvBtn.onclick = () => this.closeInventoryPanel();
   }
 
   document.addEventListener('keydown', (event) => {
@@ -3308,14 +3327,87 @@ GameLogic.bindEvents = function() {
   });
 };
 
+GameLogic.dismissDialogueLayer = function() {
+  this.isDialogueActive = false;
+  this.currentLineIndex = 0;
+
+  if (this.npcOverlay) {
+    this.npcOverlay.classList.remove('active', 'npc-lamp', 'npc-suffragist');
+    this.npcOverlay.style.zIndex = '8000';
+  }
+
+  if (this.board) this.board.classList.remove('blurred');
+
+  const modal = document.getElementById('investigationModal');
+  if (modal) modal.style.filter = 'none';
+};
+
+GameLogic.openInventoryPanel = function() {
+  this.setFullscreenMode(this.invOverlay, false, this.inventoryExpandBtn, 'Inventário');
+  this.invOverlay?.classList.add('active');
+
+  if (this.dialogueContext === 'tutorial_inv_wait' || (!this.progress?.tutorialCompleted && this.progress?.notebookIntroduced)) {
+    this.invBtn?.classList.remove('highlight-pulse');
+    this.dismissDialogueLayer();
+    this.dialogueContext = 'tutorial_inv_open';
+  }
+};
+
+GameLogic.closeInventoryPanel = function() {
+  const shouldCompleteTour = this.dialogueContext === 'tutorial_inv_open' && !this.progress?.tutorialCompleted;
+
+  this.invOverlay?.classList.remove('active');
+  this.setFullscreenMode(this.invOverlay, false, this.inventoryExpandBtn, 'Inventário');
+
+  if (shouldCompleteTour) {
+    this.progress.tutorialCompleted = true;
+    this.progress.notebookIntroduced = true;
+    this.saveGameProgress();
+    this.dialogueContext = null;
+
+    setTimeout(() => {
+      this.startDialogue([
+        'Excelente. Sua pasta está pronta para receber as provas.',
+        "Clique na Ficha 01: 'Nacional' para começar."
+      ], 'normal');
+    }, 350);
+  }
+};
+
 GameLogic.openNotebook = function() {
   this.renderNotebook();
+  this.setFullscreenMode(this.notebookOverlay, false, this.notebookExpandBtn, 'Caderno');
   this.notebookOverlay?.classList.add('active');
+
+  if (this.dialogueContext === 'tutorial_notebook_wait' || (!this.progress?.tutorialCompleted && !this.progress?.notebookIntroduced)) {
+    if (this.progress) {
+      this.progress.notebookIntroduced = true;
+      this.saveGameProgress();
+    }
+
+    this.notesBtn?.classList.remove('highlight-pulse');
+    this.dismissDialogueLayer();
+    this.dialogueContext = 'tutorial_notebook_open';
+  }
+
   setTimeout(() => document.getElementById('fieldNotesText')?.focus(), 80);
 };
 
 GameLogic.closeNotebook = function() {
+  const shouldContinueTour = this.dialogueContext === 'tutorial_notebook_open' && !this.progress?.tutorialCompleted;
+
   this.notebookOverlay?.classList.remove('active');
+  this.setFullscreenMode(this.notebookOverlay, false, this.notebookExpandBtn, 'Caderno');
+
+  if (shouldContinueTour) {
+    this.dialogueContext = null;
+    setTimeout(() => {
+      this.startDialogue([
+        'Muito bem. O Caderno de Campo guarda suas hipóteses durante a investigação.',
+        'Agora abra o Inventário no topo da mesa para ver onde as provas ficam arquivadas.'
+      ], 'tutorial_inv');
+    }, 350);
+  }
 };
 
 GameLogic.saveNotebookNotes = function() {
@@ -3326,11 +3418,8 @@ GameLogic.saveNotebookNotes = function() {
   };
   this.saveGameProgress();
   this.playSFX('stamp');
+  this.closeNotebook();
   this.showToast('Anotações salvas no caderno.');
-  if (this.saveNotesBtn) {
-    this.saveNotesBtn.classList.add('saved');
-    setTimeout(() => this.saveNotesBtn?.classList.remove('saved'), 900);
-  }
 };
 
 GameLogic.showToast = function(message) {
@@ -3357,7 +3446,7 @@ const LMOriginalStartDialogue = GameLogic.startDialogue;
 GameLogic.startDialogue = function(lines, context) {
   const nextLines = Array.isArray(lines) ? [...lines] : [];
 
-  if (context === 'tutorial_inv' && !nextLines.some(line => String(line).includes('Caderno de Campo'))) {
+  if (context === 'tutorial_inv' && !this.progress?.notebookIntroduced && !nextLines.some(line => String(line).includes('Caderno de Campo'))) {
     nextLines.splice(2, 0, 'Também deixei um Caderno de Campo no topo da mesa. Use-o para anotar pistas, dúvidas e conclusões durante a investigação.');
   }
 
@@ -3374,7 +3463,22 @@ GameLogic.startDialogue = function(lines, context) {
 
 const LMOriginalAdvanceDialogue = GameLogic.advanceDialogue;
 GameLogic.advanceDialogue = function() {
+  if (this.dialogueContext === 'tutorial_notebook_wait') return;
+  const previousContext = this.dialogueContext;
+
   LMOriginalAdvanceDialogue.call(this);
+
+  const currentLine = String(this.currentLines?.[this.currentLineIndex] || '');
+  if (
+    previousContext === 'tutorial_inv' &&
+    this.isDialogueActive &&
+    !this.progress?.notebookIntroduced &&
+    currentLine.includes('Caderno de Campo')
+  ) {
+    this.notesBtn?.classList.add('highlight-pulse');
+    this.dialogueContext = 'tutorial_notebook_wait';
+  }
+
   if (!this.isDialogueActive) {
     document.getElementById('npcOverlay')?.classList.remove('npc-lamp', 'npc-suffragist');
   }

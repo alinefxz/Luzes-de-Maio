@@ -8,8 +8,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
   
-  <link rel="stylesheet" href="styles.css?v=20260729h">
-  <link rel="stylesheet" href="game.css?v=20260729h">
+  <link rel="stylesheet" href="styles.css?v=20260730e">
+  <link rel="stylesheet" href="game.css?v=20260730e">
 </head>
 <body class="game-body">
 
@@ -51,10 +51,8 @@
   </nav>
 
   <div class="top-actions-area">
-    <a href="index.html" class="vintage-plate-btn" title="Abandonar Investigação">
-      <span class="plate-screw screw-left"></span>
-      ABANDONAR ARQUIVO
-      <span class="plate-screw screw-right"></span>
+    <a href="index.html" class="back-arrow-btn" title="Voltar ao arquivo inicial" aria-label="Voltar ao arquivo inicial">
+      <span class="back-arrow-symbol" aria-hidden="true">&larr;</span>
     </a>
   </div>
 
@@ -221,13 +219,37 @@
 
   <div class="notebook-overlay" id="notebookOverlay">
     <div class="notebook-card">
-      <button class="close-dossier-new" id="closeNotesBtn" type="button" title="Fechar Caderno" aria-label="Fechar Caderno">×</button>
-      <span class="notebook-kicker">CADERNO DE CAMPO</span>
-      <h2>Anotações da Investigação</h2>
+      <button class="fullscreen-toggle notebook-fullscreen-toggle" id="notebookExpandBtn" type="button" title="Expandir Caderno" aria-label="Expandir Caderno" aria-pressed="false">&#x26F6;</button>
+      <button class="close-dossier-new" id="closeNotesBtn" type="button" title="Fechar Caderno" aria-label="Fechar Caderno">&times;</button>
 
-      <textarea id="fieldNotesText" class="notebook-textarea" placeholder="Anote hipóteses, dúvidas, pistas e conclusões..."></textarea>
+      <div class="notebook-heading">
+        <span class="notebook-kicker">CADERNO DE CAMPO &bull; REF: NOTAS</span>
+        <h2>Anota&ccedil;&otilde;es da Investiga&ccedil;&atilde;o</h2>
+        <div class="header-divider"></div>
+      </div>
 
-      <button id="saveNotesBtn" class="notebook-save-btn" type="button">Salvar anotações</button>
+      <div class="notebook-layout">
+        <section class="notebook-writing-area" aria-label="Anota&ccedil;&otilde;es da investiga&ccedil;&atilde;o">
+          <textarea id="fieldNotesText" class="notebook-textarea" placeholder="Anote hip&oacute;teses, d&uacute;vidas, pistas e conclus&otilde;es..."></textarea>
+          <button id="saveNotesBtn" class="notebook-save-btn" type="button">Salvar anota&ccedil;&otilde;es</button>
+        </section>
+
+        <aside class="notebook-polaroids" aria-label="Fontes de consulta">
+          <figure class="notebook-polaroid polaroid-muzambinho">
+            <div class="notebook-polaroid-img">
+              <span>MZB</span>
+            </div>
+            <figcaption>Muzambinho, 1933</figcaption>
+          </figure>
+
+          <figure class="notebook-polaroid polaroid-women">
+            <div class="notebook-polaroid-img">
+              <span>VOTO</span>
+            </div>
+            <figcaption>Mulheres nas urnas</figcaption>
+          </figure>
+        </aside>
+      </div>
     </div>
   </div>
 
@@ -382,7 +404,7 @@
 
   <div id="toastContainer"></div>
 
-  <script src="app.js?v=20260729h"></script>
-  <script src="game.js?v=20260729h"></script>
+  <script src="app.js?v=20260730e"></script>
+  <script src="game.js?v=20260730e"></script>
 </body>
 </html>
