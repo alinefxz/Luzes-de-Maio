@@ -8,8 +8,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
   
-  <link rel="stylesheet" href="styles.css?v=20260527">
-  <link rel="stylesheet" href="game.css?v=20260527">
+  <link rel="stylesheet" href="styles.css?v=20260729h">
+  <link rel="stylesheet" href="game.css?v=20260729h">
 </head>
 <body class="game-body">
 
@@ -59,7 +59,13 @@
   </div>
 
   <div class="top-actions-area-right">
-    <button id="inventoryBtn" class="vintage-plate-btn" title="Abrir Pasta de Campo">
+    <button id="notesBtn" class="vintage-plate-btn" type="button" title="Abrir Caderno de Campo (C)">
+      <span class="plate-screw screw-left"></span>
+      CADERNO
+      <span class="plate-screw screw-right"></span>
+    </button>
+
+    <button id="inventoryBtn" class="vintage-plate-btn" type="button" title="Abrir Pasta de Campo">
       <span class="plate-screw screw-left"></span>
       INVENTÁRIO
       <span class="plate-screw screw-right"></span>
@@ -213,6 +219,18 @@
     </div>
   </div>
 
+  <div class="notebook-overlay" id="notebookOverlay">
+    <div class="notebook-card">
+      <button class="close-dossier-new" id="closeNotesBtn" type="button" title="Fechar Caderno" aria-label="Fechar Caderno">×</button>
+      <span class="notebook-kicker">CADERNO DE CAMPO</span>
+      <h2>Anotações da Investigação</h2>
+
+      <textarea id="fieldNotesText" class="notebook-textarea" placeholder="Anote hipóteses, dúvidas, pistas e conclusões..."></textarea>
+
+      <button id="saveNotesBtn" class="notebook-save-btn" type="button">Salvar anotações</button>
+    </div>
+  </div>
+
   <div id="npcOverlay" class="npc-overlay">
     <div class="npc-wrapper">
       <div class="npc-portrait"><div class="npc-image-placeholder"></div></div>
@@ -234,7 +252,6 @@
         <button id="tabLogin" class="auth-tab active" type="button" onclick="GameLogic.switchAuthTab('login')">Entrar</button>
         <button id="tabRegister" class="auth-tab" type="button" onclick="GameLogic.switchAuthTab('register')">Nova Credencial</button>
         <button id="tabProfile" class="auth-tab" type="button" onclick="GameLogic.switchAuthTab('profile')" style="display:none;">Perfil</button>
-        <button id="tabAnswers" class="auth-tab" type="button" onclick="GameLogic.switchAuthTab('answers')" style="display:none;">Respostas</button>
       </div>
 
       <form id="loginForm">
@@ -280,15 +297,6 @@
         </div>
         <div class="input-group"><label for="p_level">Conhecimento sobre Voto Feminino</label><select id="p_level"><option value="1">1 - Curiosa(o), conheço muito pouco</option><option value="2">2 - Conheço o básico da escola</option><option value="3" selected>3 - Intermediário (sei as datas)</option><option value="4">4 - Avançado</option><option value="5">5 - Pesquisadora(or) da área</option></select></div>
         <button type="submit" class="btn-primary" style="width:100%; justify-content:center;" id="submitProfileBtn">Salvar Credencial</button>
-      </form>
-
-      <form id="answersPanel" style="display:none;">
-        <p class="modal-desc">Revise o que você já registrou e atualize seu parecer pessoal.</p>
-        <div id="answersList" class="answers-ledger"></div>
-        <div class="evaluation-question"><label for="profile_mechanics">Clareza e Mecânicas</label><textarea id="profile_mechanics" placeholder="Edite suas observações..." class="typewriter-input"></textarea></div>
-        <div class="evaluation-question"><label for="profile_immersion">Narrativa e Tema</label><textarea id="profile_immersion" placeholder="Edite suas observações..." class="typewriter-input"></textarea></div>
-        <div class="evaluation-question"><label for="profile_improvements">Melhorias e Expansão</label><textarea id="profile_improvements" placeholder="Edite suas sugestões..." class="typewriter-input"></textarea></div>
-        <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">Salvar Respostas do Perfil</button>
       </form>
 
       <section class="profile-dashboard" id="profileDashboard" style="display:none;">
@@ -374,7 +382,7 @@
 
   <div id="toastContainer"></div>
 
-  <script src="app.js?v=20260527"></script>
-  <script src="game.js?v=20260527"></script>
+  <script src="app.js?v=20260729h"></script>
+  <script src="game.js?v=20260729h"></script>
 </body>
 </html>

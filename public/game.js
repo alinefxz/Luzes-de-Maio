@@ -858,7 +858,6 @@ const GameLogic = {
             this.saveGameProgress();
             this.renderAnswersPanel();
             this.playSFX('stamp');
-            alert("Respostas salvas no perfil.");
         };
     },
 
@@ -2409,7 +2408,7 @@ GameLogic.showWrongAnswerHelp = function(data) {
   const curiosity = data.curiosity || "Curiosidade: arquivos historicos tambem ensinam pelos erros, porque cada tentativa obriga a olhar a pista por outro angulo.";
   const npcOverlay = document.getElementById('npcOverlay');
   if(npcOverlay) npcOverlay.style.zIndex = '99999';
-  this.startDialogue([`Dica: ${hint}`, `Curiosidade: ${curiosity}`], "wrong_answer");
+  this.startDialogue([hint, `Curiosidade: ${curiosity}`], "wrong_answer");
 };
 
 EvidenceSystem.tokenizeHighlightText = function(data) {
@@ -3020,10 +3019,11 @@ GameLogic.updateHeaderAccountControls = function() {
     if(logoutBtn) logoutBtn.style.display = 'inline-block';
     if(headerAvatar) {
       const progress = this.progress || this.store.ensureProgress(this.user.progress || {});
+      const rank = this.getProfileRank(progress);
       headerAvatar.style.display = 'flex';
       headerAvatar.classList.add('ranked-avatar');
       headerAvatar.style.setProperty('--avatar-rank-fill', `${this.getAvatarRankFill(progress)}%`);
-      headerAvatar.innerHTML = `<img src="assets/${this.user.avatar || 'bertha'}.png" alt="${this.user.fullName || this.user.name}">`;
+      headerAvatar.innerHTML = `<img src="assets/${this.user.avatar || 'bertha'}.png" alt="${this.user.fullName || this.user.name}"><span class="avatar-rank-badge" title="${rank.title}">${rank.icon}</span>`;
     }
     return;
   }
@@ -3267,6 +3267,117 @@ GameLogic.deleteAccount = function() {
       }
     }
   });
+};
+
+const LMOriginalBindEvents = GameLogic.bindEvents;
+GameLogic.bindEvents = function() {
+  LMOriginalBindEvents.call(this);
+
+  this.notesBtn = document.getElementById('notesBtn');
+  this.notebookOverlay = document.getElementById('notebookOverlay');
+  this.closeNotesBtn = document.getElementById('closeNotesBtn');
+  this.saveNotesBtn = document.getElementById('saveNotesBtn');
+
+  if (this.notesBtn) {
+    this.notesBtn.onclick = () => this.openNotebook();
+  }
+
+  if (this.closeNotesBtn) {
+    this.closeNotesBtn.onclick = () => this.closeNotebook();
+  }
+
+  if (this.saveNotesBtn) {
+    this.saveNotesBtn.onclick = () => this.saveNotebookNotes();
+  }
+
+  document.addEventListener('keydown', (event) => {
+    const tag = event.target?.tagName?.toLowerCase();
+    const isTyping = ['input', 'textarea', 'select'].includes(tag);
+    const notebookOpen = this.notebookOverlay?.classList.contains('active');
+
+    if (event.key === 'Escape' && notebookOpen) {
+      event.preventDefault();
+      this.closeNotebook();
+      return;
+    }
+
+    if (!isTyping && event.key.toLowerCase() === 'c') {
+      event.preventDefault();
+      this.openNotebook();
+    }
+  });
+};
+
+GameLogic.openNotebook = function() {
+  this.renderNotebook();
+  this.notebookOverlay?.classList.add('active');
+  setTimeout(() => document.getElementById('fieldNotesText')?.focus(), 80);
+};
+
+GameLogic.closeNotebook = function() {
+  this.notebookOverlay?.classList.remove('active');
+};
+
+GameLogic.saveNotebookNotes = function() {
+  if (!this.progress) return;
+  this.progress.fieldNotes = {
+    ...(this.progress.fieldNotes || {}),
+    general: document.getElementById('fieldNotesText')?.value || ''
+  };
+  this.saveGameProgress();
+  this.playSFX('stamp');
+  this.showToast('Anotações salvas no caderno.');
+  if (this.saveNotesBtn) {
+    this.saveNotesBtn.classList.add('saved');
+    setTimeout(() => this.saveNotesBtn?.classList.remove('saved'), 900);
+  }
+};
+
+GameLogic.showToast = function(message) {
+  const container = document.getElementById('toastContainer');
+  if(!container) return;
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.innerText = message;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    setTimeout(() => toast.remove(), 300);
+  }, 2600);
+};
+
+GameLogic.renderNotebook = function() {
+  const text = document.getElementById('fieldNotesText');
+  if (!this.progress) return;
+
+  if (text) text.value = this.progress.fieldNotes?.general || '';
+};
+
+const LMOriginalStartDialogue = GameLogic.startDialogue;
+GameLogic.startDialogue = function(lines, context) {
+  const nextLines = Array.isArray(lines) ? [...lines] : [];
+
+  if (context === 'tutorial_inv' && !nextLines.some(line => String(line).includes('Caderno de Campo'))) {
+    nextLines.splice(2, 0, 'Também deixei um Caderno de Campo no topo da mesa. Use-o para anotar pistas, dúvidas e conclusões durante a investigação.');
+  }
+
+  LMOriginalStartDialogue.call(this, nextLines, context);
+
+  const overlay = document.getElementById('npcOverlay');
+  const nameTag = overlay?.querySelector('.npc-name-tag');
+  const isLamp = context === 'wrong_answer';
+
+  overlay?.classList.toggle('npc-lamp', isLamp);
+  overlay?.classList.toggle('npc-suffragist', !isLamp);
+  if (nameTag) nameTag.innerText = isLamp ? 'Dica' : 'A Sufragista';
+};
+
+const LMOriginalAdvanceDialogue = GameLogic.advanceDialogue;
+GameLogic.advanceDialogue = function() {
+  LMOriginalAdvanceDialogue.call(this);
+  if (!this.isDialogueActive) {
+    document.getElementById('npcOverlay')?.classList.remove('npc-lamp', 'npc-suffragist');
+  }
 };
 
 document.addEventListener('DOMContentLoaded', () => GameLogic.init());

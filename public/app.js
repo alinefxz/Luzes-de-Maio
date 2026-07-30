@@ -730,10 +730,11 @@ const Game = {
       if(this.headerAvatar) {
         this.headerAvatar.style.display = 'flex';
         const avatarKey = this.state.user.avatar || 'bertha';
+        const rank = this.getProfileRank(this.state.user.progress || {});
         const rankFill = this.getAvatarRankFill(this.state.user.progress || {});
         this.headerAvatar.classList.add('ranked-avatar');
         this.headerAvatar.style.setProperty('--avatar-rank-fill', `${rankFill}%`);
-        this.headerAvatar.innerHTML = this.state.avatars[avatarKey];
+        this.headerAvatar.innerHTML = `${this.state.avatars[avatarKey] || ''}<span class="avatar-rank-badge" title="${rank.title}">${rank.icon}</span>`;
       }
       if(this.stampBtn) this.stampBtn.style.display = 'block';
       if(this.stampMark) this.stampMark.classList.remove('stamped');
