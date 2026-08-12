@@ -9,84 +9,198 @@ const PUBLIC_DIR = path.join(__dirname, "..", "public");
 const DATA_DIR = path.join(__dirname, "data");
 const USERS_PATH = path.join(DATA_DIR, "users.json");
 const REVIEWS_PATH = path.join(DATA_DIR, "reviews.json");
+const ADMIN_USERNAME = "admin";
+const ADMIN_PASSWORD = "admin";
+const FULL_UNLOCKED_PHASES = Array.from({ length: 28 }, (_, index) => index + 1);
 
 app.use(express.json());
 app.use(express.static(PUBLIC_DIR));
 
-// inicializa os arquivos JSON
+function blankProgress() {
+  return {
+    tutorialCompleted: false,
+    unlockedPhases: [1],
+    collectedEvidence: [],
+    answers: [],
+    fieldNotes: {},
+    finalReview: null,
+    badges: []
+  };
+}
+
+function normalizeProgress(progress = {}, isAdmin = false) {
+  const source = progress && typeof progress === "object" ? progress : {};
+  const normalized = {
+    ...blankProgress(),
+    ...source,
+    unlockedPhases: Array.isArray(source.unlockedPhases) && source.unlockedPhases.length ? source.unlockedPhases : [1],
+    collectedEvidence: Array.isArray(source.collectedEvidence) ? source.collectedEvidence : [],
+    answers: Array.isArray(source.answers) ? source.answers : [],
+    fieldNotes: source.fieldNotes && typeof source.fieldNotes === "object" && !Array.isArray(source.fieldNotes) ? source.fieldNotes : {},
+    finalReview: source.finalReview || null,
+    badges: Array.isArray(source.badges) ? source.badges : []
+  };
+
+  if (!isAdmin) return normalized;
+
+  return {
+    ...normalized,
+    tutorialCompleted: true,
+    notebookIntroduced: true,
+    unlockedPhases: FULL_UNLOCKED_PHASES,
+    badges: ["primeira-pista", "linha-do-tempo", "leitura-local", "voz-publica", "guardia-do-dossie"]
+  };
+}
+
+function createAdminUser(overrides = {}) {
+  const base = {
+    name: ADMIN_USERNAME,
+    fullName: "Admin do Arquivo",
+    password: ADMIN_PASSWORD,
+    knowledgeLevel: 5,
+    ageGroup: "25 a 34",
+    gender: "Prefiro nao informar",
+    location: "Muzambinho",
+    occupation: "Pesquisador",
+    avatar: "bertha",
+    isAdmin: true,
+    updatedAt: new Date().toISOString()
+  };
+
+  return {
+    ...base,
+    ...overrides,
+    name: ADMIN_USERNAME,
+    password: overrides.password || ADMIN_PASSWORD,
+    isAdmin: true,
+    progress: normalizeProgress(overrides.progress, true)
+  };
+}
+
+async function writeJSON(filePath, data) {
+  await fs.writeFile(filePath, JSON.stringify(data, null, 2));
+}
+
 async function initDB() {
   try { await fs.mkdir(DATA_DIR, { recursive: true }); } catch (e) {}
-  try { await fs.access(USERS_PATH); } catch { await fs.writeFile(USERS_PATH, JSON.stringify({ current: null, users: [] })); }
-  try { await fs.access(REVIEWS_PATH); } catch { await fs.writeFile(REVIEWS_PATH, JSON.stringify({ reviews: [] })); }
+  try { await fs.access(USERS_PATH); } catch { await writeJSON(USERS_PATH, { current: null, users: [createAdminUser()] }); }
+  try { await fs.access(REVIEWS_PATH); } catch { await writeJSON(REVIEWS_PATH, { reviews: [] }); }
 }
 initDB();
 
-async function readJSON(filePath) {
-  const data = await fs.readFile(filePath, "utf8");
-  return JSON.parse(data);
+async function readJSON(filePath, fallback) {
+  try {
+    const data = await fs.readFile(filePath, "utf8");
+    return JSON.parse(data);
+  } catch (error) {
+    return fallback;
+  }
 }
 
-// usuário
+function normalizeUserPayload(body = {}, existing = {}) {
+  const name = String(body.name || existing.name || "").trim();
+  const isAdmin = name.toLowerCase() === ADMIN_USERNAME;
+  if (!name) return null;
+
+  if (isAdmin) {
+    return createAdminUser({
+      ...existing,
+      ...body,
+      fullName: body.fullName || existing.fullName || "Admin do Arquivo",
+      progress: body.progress || existing.progress
+    });
+  }
+
+  return {
+    ...existing,
+    name,
+    fullName: body.fullName || existing.fullName || name,
+    password: body.password || existing.password || "",
+    knowledgeLevel: Number(body.knowledgeLevel || existing.knowledgeLevel) || 3,
+    ageGroup: body.ageGroup || existing.ageGroup || "",
+    gender: body.gender || existing.gender || "",
+    location: body.location || existing.location || "",
+    occupation: body.occupation || existing.occupation || "",
+    avatar: body.avatar || existing.avatar || "leolinda",
+    isAdmin: false,
+    progress: normalizeProgress(body.progress || existing.progress, false),
+    updatedAt: new Date().toISOString()
+  };
+}
+
 app.get("/api/user", async (req, res) => {
-  const data = await readJSON(USERS_PATH);
+  const data = await readJSON(USERS_PATH, { current: null, users: [] });
+  data.users = Array.isArray(data.users) ? data.users : [];
+  if (!data.users.some(user => String(user.name || "").toLowerCase() === ADMIN_USERNAME)) {
+    data.users.unshift(createAdminUser());
+    await writeJSON(USERS_PATH, data);
+  }
   res.json(data);
 });
 
 app.post("/api/user", async (req, res) => {
-  const body = req.body;
-  // Exige Nome de Usuário e Senha
-  if (!body.name || !body.password) return res.status(400).json({ error: "Nome de usuário e senha são obrigatórios." });
+  const body = req.body || {};
+  if (!body.name || !body.password) {
+    return res.status(400).json({ error: "Nome de usuario e senha sao obrigatorios." });
+  }
 
-  let data = await readJSON(USERS_PATH);
-  let existingIndex = data.users.findIndex(u => u.name.toLowerCase() === body.name.toLowerCase());
+  const data = await readJSON(USERS_PATH, { current: null, users: [] });
+  data.users = Array.isArray(data.users) ? data.users : [];
 
-  let user = existingIndex >= 0 ? { ...data.users[existingIndex] } : {};
+  const name = String(body.name).trim().toLowerCase();
+  const existingIndex = data.users.findIndex(user => String(user.name || "").trim().toLowerCase() === name);
+  const existing = existingIndex >= 0 ? data.users[existingIndex] : {};
+  const user = normalizeUserPayload(body, existing);
 
-  // Salvando todos os campos, incluindo a Senha e o Nome Completo
-  user.name = body.name;
-  user.fullName = body.fullName || user.fullName || "";
-  user.password = body.password;
-  user.knowledgeLevel = Number(body.knowledgeLevel) || 3;
-  user.ageGroup = body.ageGroup || "";
-  user.gender = body.gender || "";
-  user.location = body.location || "";
-  user.occupation = body.occupation || "";
-  user.avatar = body.avatar || "leolinda";
-  
-  // ========================================================
-  // SALVANDO O PROGRESSO DO JOGO
-  // ========================================================
-  user.progress = body.progress || { tutorialCompleted: false, unlockedPhases: [1] };
-  
-  user.updatedAt = new Date().toISOString();
+  if (!user) return res.status(400).json({ error: "Credencial invalida." });
 
   if (existingIndex >= 0) data.users[existingIndex] = user;
   else data.users.push(user);
-  
+
+  if (!data.users.some(item => String(item.name || "").toLowerCase() === ADMIN_USERNAME)) {
+    data.users.unshift(createAdminUser());
+  }
+
   data.current = user;
-  await fs.writeFile(USERS_PATH, JSON.stringify(data, null, 2));
+  await writeJSON(USERS_PATH, data);
   res.json(data);
 });
 
-// Logout
 app.post("/api/user/logout", async (req, res) => {
-  let data = await readJSON(USERS_PATH);
+  const data = await readJSON(USERS_PATH, { current: null, users: [createAdminUser()] });
   data.current = null;
-  await fs.writeFile(USERS_PATH, JSON.stringify(data, null, 2));
+  await writeJSON(USERS_PATH, data);
   res.json({ success: true });
 });
 
-// Rotas de Avaliação
+app.delete("/api/user/:name", async (req, res) => {
+  const name = String(req.params.name || "").trim().toLowerCase();
+  if (name === ADMIN_USERNAME) {
+    return res.status(403).json({ error: "A credencial admin nao pode ser removida." });
+  }
+
+  const data = await readJSON(USERS_PATH, { current: null, users: [createAdminUser()] });
+  data.users = Array.isArray(data.users) ? data.users.filter(user => String(user.name || "").trim().toLowerCase() !== name) : [];
+  if (!data.users.some(user => String(user.name || "").toLowerCase() === ADMIN_USERNAME)) data.users.unshift(createAdminUser());
+  if (data.current && String(data.current.name || "").trim().toLowerCase() === name) data.current = null;
+  await writeJSON(USERS_PATH, data);
+  res.json({ success: true });
+});
+
 app.get("/api/reviews", async (req, res) => {
-  const data = await readJSON(REVIEWS_PATH);
-  res.json(data);
+  const data = await readJSON(REVIEWS_PATH, { reviews: [] });
+  res.json({ reviews: Array.isArray(data.reviews) ? data.reviews : [] });
 });
 
 app.post("/api/reviews", async (req, res) => {
-  const review = req.body;
-  let data = await readJSON(REVIEWS_PATH);
+  const review = {
+    ...req.body,
+    date: req.body?.date || new Date().toISOString()
+  };
+  const data = await readJSON(REVIEWS_PATH, { reviews: [] });
+  data.reviews = Array.isArray(data.reviews) ? data.reviews : [];
   data.reviews.unshift(review);
-  await fs.writeFile(REVIEWS_PATH, JSON.stringify(data, null, 2));
+  await writeJSON(REVIEWS_PATH, data);
   res.json({ success: true });
 });
 

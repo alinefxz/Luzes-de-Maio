@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
   
-  <link rel="stylesheet" href="styles.css?v=20260730d">
+  <link rel="stylesheet" href="styles.css?v=20260805b">
 </head>
 <body>
   <svg width="0" height="0" style="position: absolute;">
@@ -80,7 +80,6 @@
             <span class="btn-text">Iniciar Investigação</span>
             <span class="btn-icon">→</span>
           </button>
-          <button class="btn-secondary" id="testCompleteBtn">Modo Teste: Concluir</button>
         </div>
       </div>
 
@@ -97,10 +96,12 @@
               <h3 class="news-title">"As novas eleitoras..."</h3>
               <p class="news-body">A cidade amanheceu agitada. Mulheres de todas as partes dirigem-se aos locais de votação...</p>
             </div>
-            <div class="polaroid">
-              <div class="polaroid-img"></div>
-              <span class="polaroid-caption">Praça principal, '33</span>
-            </div>
+            <figure class="polaroid" title="Uma mulher vota em uma seção na Rua das Laranjeiras, no Rio, em 1933, no primeiro pleito após o voto feminino ser instituído Foto: Acervo / O GLOBO">
+              <div class="polaroid-img">
+                <img src="assets/mulheres_voto.jpg" alt="Mulher votando em uma seção na Rua das Laranjeiras, no Rio, em 1933">
+              </div>
+              <figcaption class="polaroid-caption">Mulher votando, 1933</figcaption>
+            </figure>
           </div>
           <button class="interactive-stamp" id="stampBtn">Carimbar Visto</button>
           <div class="stamp-mark" id="stampMark">VISTO<br><small id="stampDate"></small></div>
@@ -118,10 +119,12 @@
       <div class="history-cards">
         <article class="board-card straight-card card-right-polaroid" tabindex="0">
           <div class="tape card-tape"></div> 
-          <div class="polaroid-mini pin-right">
-            <div class="polaroid-img"></div>
-            <span class="polaroid-caption">Urnas, '33</span>
-          </div>
+          <figure class="polaroid-mini pin-right" title="Fila de espera para votação na seção eleitoral feminina do Méier, Zona Norte do Rio, nas eleições de 1933 (publicada originalmente em 4 de maio de 1993) - Foto: Arquivo / Agência O Globo">
+            <div class="polaroid-img">
+              <img src="assets/mulheres_nas_urnas.webp" alt="Fila de espera para votação na seção eleitoral feminina do Méier em 1933">
+            </div>
+            <figcaption class="polaroid-caption">Fila no Méier, 1933</figcaption>
+          </figure>
           <div class="card-text-safe-zone">
             <h3>O Voto Feminino</h3>
             <p>Após décadas de intensa mobilização social, o Código Eleitoral de 1932 garantiu o direito de voto às mulheres brasileiras. Contudo, a primeira vez que elas realmente foram às urnas ocorreu em <strong>maio de 1933</strong>.</p>
@@ -130,10 +133,12 @@
 
         <article class="board-card straight-card card-left-polaroid" tabindex="0">
           <div class="tape card-tape"></div>
-          <div class="polaroid-mini pin-left polaroid-alt">
-            <div class="polaroid-img bg-stamp"></div>
-            <span class="polaroid-caption">Muzambinho</span>
-          </div>
+          <figure class="polaroid-mini pin-left polaroid-alt" title="Muzambinho, sul de Minas, cenário local da investigação">
+            <div class="polaroid-img">
+              <img src="assets/muzambinho.webp" alt="Vista de Muzambinho, no sul de Minas">
+            </div>
+            <figcaption class="polaroid-caption">Muzambinho</figcaption>
+          </figure>
           <div class="card-text-safe-zone">
             <h3>O Cenário Local</h3>
             <p>Muzambinho, no sul de Minas, foi palco desse momento transformador. Longe das capitais, o interior guardou seus segredos. Atas e recortes revelam os desafios das primeiras eleitoras da cidade.</p>
@@ -415,6 +420,6 @@
 
   <div id="toastContainer"></div>
   
-  <script src="app.js?v=20260729b"></script>
+  <script src="app.js?v=20260810a"></script>
 </body>
 </html>

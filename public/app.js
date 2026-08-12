@@ -3,6 +3,10 @@ const LMProfileStore = (() => {
   const CURRENT_KEY = 'lm_currentUser';
   const LEGACY_USER_KEY = 'lm_user';
   const LEGACY_PROGRESS_KEY = 'lm_progress';
+  const STORAGE_VERSION_KEY = 'lm_storage_version';
+  const ADMIN_STORAGE_VERSION = 'admin-reset-20260805a';
+  const ADMIN_USERNAME = 'admin';
+  const ADMIN_PASSWORD = 'admin';
 
   const safeParse = (value, fallback = null) => {
     try { return value ? JSON.parse(value) : fallback; }
@@ -36,10 +40,37 @@ const LMProfileStore = (() => {
     };
   };
 
+  const completedProgress = (progress = {}) => ({
+    ...ensureProgress(progress),
+    tutorialCompleted: true,
+    notebookIntroduced: true,
+    unlockedPhases: Array.from({ length: 28 }, (_, index) => index + 1),
+    badges: ['primeira-pista', 'linha-do-tempo', 'leitura-local', 'voz-publica', 'guardia-do-dossie']
+  });
+
+  const createAdminUser = (overrides = {}) => ({
+    name: ADMIN_USERNAME,
+    username: ADMIN_USERNAME,
+    fullName: 'Admin do Arquivo',
+    password: ADMIN_PASSWORD,
+    knowledgeLevel: '5',
+    level: '5',
+    ageGroup: '25 a 34',
+    age: '25 a 34',
+    gender: 'Prefiro nao informar',
+    location: 'Muzambinho',
+    occupation: 'Pesquisador',
+    avatar: 'bertha',
+    isAdmin: true,
+    progress: completedProgress(),
+    ...overrides
+  });
+
   const normalizeUser = (raw = {}) => {
     if (!raw || typeof raw !== 'object') return null;
     const name = String(raw.name || raw.username || '').trim();
     if (!name) return null;
+    const isAdmin = userKey(name) === ADMIN_USERNAME;
     const knowledgeLevel = String(raw.knowledgeLevel || raw.level || '3');
     const ageGroup = raw.ageGroup || raw.age || '';
 
@@ -57,11 +88,60 @@ const LMProfileStore = (() => {
       location: raw.location || '',
       occupation: raw.occupation || '',
       avatar: raw.avatar || 'bertha',
-      progress: ensureProgress(raw.progress)
+      isAdmin,
+      progress: isAdmin ? completedProgress(raw.progress) : ensureProgress(raw.progress)
     };
   };
 
+  const runStorageMigration = () => {
+    if (localStorage.getItem(STORAGE_VERSION_KEY) === ADMIN_STORAGE_VERSION) return;
+    const admin = normalizeUser(createAdminUser());
+    localStorage.setItem(USERS_KEY, JSON.stringify({ [userKey(admin.name)]: admin }));
+    localStorage.setItem(STORAGE_VERSION_KEY, ADMIN_STORAGE_VERSION);
+    localStorage.removeItem(CURRENT_KEY);
+    localStorage.removeItem(LEGACY_USER_KEY);
+    localStorage.removeItem(LEGACY_PROGRESS_KEY);
+  };
+
+  const syncUserToServer = (user) => {
+    if (typeof fetch !== 'function' || window.location.protocol === 'file:') return Promise.resolve(true);
+    return fetch('/api/user', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(user)
+    }).then(response => response.ok).catch(() => false);
+  };
+
+  const syncReviewToServer = (review) => {
+    if (typeof fetch !== 'function' || window.location.protocol === 'file:') return Promise.resolve(true);
+    return fetch('/api/reviews', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(review)
+    }).then(response => response.ok).catch(() => false);
+  };
+
+  const importServerUsers = (serverUsers = []) => {
+    const users = readUsers();
+    serverUsers.forEach(user => {
+      const normalized = normalizeUser(user);
+      if (normalized) users[userKey(normalized.name)] = normalized;
+    });
+    if (!users[ADMIN_USERNAME]) users[ADMIN_USERNAME] = normalizeUser(createAdminUser());
+    writeUsers(users);
+    return users;
+  };
+
+  const loadServerUsers = async () => {
+    if (typeof fetch !== 'function' || window.location.protocol === 'file:') return readUsers();
+    const response = await fetch('/api/user', { cache: 'no-store' });
+    if (!response.ok) throw new Error('server-users-unavailable');
+    const data = await response.json();
+    return importServerUsers(Array.isArray(data.users) ? data.users : []);
+  };
+
   const readUsers = () => {
+    runStorageMigration();
     const raw = safeParse(localStorage.getItem(USERS_KEY), {});
     const users = {};
 
@@ -85,7 +165,7 @@ const LMProfileStore = (() => {
     localStorage.setItem(USERS_KEY, JSON.stringify(users));
   };
 
-  const setCurrentUser = (user) => {
+  const setCurrentUser = (user, { sync = true } = {}) => {
     const normalized = normalizeUser(user);
     if (!normalized) return null;
 
@@ -97,10 +177,12 @@ const LMProfileStore = (() => {
     localStorage.removeItem(LEGACY_USER_KEY);
     localStorage.removeItem(LEGACY_PROGRESS_KEY);
 
+    if (sync) syncUserToServer(normalized);
     return normalized;
   };
 
   const getCurrentUser = () => {
+    runStorageMigration();
     let current = normalizeUser(safeParse(localStorage.getItem(CURRENT_KEY), null));
 
     if (!current) {
@@ -185,7 +267,23 @@ const LMProfileStore = (() => {
     if (!current) throw new Error('missing-session');
     const progress = ensureProgress(current.progress);
     progress.finalReview = review;
+    syncReviewToServer(review);
     return setCurrentUser({ ...current, progress });
+  };
+
+  const saveReviewAndWait = async (review) => {
+    const current = getCurrentUser();
+    if (!current) throw new Error('missing-session');
+
+    const progress = ensureProgress(current.progress);
+    progress.finalReview = review;
+    const savedUser = setCurrentUser({ ...current, progress }, { sync: false });
+    const [userSynced, reviewSynced] = await Promise.all([
+      syncUserToServer(savedUser),
+      syncReviewToServer(review)
+    ]);
+
+    return { user: savedUser, synced: userSynced && reviewSynced };
   };
 
   const saveAnswer = (answer) => {
@@ -211,7 +309,11 @@ const LMProfileStore = (() => {
 
   return {
     blankProgress,
+    completedProgress,
     ensureProgress,
+    createAdminUser,
+    importServerUsers,
+    loadServerUsers,
     normalizeUser,
     readUsers,
     getCurrentUser,
@@ -224,6 +326,7 @@ const LMProfileStore = (() => {
     resetCurrentProgress,
     deleteCurrentUser,
     saveReview,
+    saveReviewAndWait,
     saveAnswer
   };
 })();
@@ -461,17 +564,6 @@ const Game = {
       });
     }
 
-    const testBtn = document.getElementById('testCompleteBtn');
-    if(testBtn) {
-      testBtn.addEventListener('click', () => {
-        this.state.isGameCompleted = !this.state.isGameCompleted;
-        testBtn.innerText = this.state.isGameCompleted ? "Modo Teste: Reverter" : "Modo Teste: Concluir";
-        testBtn.style.backgroundColor = this.state.isGameCompleted ? "var(--sage)" : "";
-        testBtn.style.color = this.state.isGameCompleted ? "var(--charcoal)" : "";
-        this.showToast(this.state.isGameCompleted ? "Jogo marcado como CONCLUÍDO." : "Jogo marcado como PENDENTE.");
-      });
-    }
-    
     // INICIAR INVESTIGAÇÃO (COM VIAGEM NO TEMPO RESTAURADA)
     const startBtn = document.getElementById('startBtn');
     if(startBtn) {
@@ -522,14 +614,31 @@ const Game = {
     }
 
     document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const decisionLayer = document.querySelector('.profile-decision-layer');
+        if(decisionLayer) {
+          e.preventDefault();
+          decisionLayer.remove();
+          return;
+        }
+
+        if(this.modalOverlay?.classList.contains('active')) {
+          e.preventDefault();
+          this.closeAllModals();
+          return;
+        }
+
+        if(this.fullMenu?.classList.contains('active')) {
+          e.preventDefault();
+          this.fullMenu.classList.remove('active');
+          return;
+        }
+      }
+
+      if(document.getElementById('finalLetterOverlay') || document.getElementById('finalThanksScreen')) return;
+
       const tag = e.target?.tagName?.toLowerCase();
       if(['input', 'textarea', 'select'].includes(tag)) return;
-
-      if (e.key === 'Escape') {
-        this.closeAllModals();
-        if(this.fullMenu) this.fullMenu.classList.remove('active');
-        return;
-      }
 
       const key = e.key.toLowerCase();
       if(key === 'm') {
@@ -545,10 +654,10 @@ const Game = {
   getBadgeCatalog() {
     return [
       { id: 'primeira-pista', icon: 'I', title: 'Primeira pista', text: 'Abriu o arquivo e iniciou a investigação.', threshold: 2 },
-      { id: 'linha-do-tempo', icon: 'II', title: 'Linha em ordem', text: 'Reconstruiu os primeiros marcos do voto feminino.', threshold: 4 },
-      { id: 'leitora-de-atas', icon: 'III', title: 'Leitora de atas', text: 'Avançou até os registros locais e documentos oficiais.', threshold: 7 },
-      { id: 'voz-do-arquivo', icon: 'IV', title: 'Voz do arquivo', text: 'Comparou falas, jornais e disputas de memória.', threshold: 12 },
-      { id: 'guardia-da-memoria', icon: 'V', title: 'Guardiã da memória', text: 'Chegou perto de completar o dossiê histórico.', threshold: 18 }
+      { id: 'linha-do-tempo', icon: 'II', title: 'Linha em ordem', text: 'Reconstruiu os primeiros marcos do voto feminino.', threshold: 6 },
+      { id: 'leitora-de-atas', icon: 'III', title: 'Leitora de atas', text: 'Avançou até os registros locais e documentos oficiais.', threshold: 10 },
+      { id: 'voz-do-arquivo', icon: 'IV', title: 'Voz do arquivo', text: 'Comparou falas, jornais e disputas de memória.', threshold: 18 },
+      { id: 'guardia-da-memoria', icon: 'V', title: 'Guardiã da memória', text: 'Chegou perto de completar o dossiê histórico.', threshold: 28 }
     ];
   },
 
@@ -612,7 +721,7 @@ const Game = {
   getAvatarRankFill(progress = {}) {
     const unlocked = Array.isArray(progress.unlockedPhases) && progress.unlockedPhases.length ? progress.unlockedPhases : [1];
     const highest = Math.max(...unlocked, 1);
-    return Math.max(8, Math.min(100, Math.round((highest / 18) * 100)));
+    return Math.max(8, Math.min(100, Math.round((highest / 28) * 100)));
   },
 
   fillProfileForm() {
@@ -900,8 +1009,9 @@ const Game = {
     if(id === 'review') {
       const rl = document.getElementById('reviewLocked');
       const ru = document.getElementById('reviewUnlocked');
-      if(rl) rl.style.display = this.state.isGameCompleted ? 'none' : 'block';
-      if(ru) ru.style.display = this.state.isGameCompleted ? 'block' : 'none';
+      const canReview = !!(this.state.user && this.state.user.progress && this.state.user.progress.unlockedPhases.includes(28));
+      if(rl) rl.style.display = canReview ? 'none' : 'block';
+      if(ru) ru.style.display = canReview ? 'block' : 'none';
     }
 
     if(id === 'profile') {
@@ -939,18 +1049,26 @@ const Game = {
     }, 3000);
   },
 
-  loadUser() {
+  async loadUser() {
+    try { await LMProfileStore.loadServerUsers(); } catch (e) {}
     this.state.user = LMProfileStore.getCurrentUser();
     this.updateHeaderUI();
   },
 
-  loginUser(e) {
+  async loginUser(e) {
     e.preventDefault();
     const loginUsername = document.getElementById('l_name').value.trim();
     const loginPassword = document.getElementById('l_password').value.trim();
 
     try {
-      const foundUser = LMProfileStore.login(loginUsername, loginPassword);
+      let foundUser;
+      try {
+        foundUser = LMProfileStore.login(loginUsername, loginPassword);
+      } catch (err) {
+        if (err.message !== 'missing-user') throw err;
+        await LMProfileStore.loadServerUsers();
+        foundUser = LMProfileStore.login(loginUsername, loginPassword);
+      }
       this.state.user = foundUser;
       this.updateHeaderUI();
       this.closeAllModals();
@@ -988,6 +1106,7 @@ const Game = {
   },
 
   logout() {
+    fetch('/api/user/logout', { method: 'POST' }).catch(() => {});
     LMProfileStore.clearCurrentUser();
     this.state.user = null;
     if(document.getElementById('profileForm')) document.getElementById('profileForm').reset();
@@ -1042,13 +1161,16 @@ const Game = {
 
   deleteAccount() {
     if(!this.state.user) return this.showToast("Nenhuma conta ativa para excluir.");
+    if(this.state.user.isAdmin) return this.showToast("A credencial admin deve permanecer no arquivo.");
     this.showProfileDecision({
       title: 'Excluir conta?',
       message: 'Essa ação apaga a credencial e todo o progresso salvo. Não dá para desfazer depois.',
       confirmText: 'Excluir conta',
       variant: 'danger-strong',
       onConfirm: () => {
+        const deletedName = this.state.user.name;
         LMProfileStore.deleteCurrentUser();
+        fetch(`/api/user/${encodeURIComponent(deletedName)}`, { method: 'DELETE' }).catch(() => {});
         this.state.user = null;
         document.getElementById('profileForm')?.reset();
         document.getElementById('loginForm')?.reset();
@@ -1090,7 +1212,7 @@ const Game = {
     if(id === 'review') {
       const rl = document.getElementById('reviewLocked');
       const ru = document.getElementById('reviewUnlocked');
-      const canReview = this.state.isGameCompleted || !!(this.state.user && this.state.user.progress && this.state.user.progress.unlockedPhases.includes(6));
+      const canReview = !!(this.state.user && this.state.user.progress && this.state.user.progress.unlockedPhases.includes(28));
       if(rl) rl.style.display = canReview ? 'none' : 'block';
       if(ru) ru.style.display = canReview ? 'block' : 'none';
     }

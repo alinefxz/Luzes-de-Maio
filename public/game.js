@@ -262,6 +262,7 @@ const GameLogic = {
 
     logout() {
         if(confirm("Deseja realmente selar o arquivo e encerrar a sessão?")) {
+            fetch('/api/user/logout', { method: 'POST' }).catch(() => {});
             this.store.clearCurrentUser();
             this.user = null;
             this.progress = this.store.blankProgress();
@@ -408,7 +409,7 @@ const GameLogic = {
     setupReviewForm() {
         const form = document.getElementById('reviewForm');
         if(form) {
-            form.onsubmit = (e) => {
+            form.onsubmit = async (e) => {
                 e.preventDefault();
                 if(!this.user) {
                     alert("Entre com sua credencial antes de enviar o parecer.");
@@ -429,10 +430,35 @@ const GameLogic = {
                     date: new Date().toISOString()
                 };
 
-                this.progress.finalReview = review;
-                this.user = this.store.saveProgress(this.progress);
-                this.playSFX('stamp');
-                this.startDialogue(["Parecer enviado com sucesso. Memória preservada!"], "normal");
+                const submitButton = form.querySelector('[type="submit"]');
+                if(submitButton) {
+                    submitButton.disabled = true;
+                    submitButton.textContent = 'Arquivando parecer...';
+                }
+
+                try {
+                    const result = typeof this.store.saveReviewAndWait === 'function'
+                        ? await this.store.saveReviewAndWait(review)
+                        : { user: this.store.saveReview(review), synced: true };
+
+                    this.user = result.user;
+                    this.progress = this.store.ensureProgress(this.user.progress);
+                    this.usersDB = this.store.readUsers();
+                    this.playSFX('stamp');
+                    form.classList.add('review-saved');
+                    if(submitButton) submitButton.textContent = 'Parecer arquivado';
+
+                    setTimeout(() => {
+                        this.closeAllModals();
+                        this.startBackTransition('index.html');
+                    }, 520);
+                } catch (error) {
+                    if(submitButton) {
+                        submitButton.disabled = false;
+                        submitButton.textContent = 'Carimbar e Anexar aos Arquivos';
+                    }
+                    this.showToast('Não foi possível arquivar a avaliação. Tente novamente.');
+                }
             };
         }
     },
@@ -804,10 +830,18 @@ const GameLogic = {
         const profileForm = document.getElementById('profileForm');
         const answersPanel = document.getElementById('answersPanel');
 
-        if(loginForm) loginForm.onsubmit = (e) => {
+        if(loginForm) loginForm.onsubmit = async (e) => {
             e.preventDefault();
             try {
-                this.user = this.store.login(document.getElementById('l_name').value.trim(), document.getElementById('l_password').value);
+                const loginName = document.getElementById('l_name').value.trim();
+                const loginPassword = document.getElementById('l_password').value;
+                try {
+                    this.user = this.store.login(loginName, loginPassword);
+                } catch (err) {
+                    if(err.message !== 'missing-user') throw err;
+                    await this.store.loadServerUsers();
+                    this.user = this.store.login(loginName, loginPassword);
+                }
                 location.reload();
             } catch (err) {
                 alert(err.message === 'bad-password' ? "Senha incorreta." : "Nome de usuario nao encontrado.");
@@ -930,7 +964,6 @@ const GameLogic = {
     },
 
     closeAllModals() {
-        if (!this.user) return; // Força logar
         const o = document.getElementById('modalOverlay');
         if(o) o.classList.remove('active');
         document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
@@ -1781,7 +1814,7 @@ GameLogic.closeChapterTimeline = function() {
   return true;
 };
 
-GameLogic.unlockNextPhase = function(current) {
+GameLogic.unlockNextPhase = function(current, options = {}) {
   const total = this.getPhaseList().length;
   const next = current + 1;
   if (!this.progress.unlockedPhases.includes(next)) {
@@ -1814,6 +1847,30 @@ GameLogic.bindDrawerEvents = function() {
 };
 
 GameLogic.closeTopLayer = function() {
+  const finalLetter = document.getElementById('finalLetterOverlay');
+  if(finalLetter && typeof this.closeFinalLetter === 'function') {
+    this.closeFinalLetter();
+    return true;
+  }
+
+  const finalThanks = document.getElementById('finalThanksScreen');
+  if(finalThanks && this.user?.isAdmin && typeof this.dismissFinalThanks === 'function') {
+    this.dismissFinalThanks();
+    return true;
+  }
+
+  const decisionLayer = document.querySelector('.profile-decision-layer');
+  if(decisionLayer) {
+    decisionLayer.remove();
+    return true;
+  }
+
+  const phaseIntro = document.getElementById('phaseIntroOverlay');
+  if(phaseIntro) {
+    phaseIntro.remove();
+    return true;
+  }
+
   if(this.closeChapterTimeline()) return true;
 
   const investigation = document.getElementById('investigationModal');
@@ -1840,8 +1897,9 @@ GameLogic.closeTopLayer = function() {
   }
 
   const modalOverlay = document.getElementById('modalOverlay');
-  if(modalOverlay && modalOverlay.classList.contains('active') && this.user) {
-    this.closeAllModals();
+  if(modalOverlay && modalOverlay.classList.contains('active')) {
+    modalOverlay.classList.remove('active');
+    document.querySelectorAll('.modal').forEach(modal => modal.classList.remove('active'));
     return true;
   }
 
@@ -1853,22 +1911,22 @@ GameLogic.bindKeyboardShortcuts = function() {
   this.keyboardShortcutsBound = true;
 
   document.addEventListener('keydown', (event) => {
-    const tag = event.target?.tagName?.toLowerCase();
-    if(['input', 'textarea', 'select'].includes(tag)) return;
-
-    if(this.isDialogueActive) {
-      if(event.key === 'Escape') {
-        event.preventDefault();
-        this.advanceDialogue();
-      }
-      return;
-    }
-
     if(event.key === 'Escape') {
       event.preventDefault();
+
+      if(this.isDialogueActive) {
+        this.advanceDialogue();
+        return;
+      }
+
       this.closeTopLayer();
       return;
     }
+
+    if(document.getElementById('finalLetterOverlay') || document.getElementById('finalThanksScreen')) return;
+
+    const tag = event.target?.tagName?.toLowerCase();
+    if(['input', 'textarea', 'select'].includes(tag)) return;
 
     if(event.key === 'ArrowRight' || event.key === 'PageDown') {
       event.preventDefault();
@@ -1879,6 +1937,19 @@ GameLogic.bindKeyboardShortcuts = function() {
     if(event.key === 'ArrowLeft' || event.key === 'PageUp') {
       event.preventDefault();
       this.changeDrawer(-1);
+      return;
+    }
+
+    if(/^[1-9]$/.test(event.key) && !event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey) {
+      const phase = this.getPhaseByShortcut(Number(event.key));
+      if(!phase || this.isPhaseShortcutBlocked()) return;
+
+      event.preventDefault();
+      if((this.progress?.unlockedPhases || [1]).includes(phase.phaseNum)) {
+        this.clickPhase(phase.phaseNum);
+      } else {
+        this.checkLocked(phase.title || `Ficha ${event.key}`);
+      }
       return;
     }
 
@@ -2375,7 +2446,7 @@ GameLogic.renderTimeline = function(animate = false) {
   }
 };
 
-GameLogic.unlockNextPhase = function(current) {
+GameLogic.unlockNextPhase = function(current, options = {}) {
   const phases = this.getPhaseList();
   const total = phases.length;
   const next = current + 1;
@@ -2645,7 +2716,7 @@ EvidenceSystem.bindActivity = function(overlay, title, text, data) {
   const feedback = overlay.querySelector('.quiz-feedback');
 
   const resetAfterWrong = () => {
-    overlay.querySelectorAll('.selected, .answered').forEach(el => el.classList.remove('selected', 'answered'));
+    overlay.querySelectorAll('.selected, .answered, .linked').forEach(el => el.classList.remove('selected', 'answered', 'linked'));
     overlay.querySelectorAll('.check-box').forEach(el => { el.innerHTML = ''; });
     overlay.querySelectorAll('.drop-slot').forEach(slot => {
       slot.dataset.value = '';
@@ -2781,6 +2852,144 @@ EvidenceSystem.bindActivity = function(overlay, title, text, data) {
       if(state.selected.has(id)) state.selected.delete(id);
       else state.selected.add(id);
       button.classList.toggle('selected');
+    });
+  });
+
+  const renderAssociationChip = (game, value) => {
+    if(game.dataset.assocMode === 'quoteMatch') {
+      const person = (data.people || []).find(item => item.id === value) || { id: value, name: value };
+      return `${EvidenceSystem.renderPersonPortrait(person, 'tiny')}<strong>${EvidenceSystem.escapeHTML(person.name)}</strong>`;
+    }
+    return `<strong>${EvidenceSystem.escapeHTML(value)}</strong>`;
+  };
+
+  const refreshAssociationGame = (game) => {
+    if(!game) return;
+    game.querySelectorAll('[data-assoc-drop]').forEach(drop => {
+      const value = state.answers[drop.dataset.assocDrop];
+      drop.innerHTML = value ? renderAssociationChip(game, value) : '<span>Solte aqui</span>';
+      drop.classList.toggle('assoc-filled', Boolean(value));
+      drop.closest('[data-assoc-target]')?.classList.toggle('assoc-filled', Boolean(value));
+    });
+    game.querySelectorAll('[data-assoc-token]').forEach(token => {
+      const used = Object.values(state.answers).includes(token.dataset.assocToken);
+      const active = state.activeAssoc?.game === game && state.activeAssoc.value === token.dataset.assocToken;
+      token.classList.toggle('assoc-used', used);
+      token.classList.toggle('assoc-selected', active);
+    });
+  };
+
+  const refreshAllAssociationGames = () => overlay.querySelectorAll('[data-assoc-game]').forEach(game => refreshAssociationGame(game));
+
+  const assignAssociation = (game, targetId, value) => {
+    if(!game || !targetId || !value) return;
+    Object.keys(state.answers).forEach(key => {
+      if(key !== targetId && state.answers[key] === value) delete state.answers[key];
+    });
+    state.answers[targetId] = value;
+    state.activeAssoc = null;
+    showFeedback('');
+    refreshAllAssociationGames();
+  };
+
+  overlay.querySelectorAll('[data-assoc-token]').forEach(token => {
+    token.addEventListener('click', () => {
+      state.activeAssoc = {
+        game: token.closest('[data-assoc-game]'),
+        value: token.dataset.assocToken
+      };
+      refreshAllAssociationGames();
+    });
+    token.addEventListener('dragstart', event => {
+      state.activeAssoc = {
+        game: token.closest('[data-assoc-game]'),
+        value: token.dataset.assocToken
+      };
+      event.dataTransfer.setData('text/plain', token.dataset.assocToken);
+      event.dataTransfer.effectAllowed = 'move';
+      token.classList.add('assoc-selected');
+    });
+    token.addEventListener('dragend', () => {
+      refreshAllAssociationGames();
+    });
+  });
+
+  overlay.querySelectorAll('[data-assoc-target], [data-assoc-drop]').forEach(target => {
+    target.addEventListener('dragover', event => {
+      event.preventDefault();
+      target.closest('[data-assoc-target]')?.classList.add('assoc-hover');
+    });
+    target.addEventListener('dragleave', () => {
+      target.closest('[data-assoc-target]')?.classList.remove('assoc-hover');
+    });
+    target.addEventListener('drop', event => {
+      event.preventDefault();
+      const card = target.closest('[data-assoc-target]');
+      const game = target.closest('[data-assoc-game]');
+      const value = event.dataTransfer.getData('text/plain') || state.activeAssoc?.value;
+      card?.classList.remove('assoc-hover');
+      assignAssociation(game, card?.dataset.assocTarget, value);
+    });
+  });
+
+  overlay.querySelectorAll('[data-assoc-drop]').forEach(drop => {
+    drop.addEventListener('click', () => {
+      const game = drop.closest('[data-assoc-game]');
+      if(state.activeAssoc?.game === game) assignAssociation(game, drop.dataset.assocDrop, state.activeAssoc.value);
+      else showIncomplete('Escolha uma ficha de cima e encaixe aqui.');
+    });
+  });
+
+  const moveLinkDrag = (event) => {
+    if(!state.dragLink) return;
+    if(!document.body.contains(overlay)) {
+      document.removeEventListener('pointermove', moveLinkDrag);
+      document.removeEventListener('pointerup', endLinkDrag);
+      return;
+    }
+    const rect = state.dragLink.board.getBoundingClientRect();
+    state.dragLink.x = Math.max(0, Math.min(rect.width, event.clientX - rect.left));
+    state.dragLink.y = Math.max(0, Math.min(rect.height, event.clientY - rect.top));
+    drawLinkBoard(state.dragLink.board, state.dragLink);
+  };
+
+  function endLinkDrag(event) {
+    if(!state.dragLink) return;
+    const drag = state.dragLink;
+    const target = document.elementFromPoint(event.clientX, event.clientY)?.closest('[data-link-right]');
+    if(target && target.closest('[data-link-board]') === drag.board) {
+      connectLinkNodes(drag.left, target);
+    } else {
+      state.dragLink = null;
+      refreshLinkBoard(drag.board);
+    }
+    document.removeEventListener('pointermove', moveLinkDrag);
+    document.removeEventListener('pointerup', endLinkDrag);
+  }
+
+  overlay.querySelectorAll('[data-link-left]').forEach(left => {
+    left.addEventListener('pointerdown', event => {
+      event.preventDefault();
+      const board = left.closest('[data-link-board]');
+      const rect = board.getBoundingClientRect();
+      state.activeLink = { board, left };
+      state.dragLink = {
+        board,
+        left,
+        leftId: left.dataset.linkLeft,
+        x: Math.max(0, Math.min(rect.width, event.clientX - rect.left)),
+        y: Math.max(0, Math.min(rect.height, event.clientY - rect.top))
+      };
+      left.setPointerCapture?.(event.pointerId);
+      refreshLinkBoard(board);
+      document.addEventListener('pointermove', moveLinkDrag);
+      document.addEventListener('pointerup', endLinkDrag);
+    });
+  });
+
+  overlay.querySelectorAll('[data-link-right]').forEach(right => {
+    right.addEventListener('click', () => {
+      if(state.activeLink?.board === right.closest('[data-link-board]')) connectLinkNodes(state.activeLink.left, right);
     });
   });
 
@@ -2981,7 +3190,7 @@ GameLogic.closeChapterTimeline = function() {
   return true;
 };
 
-GameLogic.unlockNextPhase = function(current) {
+GameLogic.unlockNextPhase = function(current, options = {}) {
   const phases = this.getPhaseList();
   const total = phases.length;
   const next = current + 1;
@@ -3001,10 +3210,12 @@ GameLogic.unlockNextPhase = function(current) {
 
   const chapterPhases = phases.filter(item => item.chapterIndex === currentPhase?.chapterIndex);
   const lastInChapter = chapterPhases[chapterPhases.length - 1]?.phaseNum;
-  if(current === lastInChapter || current >= total) {
+  if(!options.silent && (current === lastInChapter || current >= total)) {
     const nextChapterIndex = nextPhase ? nextPhase.chapterIndex : null;
     setTimeout(() => this.showChapterTimeline(currentPhase?.chapterIndex || this.currentChapterIndex, nextChapterIndex), 850);
   }
+
+  return { currentPhase, nextPhase, total, lastInChapter };
 };
 
 GameLogic.updateHeaderAccountControls = function() {
@@ -3053,7 +3264,7 @@ GameLogic.getBadgeCatalog = function() {
     { id: 'linha-do-tempo', icon: 'II', title: 'Linha em ordem', text: 'Organizou os primeiros marcos do voto feminino.', threshold: 4 },
     { id: 'leitura-local', icon: 'III', title: 'Leitura local', text: 'Chegou aos registros de Muzambinho e suas atas.', threshold: 7 },
     { id: 'voz-publica', icon: 'IV', title: 'Voz publica', text: 'Comparou jornais, boatos e disputas de memoria.', threshold: 12 },
-    { id: 'guardia-do-dossie', icon: 'V', title: 'Guardia do dossie', text: 'Avancou pelas ultimas pistas do arquivo.', threshold: 18 }
+    { id: 'guardia-do-dossie', icon: 'V', title: 'Guardia do dossie', text: 'Avancou pelas ultimas pistas do arquivo.', threshold: 28 }
   ];
 };
 
@@ -3119,7 +3330,7 @@ GameLogic.getProfileRank = function(progress = {}) {
 GameLogic.getAvatarRankFill = function(progress = {}) {
   const unlockedPhases = Array.isArray(progress.unlockedPhases) && progress.unlockedPhases.length ? progress.unlockedPhases : [1];
   const highest = Math.max(...unlockedPhases, 1);
-  return Math.max(8, Math.min(100, Math.round((highest / 18) * 100)));
+  return Math.max(8, Math.min(100, Math.round((highest / 28) * 100)));
 };
 
 GameLogic.syncBadges = function(announce = false) {
@@ -3258,13 +3469,19 @@ GameLogic.resetProgress = function() {
 
 GameLogic.deleteAccount = function() {
   if(!this.user) return;
+  if(this.user.isAdmin) {
+    this.showToast('A credencial admin deve permanecer no arquivo.');
+    return;
+  }
   this.showProfileDecision({
     title: 'Excluir conta?',
     message: 'Essa ação apaga a credencial e todo o progresso salvo. Não dá para desfazer depois.',
     confirmText: 'Excluir conta',
     variant: 'danger-strong',
     onConfirm: () => {
+      const deletedName = this.user.name;
       if(this.store.deleteCurrentUser()) {
+        fetch(`/api/user/${encodeURIComponent(deletedName)}`, { method: 'DELETE' }).catch(() => {});
         this.user = null;
         this.progress = this.store.blankProgress();
         location.reload();
@@ -3313,6 +3530,8 @@ GameLogic.bindEvents = function() {
     const tag = event.target?.tagName?.toLowerCase();
     const isTyping = ['input', 'textarea', 'select'].includes(tag);
     const notebookOpen = this.notebookOverlay?.classList.contains('active');
+
+    if(document.getElementById('finalLetterOverlay') || document.getElementById('finalThanksScreen')) return;
 
     if (event.key === 'Escape' && notebookOpen) {
       event.preventDefault();
@@ -3484,4 +3703,1648 @@ GameLogic.advanceDialogue = function() {
   }
 };
 
-document.addEventListener('DOMContentLoaded', () => GameLogic.init());
+/* =========================================================
+   DISTRIBUICAO FINAL: 27 FICHAS ORIENTADAS POR DADOS
+   ========================================================= */
+GameLogic.loadPhaseContent = async function() {
+  try {
+    const response = await fetch('content/phases.json?v=20260805b', { cache: 'no-store' });
+    if(!response.ok) throw new Error('phase-content-not-found');
+    this.phaseContent = await response.json();
+  } catch (error) {
+    console.warn('Conteudo externo das fases nao carregado. Usando fallback interno.', error);
+    this.phaseContent = null;
+  }
+};
+
+const LMStaticFallbackChapters = GameLogic.getChapters;
+GameLogic.getChapters = function() {
+  const chapters = this.phaseContent?.chapters;
+  return Array.isArray(chapters) && chapters.length ? chapters : LMStaticFallbackChapters.call(this);
+};
+
+GameLogic.getPhaseList = function() {
+  return this.getChapters().flatMap((chapter, chapterIndex) => {
+    const start = this.getChapterStartPhase(chapterIndex);
+    return chapter.phases.map((phase, phaseIndex) => ({
+      ...phase,
+      phaseNum: start + phaseIndex,
+      phaseIndex,
+      phaseLabel: `Fase ${phaseIndex + 1} de ${chapter.phases.length}`,
+      chapterIndex,
+      chapterNumber: chapter.number,
+      chapterTitle: chapter.title,
+      chapterCentralQuestion: chapter.centralQuestion || ''
+    }));
+  });
+};
+
+GameLogic.clickPhase = function(phaseNum) {
+  if(!this.user) {
+    this.openProfileModal(false);
+    return;
+  }
+  if(this.isDialogueActive) return;
+  this.playSFX('paper');
+
+  const phase = this.getPhases()[phaseNum];
+  if(!phase) return;
+  this.openPhaseDossier(phase);
+};
+
+GameLogic.getPhaseByShortcut = function(shortcutNumber) {
+  if(typeof this.currentChapterIndex !== 'number') {
+    this.currentChapterIndex = this.getActiveChapterIndex();
+  }
+
+  const phaseIndex = shortcutNumber - 1;
+  return this.getPhaseList().find(phase =>
+    phase.chapterIndex === this.currentChapterIndex && phase.phaseIndex === phaseIndex
+  ) || null;
+};
+
+GameLogic.isPhaseShortcutBlocked = function() {
+  const profileModal = document.getElementById('modalOverlay');
+  const menu = document.getElementById('fullMenu');
+
+  return Boolean(
+    document.getElementById('investigationModal') ||
+    document.getElementById('phaseIntroOverlay') ||
+    document.getElementById('chapterTimelineOverlay') ||
+    this.notebookOverlay?.classList.contains('active') ||
+    this.invOverlay?.classList.contains('active') ||
+    profileModal?.classList.contains('active') ||
+    menu?.classList.contains('active')
+  );
+};
+
+GameLogic.startPhaseIntro = function(phase) {
+  const existing = document.getElementById('phaseIntroOverlay');
+  if(existing) existing.remove();
+
+  const overlay = document.createElement('div');
+  overlay.className = 'phase-intro-overlay';
+  overlay.id = 'phaseIntroOverlay';
+  overlay.innerHTML = `
+    <div class="phase-intro-card" role="dialog" aria-modal="true" aria-labelledby="phaseIntroTitle">
+      <button class="close-dossier-new phase-intro-close" type="button" aria-label="Fechar introducao">&times;</button>
+      <span class="phase-intro-kicker">Capitulo ${this.escapeText(phase.chapterNumber)} &bull; ${this.escapeText(phase.phaseLabel)}</span>
+      <h2 id="phaseIntroTitle">${this.escapeText(phase.title)}</h2>
+      <p class="phase-intro-question">${this.escapeText(phase.chapterCentralQuestion || phase.q || '')}</p>
+      <div class="phase-intro-note">
+        <strong>A Sufragista</strong>
+        <p>${this.escapeText(phase.intro || 'Observe a fonte, procure evidencias e confirme sua interpretacao somente quando estiver pronta.')}</p>
+      </div>
+      <div class="phase-intro-actions">
+        <button class="btn-secondary phase-intro-cancel" type="button">Voltar</button>
+        <button class="btn-primary phase-intro-start" type="button">Comecar investigacao</button>
+      </div>
+    </div>`;
+
+  document.body.appendChild(overlay);
+  const close = () => overlay.remove();
+  overlay.querySelector('.phase-intro-close')?.addEventListener('click', close);
+  overlay.querySelector('.phase-intro-cancel')?.addEventListener('click', close);
+  overlay.querySelector('.phase-intro-start')?.addEventListener('click', () => {
+    close();
+    this.openPhaseDossier(phase);
+  });
+};
+
+GameLogic.openPhaseDossier = function(phase) {
+  EvidenceSystem.spawnEvidence(phase.t, phase.c, phase);
+  this.registerPhaseStarted(phase);
+};
+
+GameLogic.escapeText = function(value = '') {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+};
+
+GameLogic.registerPhaseStarted = function(phase) {
+  if(!this.progress || !phase) return;
+  const key = String(phase.phaseNum);
+  this.progress.phaseRecords = this.progress.phaseRecords || {};
+  const current = this.progress.phaseRecords[key] || {};
+  this.progress.phaseRecords[key] = {
+    ...current,
+    state: current.state || 'INTRO',
+    startedAt: current.startedAt || new Date().toISOString(),
+    gameId: `C${phase.chapterIndex + 1}F${phase.phaseIndex + 1}`,
+    title: phase.title
+  };
+  this.recordGameEvent('game_started', phase, {});
+  this.saveGameProgress();
+};
+
+GameLogic.recordGameEvent = function(event, phase, payload = {}) {
+  if(!this.progress || !phase) return;
+  this.progress.gameEvents = Array.isArray(this.progress.gameEvents) ? this.progress.gameEvents : [];
+  this.progress.gameEvents.push({
+    event,
+    gameId: `C${phase.chapterIndex + 1}F${phase.phaseIndex + 1}`,
+    phaseNum: phase.phaseNum,
+    userId: this.user?.name || this.user?.username || 'local',
+    timestamp: new Date().toISOString(),
+    ...payload
+  });
+  if(this.progress.gameEvents.length > 180) this.progress.gameEvents = this.progress.gameEvents.slice(-180);
+};
+
+GameLogic.computePhaseScore = function(isCorrect, attempts = 1, hintsUsed = 0, completedByExplanation = false) {
+  if(completedByExplanation) return 30;
+  if(!isCorrect) return 30;
+  if(attempts <= 1 && hintsUsed === 0) return 100;
+  if(attempts <= 2 && hintsUsed <= 1) return 70;
+  return 50;
+};
+
+GameLogic.recordAnswer = function(answerMeta) {
+  if(!this.user || !this.progress) return;
+  const nextAnswer = {
+    ...answerMeta,
+    answeredAt: new Date().toISOString()
+  };
+
+  this.progress.answers = Array.isArray(this.progress.answers) ? this.progress.answers : [];
+  const existingIndex = this.progress.answers.findIndex(item => item.phaseNum === nextAnswer.phaseNum);
+  if(existingIndex >= 0) this.progress.answers[existingIndex] = nextAnswer;
+  else this.progress.answers.push(nextAnswer);
+
+  this.progress.phaseRecords = this.progress.phaseRecords || {};
+  const key = String(nextAnswer.phaseNum);
+  this.progress.phaseRecords[key] = {
+    ...(this.progress.phaseRecords[key] || {}),
+    state: nextAnswer.completedByExplanation ? 'EXPLANATION_SHOWN' : nextAnswer.isCorrect ? 'CORRECT' : 'INCORRECT',
+    attempts: nextAnswer.attempts || 1,
+    hintsUsed: nextAnswer.hintsUsed || 0,
+    score: nextAnswer.score || 0,
+    selectedAnswer: nextAnswer.selectedAnswer,
+    completedAt: nextAnswer.completedAt || null
+  };
+
+  this.saveGameProgress();
+  this.renderInventory();
+};
+
+GameLogic.addEvidenceToInventory = function(title, text, answerMeta = null) {
+  if(!this.progress) return;
+  this.progress.collectedEvidence = Array.isArray(this.progress.collectedEvidence) ? this.progress.collectedEvidence : [];
+  const reward = answerMeta?.evidenceReward || {};
+  const source = answerMeta?.source || {};
+  const evidence = {
+    id: reward.id || `EV-${answerMeta?.phaseNum || Date.now()}`,
+    title: reward.title || title,
+    text,
+    summary: reward.summary || '',
+    category: reward.category || 'evidencia',
+    chapter: answerMeta?.chapterTitle || '',
+    origin: source.collection || source.type || '',
+    explanation: reward.explanation || '',
+    answer: answerMeta
+  };
+
+  const existingIndex = this.progress.collectedEvidence.findIndex(item => item.id === evidence.id || item.title === evidence.title);
+  if(existingIndex >= 0) this.progress.collectedEvidence[existingIndex] = { ...this.progress.collectedEvidence[existingIndex], ...evidence };
+  else this.progress.collectedEvidence.push(evidence);
+
+  const phase = this.getPhaseList().find(item => item.phaseNum === answerMeta?.phaseNum) || { phaseNum: answerMeta?.phaseNum || 0, chapterIndex: 0, phaseIndex: 0 };
+  this.recordGameEvent('evidence_collected', phase, { evidenceId: evidence.id });
+  this.saveGameProgress();
+  this.renderInventory();
+};
+
+GameLogic.getBadgeCatalog = function() {
+  return [
+    { id: 'primeira-pista', icon: 'I', title: 'Primeira pista', text: 'Abriu o arquivo e iniciou a investigacao.', threshold: 2 },
+    { id: 'linha-do-tempo', icon: 'II', title: 'Linha em ordem', text: 'Reconstruiu os primeiros marcos do voto feminino.', threshold: 6 },
+    { id: 'leitura-local', icon: 'III', title: 'Leitura local', text: 'Chegou aos registros de Muzambinho e suas fontes.', threshold: 10 },
+    { id: 'voz-publica', icon: 'IV', title: 'Voz publica', text: 'Comparou jornais, boatos e disputas de memoria.', threshold: 18 },
+    { id: 'guardia-do-dossie', icon: 'V', title: 'Guardia do dossie', text: 'Avancou ate a montagem do dossie final.', threshold: 28 }
+  ];
+};
+
+GameLogic.getAvatarRankFill = function(progress = {}) {
+  const unlockedPhases = Array.isArray(progress.unlockedPhases) && progress.unlockedPhases.length ? progress.unlockedPhases : [1];
+  const highest = Math.max(...unlockedPhases, 1);
+  return Math.max(8, Math.min(100, Math.round((highest / 28) * 100)));
+};
+
+EvidenceSystem.sourceInfoHTML = function(source = {}) {
+  const empty = !source || !Object.keys(source).length;
+  if(empty) return '<p>Fonte em preparacao para esta ficha.</p>';
+  const rows = [
+    ['Tipo', source.type],
+    ['Autoria', source.author],
+    ['Data', source.date],
+    ['Local', source.place],
+    ['Acervo', source.collection],
+    ['Observacao', source.note]
+  ].filter(([, value]) => value);
+  return rows.map(([label, value]) => `<p><strong>${label}:</strong> ${this.escapeHTML(value)}</p>`).join('');
+};
+
+EvidenceSystem.spawnEvidence = function(title, text, phaseData) {
+  document.getElementById('investigationModal')?.remove();
+
+  const overlay = document.createElement('div');
+  overlay.id = 'investigationModal';
+  overlay.className = 'investigation-overlay active';
+  const activityHTML = this.renderActivity(phaseData);
+  const sourceHTML = this.sourceInfoHTML(phaseData.source);
+
+  overlay.innerHTML = `
+    <div class="investigation-dossier" id="dossierContainer">
+      <div class="dossier-clip"></div>
+      <div class="dossier-page page-left phase-source-page">
+        <div class="dossier-paper-pad">
+          <div class="form-tag">DOCUMENTO APREENDIDO</div>
+          <h2 class="evidence-title">${this.escapeHTML(title)}</h2>
+          <div class="source-tabs" role="tablist" aria-label="Fonte historica">
+            <button type="button" class="source-tab active" data-source-tab="document">Documento</button>
+            <button type="button" class="source-tab" data-source-tab="transcription">Transcricao</button>
+            <button type="button" class="source-tab" data-source-tab="info">Fonte</button>
+          </div>
+          <div class="source-panel active" data-source-panel="document">
+            <div class="document-placeholder">
+              <span>${this.escapeHTML(phaseData.source?.type || 'documento')}</span>
+              <strong>${this.escapeHTML(phaseData.source?.date || 'arquivo')}</strong>
+            </div>
+          </div>
+          <div class="source-panel" data-source-panel="transcription">
+            <div class="evidence-text">${text}</div>
+          </div>
+          <div class="source-panel source-info" data-source-panel="info">${sourceHTML}</div>
+        </div>
+      </div>
+      <div class="dossier-page page-right phase-activity-page">
+        <button class="fullscreen-toggle investigation-fullscreen-toggle" type="button" title="Expandir Pergunta" aria-label="Expandir Pergunta" aria-pressed="false" onclick="EvidenceSystem.toggleFullscreen(this)">&#x26F6;</button>
+        <button class="close-investigation" title="Fechar Pasta" onclick="this.closest('.investigation-overlay').remove()">&#215;</button>
+        <header class="phase-header">
+          <span class="phase-kicker">Capitulo ${this.escapeHTML(phaseData.chapterNumber)} &bull; ${this.escapeHTML(phaseData.phaseLabel || '')}</span>
+          <h2>${this.escapeHTML(phaseData.title || 'Questionario de Analise')}</h2>
+          <p>${this.escapeHTML(phaseData.chapterCentralQuestion || '')}</p>
+        </header>
+        <p class="quiz-question">${this.escapeHTML(phaseData.q)}</p>
+        <div class="activity-area">${activityHTML}</div>
+        <div class="phase-hint-box" aria-live="polite"></div>
+        <div class="quiz-feedback" aria-live="polite"></div>
+        <button type="button" class="phase-reset-text" data-reset-activity>limpar tentativa</button>
+      </div>
+    </div>`;
+
+  document.body.appendChild(overlay);
+  this.bindActivity(overlay, title, text, phaseData);
+};
+
+EvidenceSystem.getPersonImage = function(person = {}) {
+  const key = String(person.id || person.name || '').toLowerCase();
+  const portraits = {
+    bertha: 'assets/bertha.png',
+    celina: 'assets/celina.png',
+    leolinda: 'assets/leolinda.png',
+    mietta: 'assets/mietta.png',
+    myrthes: 'assets/myrthes.png',
+    carlota: 'assets/carlota.png'
+  };
+  if(portraits[key]) return portraits[key];
+  if(key.includes('bertha')) return portraits.bertha;
+  if(key.includes('celina')) return portraits.celina;
+  if(key.includes('leolinda')) return portraits.leolinda;
+  if(key.includes('mietta')) return portraits.mietta;
+  return '';
+};
+
+EvidenceSystem.renderPersonPortrait = function(person = {}, sizeClass = '') {
+  const name = person.name || person.id || 'Personagem';
+  const initial = this.escapeHTML(String(name).charAt(0).toUpperCase());
+  const src = this.getPersonImage(person);
+  const classes = `person-portrait ${sizeClass}`.trim();
+
+  if(!src) return `<span class="${classes} no-photo" aria-hidden="true">${initial}</span>`;
+  return `<span class="${classes}"><img src="${src}" alt="${this.escapeHTML(name)}" onerror="const p=this.closest('.person-portrait'); if(p){p.classList.add('no-photo'); p.textContent='${initial}';}"></span>`;
+};
+
+EvidenceSystem.renderActivity = function(data) {
+  const submit = (label = 'Confirmar resposta') => `<button class="btn-primary activity-submit" type="button" data-submit-activity>${label}</button>`;
+
+  if(data.mode === 'chronology' || data.mode === 'rightsStack') {
+    const items = data.events || data.rights || [];
+    const orderClass = data.mode === 'rightsStack' ? 'rights-lane' : 'chronology-lane';
+    return `
+      <div class="drop-lane ${orderClass}">
+        ${items.map((_, index) => `<div class="drop-slot" data-slot-index="${index}"><span>${index + 1}</span><em>Toque ou solte aqui</em></div>`).join('')}
+      </div>
+      <div class="activity-bank">
+        ${items.map(item => `<button class="activity-card drag-card" type="button" draggable="true" data-order-id="${item.id}" data-order-label="${this.escapeHTML(item.label)}">${data.mode === 'rightsStack' ? '' : `<strong>${this.escapeHTML(item.year || '')}</strong>`}${this.escapeHTML(item.label)}</button>`).join('')}
+      </div>
+      ${submit(data.mode === 'rightsStack' ? 'Carimbar escada' : 'Verificar ordem')}`;
+  }
+
+  if(data.mode === 'textHighlight') {
+    const tokens = this.tokenizeHighlightText(data);
+    return `
+      <div class="mission-card">${this.escapeHTML(data.q)}</div>
+      <div class="mark-text" data-mark-text>
+        ${tokens.map(token => token.selectable
+          ? `<button class="mark-token" type="button" data-token-id="${token.id}" data-answer="${token.answer}">${this.escapeHTML(token.text)}</button>`
+          : `<span>${this.escapeHTML(token.text)}</span>`).join('')}
+      </div>
+      ${submit('Confirmar marcacoes')}`;
+  }
+
+  if(data.mode === 'quoteMatch') {
+    return `
+      <div class="assoc-game quote-drop-game" data-assoc-game data-assoc-mode="quoteMatch">
+        <div class="quote-person-shelf assoc-bank">
+          ${data.people.map(person => `
+            <button class="assoc-token quote-person-token" type="button" draggable="true" data-assoc-token="${person.id}" data-token-label="${this.escapeHTML(person.name)}" data-initial="${this.escapeHTML(person.name.charAt(0))}">
+              ${this.renderPersonPortrait(person)}
+              <strong>${this.escapeHTML(person.name)}</strong>
+            </button>
+          `).join('')}
+        </div>
+        <div class="quote-phrase-grid">
+          ${data.quotes.map(quote => `
+            <article class="quote-drop-card" data-assoc-target="${quote.id}">
+              <button class="quote-drop-corner assoc-drop-zone" type="button" data-assoc-drop="${quote.id}"><span>Solte aqui</span></button>
+              <p>${this.escapeHTML(quote.text)}</p>
+            </article>
+          `).join('')}
+        </div>
+      </div>
+      ${submit('Confirmar associacoes')}`;
+  }
+
+  if(data.mode === 'restoreText') {
+    let blankIndex = 0;
+    const textHTML = data.template.map(part => {
+      const blank = data.blanks[blankIndex];
+      if(blank && part === blank.answer) {
+        blankIndex += 1;
+        return `<button class="blank-slot" type="button" data-blank-id="${blank.id}" data-answer="${this.escapeHTML(blank.answer)}">_____</button>`;
+      }
+      return `<span>${this.escapeHTML(part)}</span>`;
+    }).join('');
+    return `
+      <div class="restore-text">${textHTML}</div>
+      <div class="word-bank">
+        ${data.words.map(word => `<button class="word-chip" type="button" draggable="true" data-word="${this.escapeHTML(word)}">${this.escapeHTML(word)}</button>`).join('')}
+      </div>
+      ${submit('Confirmar restauracao')}`;
+  }
+
+  if(data.mode === 'votingBooth') {
+    return `
+      <div class="booth-card">
+        ${data.choices.map(choice => `<button class="activity-card" type="button" data-booth-id="${choice.id}" data-correct="${choice.correct}">${this.escapeHTML(choice.text)}</button>`).join('')}
+      </div>
+      ${submit('Confirmar decisao')}`;
+  }
+
+  if(data.mode === 'headlineOrder') {
+    return `
+      <div class="headline-line" data-headline-line><span>Monte a manchete aqui</span></div>
+      <div class="word-bank headline-bank">
+        ${data.words.map((word, index) => `<button class="word-chip" type="button" draggable="true" data-word="${this.escapeHTML(word)}" data-word-index="${index}">${this.escapeHTML(word)}</button>`).join('')}
+      </div>
+      ${submit('Confirmar manchete')}`;
+  }
+
+  if(data.mode === 'wireBoard') {
+    const options = Array.from(new Set(data.pairs.flatMap(item => item.options || [])));
+    return `
+      <div class="assoc-game pair-drop-game" data-assoc-game data-assoc-mode="wireBoard">
+        <div class="pair-option-shelf assoc-bank">
+          ${options.map(option => `<button class="assoc-token pair-option-token" type="button" draggable="true" data-assoc-token="${this.escapeHTML(option)}" data-token-label="${this.escapeHTML(option)}">${this.escapeHTML(option)}</button>`).join('')}
+        </div>
+        <div class="pair-target-grid">
+          ${data.pairs.map(item => `
+            <article class="pair-drop-card" data-assoc-target="${item.id}">
+              <strong>${this.escapeHTML(item.clue)}</strong>
+              <button class="pair-drop-slot assoc-drop-zone" type="button" data-assoc-drop="${item.id}"><span>Solte aqui</span></button>
+            </article>
+          `).join('')}
+        </div>
+      </div>
+      ${submit('Confirmar associacoes')}`;
+  }
+
+  if(data.mode === 'connections') {
+    const options = Array.from(new Set(data.pairs.flatMap(item => item.options || [])));
+    return `
+      <div class="assoc-game pair-drop-game connection-drop-game" data-assoc-game data-assoc-mode="connections">
+        <div class="pair-option-shelf assoc-bank">
+          ${options.map(option => `<button class="assoc-token pair-option-token" type="button" draggable="true" data-assoc-token="${this.escapeHTML(option)}" data-token-label="${this.escapeHTML(option)}">${this.escapeHTML(option)}</button>`).join('')}
+        </div>
+        <div class="pair-target-grid">
+          ${data.pairs.map(item => `
+            <article class="pair-drop-card" data-assoc-target="${item.id}">
+              <strong>${this.escapeHTML(item.clue)}</strong>
+              <button class="pair-drop-slot assoc-drop-zone" type="button" data-assoc-drop="${item.id}"><span>Solte aqui</span></button>
+            </article>
+          `).join('')}
+        </div>
+      </div>
+      ${submit('Confirmar associacoes')}`;
+  }
+
+  if(data.mode === 'factOpinion') {
+    return data.statements.map(item => `
+      <div class="activity-card" data-statement-id="${item.id}">
+        ${this.escapeHTML(item.text)}
+        <div class="choice-row">
+          <button class="mini-action-btn" type="button" data-value="fato">Fato</button>
+          <button class="mini-action-btn" type="button" data-value="opiniao">Opiniao</button>
+        </div>
+      </div>
+    `).join('') + submit('Confirmar crivo');
+  }
+
+  if(data.mode === 'highlight') {
+    return `
+      <div class="activity-order-note typewriter">Marque os trechos que viram prova.</div>
+      ${data.snippets.map(item => `<button class="activity-card" type="button" data-highlight-id="${item.id}">${this.escapeHTML(item.text)}</button>`).join('')}
+      ${submit('Analisar selecao')}`;
+  }
+
+  if(data.mode === 'wornDocument') {
+    return `
+      <div class="worn-document">
+        <div class="worn-paper worn-paper-magnifier" data-worn-paper tabindex="0" role="button" aria-label="Passe a lupa pelo documento para revelar o texto">
+          <div class="worn-cover">
+            <span>Documento desgastado</span>
+            <p>Passe a lupa por cima do papel para revelar o recorte.</p>
+          </div>
+          <div class="worn-hidden-text" data-worn-text>${this.escapeHTML(data.restoreText || '')}</div>
+          <span class="magnifier-cursor" data-magnifier-cursor aria-hidden="true"><img src="assets/lupa.png" alt=""></span>
+        </div>
+      </div>
+      <div class="quiz-options">
+        ${data.options.map((opt, index) => `<button class="quiz-checkbox-btn" type="button" data-quiz-index="${index}"><span class="check-box"></span><span class="option-text">${this.escapeHTML(opt)}</span></button>`).join('')}
+      </div>
+      ${submit('Confirmar interpretacao')}`;
+  }
+
+  if(data.mode === 'fakeNews') {
+    return `
+      <div class="historical-check">
+        <div class="claim-card">
+          <strong>Afirmacao em investigacao</strong>
+          <p>${this.escapeHTML(data.statement || data.c)}</p>
+          <small>Confira se a frase exagera, omite condicoes ou usa uma palavra absoluta.</small>
+        </div>
+        <div class="source-mini-list">
+          ${(data.sources || []).map(source => `<button type="button" class="activity-card source-check-card" data-open-source="${source.id}"><strong>${this.escapeHTML(source.title)}</strong><span>${this.escapeHTML(source.text)}</span><em>Consultar fonte</em></button>`).join('')}
+        </div>
+        <div class="classification-panel">
+          <strong>Depois da consulta, como fica a afirmacao?</strong>
+          <div class="choice-row">
+            ${data.classifications.map(item => `<button class="mini-action-btn" type="button" data-fake-classification="${this.escapeHTML(item)}">${this.escapeHTML(item)}</button>`).join('')}
+          </div>
+        </div>
+      </div>
+      ${submit('Confirmar checagem')}`;
+  }
+
+  if(data.mode === 'fakeNewsLegacy') {
+    return `
+      <div class="claim-card"><strong>Afirmação investigada</strong><p>${this.escapeHTML(data.statement || data.c)}</p></div>
+      <div class="source-mini-list">
+        ${(data.sources || []).map(source => `<button type="button" class="activity-card" data-open-source="${source.id}"><strong>${this.escapeHTML(source.title)}</strong><span>${this.escapeHTML(source.text)}</span></button>`).join('')}
+      </div>
+      <div class="choice-row">
+        ${data.classifications.map(item => `<button class="mini-action-btn" type="button" data-fake-classification="${this.escapeHTML(item)}">${this.escapeHTML(item)}</button>`).join('')}
+      </div>
+      ${submit('Confirmar checagem')}`;
+  }
+
+  if(data.mode === 'finalDossier') {
+    return `
+      <div class="final-dossier-builder">
+        <section>
+          <strong>Tese</strong>
+          ${data.thesisOptions.map(item => `<button class="activity-card" type="button" data-thesis="${this.escapeHTML(item)}">${this.escapeHTML(item)}</button>`).join('')}
+        </section>
+        <section>
+          <strong>Evidencias</strong>
+          <div class="final-evidence-grid">
+            ${data.evidenceBank.map(item => `<button class="activity-card" type="button" data-final-evidence="${this.escapeHTML(item)}">${this.escapeHTML(item)}</button>`).join('')}
+          </div>
+        </section>
+        <section>
+          <strong>Limitacao da fonte</strong>
+          ${data.limitations.map(item => `<button class="activity-card" type="button" data-limitation="${this.escapeHTML(item)}">${this.escapeHTML(item)}</button>`).join('')}
+        </section>
+        <label class="final-conclusion-label">Conclusao</label>
+        <textarea class="typewriter-input final-conclusion" data-final-conclusion placeholder="Escreva uma conclusao curta relacionando conquista, Muzambinho e limites..."></textarea>
+      </div>
+      ${submit('Carimbar dossie final')}`;
+  }
+
+  return `
+    <div class="quiz-options">
+      ${data.options.map((opt, index) => `
+        <button class="quiz-checkbox-btn" type="button" data-quiz-index="${index}">
+          <span class="check-box"></span>
+          <span class="option-text">${this.escapeHTML(opt)}</span>
+        </button>`).join('')}
+    </div>
+    ${submit('Confirmar resposta')}`;
+};
+
+EvidenceSystem.bindActivity = function(overlay, title, text, data) {
+  const state = {
+    order: [],
+    selected: new Set(),
+    answers: {},
+    blankWord: null,
+    blanks: {},
+    headline: [],
+    quizIndex: null,
+    attempts: 0,
+    hintsUsed: 0,
+    activeWire: null,
+    activeLink: null,
+    dragLink: null,
+    activeAssoc: null,
+    restoredRegions: new Set(),
+    openedSources: new Set(),
+    thesis: '',
+    finalEvidence: new Set(),
+    limitation: ''
+  };
+  const feedback = overlay.querySelector('.quiz-feedback');
+  const hintBox = overlay.querySelector('.phase-hint-box');
+
+  const showFeedback = (html) => {
+    if(feedback) feedback.innerHTML = html;
+  };
+
+  const showIncomplete = (message) => {
+    showFeedback(`<div class="phase-feedback-note">${this.escapeHTML(message)}</div>`);
+  };
+
+  const resetAfterWrong = () => {
+    overlay.querySelectorAll('.selected, .answered, .linked, .assoc-selected, .assoc-filled, .assoc-used').forEach(el => el.classList.remove('selected', 'answered', 'linked', 'assoc-selected', 'assoc-filled', 'assoc-used'));
+    overlay.querySelectorAll('.check-box').forEach(el => { el.innerHTML = ''; });
+    overlay.querySelectorAll('.drop-slot').forEach(slot => {
+      slot.dataset.value = '';
+      slot.classList.remove('filled');
+      slot.innerHTML = `<span>${Number(slot.dataset.slotIndex) + 1}</span><em>Toque ou solte aqui</em>`;
+    });
+    overlay.querySelectorAll('.drag-card, .word-chip').forEach(el => { el.disabled = false; el.classList.remove('used'); });
+    overlay.querySelectorAll('.blank-slot').forEach(slot => { slot.textContent = '_____'; slot.dataset.value = ''; });
+    const line = overlay.querySelector('[data-headline-line]');
+    if(line) line.innerHTML = '<span>Monte a manchete aqui</span>';
+    overlay.querySelectorAll('[data-wire-lines], [data-link-lines]').forEach(svg => svg.replaceChildren());
+    overlay.querySelectorAll('[data-worn-paper]').forEach(paper => {
+      paper.classList.remove('restored', 'revealing');
+      paper.style.removeProperty('--reveal-x');
+      paper.style.removeProperty('--reveal-y');
+      paper.style.removeProperty('--reveal-mask');
+      paper.dataset.revealSamples = '0';
+      paper.dataset.revealPoints = '';
+    });
+    overlay.querySelectorAll('[data-restore-region]').forEach(button => button.classList.remove('used'));
+    overlay.querySelectorAll('[data-quote-preview]').forEach(preview => { preview.innerHTML = 'Escolha quem falou'; });
+    overlay.querySelectorAll('[data-assoc-drop]').forEach(drop => { drop.innerHTML = '<span>Solte aqui</span>'; });
+    state.order = [];
+    state.selected.clear();
+    state.answers = {};
+    state.blanks = {};
+    state.headline = [];
+    state.blankWord = null;
+    state.quizIndex = null;
+    state.activeWire = null;
+    state.activeLink = null;
+    state.dragLink = null;
+    state.activeAssoc = null;
+    state.restoredRegions.clear();
+    state.openedSources.clear();
+    state.finalEvidence.clear();
+    state.thesis = '';
+    state.limitation = '';
+  };
+
+  const completePhase = ({ isCorrect, selectedAnswer, completedByExplanation = false }) => {
+    const score = GameLogic.computePhaseScore(isCorrect, state.attempts || 1, state.hintsUsed, completedByExplanation);
+    const answerMeta = {
+      phaseNum: data.phaseNum,
+      title,
+      chapterTitle: data.chapterTitle,
+      question: data.q,
+      selectedAnswer,
+      isCorrect,
+      attempts: state.attempts || 1,
+      hintsUsed: state.hintsUsed,
+      score,
+      completedByExplanation,
+      completedAt: new Date().toISOString(),
+      source: data.source,
+      evidenceReward: data.evidenceReward
+    };
+
+    GameLogic.recordAnswer(answerMeta);
+    GameLogic.recordGameEvent(isCorrect ? 'answer_correct' : 'explanation_opened', data, { attempt: state.attempts || 1, score });
+    GameLogic.playSFX('stamp');
+    overlay.classList.add(isCorrect ? 'verdict-deferido' : 'verdict-concluido');
+    showFeedback(`
+      <div class="stamp-correct stamp-animated">${completedByExplanation ? 'ANALISE CONCLUIDA' : 'DEFERIDO'}</div>
+    `);
+    GameLogic.addEvidenceToInventory(title, text, answerMeta);
+    const unlockInfo = GameLogic.unlockNextPhase(data.phaseNum, { silent: true });
+    const isChapterEnd = data.phaseNum === unlockInfo.lastInChapter || data.phaseNum >= unlockInfo.total;
+    GameLogic.pendingPhaseAfterDialogue = isChapterEnd
+      ? {
+          chapterIndex: unlockInfo.currentPhase?.chapterIndex || GameLogic.currentChapterIndex,
+          nextChapterIndex: unlockInfo.nextPhase ? unlockInfo.nextPhase.chapterIndex : null
+        }
+      : null;
+
+    setTimeout(() => {
+      document.getElementById('investigationModal')?.remove();
+      GameLogic.startDialogue([
+        data.feedback || 'Resposta registrada com justificativa historica.',
+        isChapterEnd ? 'Guarde essa explicacao: ela fecha uma parte importante do dossie.' : 'A proxima ficha foi liberada na gaveta.'
+      ], 'phase_feedback');
+    }, 950);
+  };
+
+  const finish = (isCorrect, selectedAnswer) => {
+    state.attempts += 1;
+    GameLogic.recordGameEvent('answer_submitted', data, { attempt: state.attempts, answer: selectedAnswer });
+
+    if(isCorrect) {
+      completePhase({ isCorrect: true, selectedAnswer });
+      return;
+    }
+
+    GameLogic.playSFX('error');
+    const canConclude = state.attempts >= 3;
+    overlay.classList.remove('verdict-indeferido');
+    void overlay.offsetWidth;
+    overlay.classList.add('verdict-indeferido');
+    showFeedback(`
+      <div class="stamp-wrong">INDEFERIDO</div>
+      <p class="phase-feedback-text">O livro abriu uma pista para revisar a leitura.</p>
+      ${canConclude ? '<button type="button" class="btn-secondary" data-complete-explanation>Concluir com explicacao</button>' : ''}
+    `);
+    overlay.querySelector('.investigation-dossier')?.classList.add('shake-error');
+    setTimeout(() => overlay.querySelector('.investigation-dossier')?.classList.remove('shake-error'), 450);
+    GameLogic.showWrongAnswerHelp(data);
+    if(canConclude) {
+      feedback.querySelector('[data-complete-explanation]')?.addEventListener('click', () => {
+        completePhase({ isCorrect: false, selectedAnswer, completedByExplanation: true });
+      });
+    } else {
+      setTimeout(() => {
+        showFeedback('');
+        resetAfterWrong();
+      }, 1500);
+    }
+  };
+
+  const clearSlot = (slot) => {
+    if(!slot) return;
+    const oldId = slot.dataset.value;
+    if(oldId) {
+      const oldCard = overlay.querySelector(`[data-order-id="${CSS.escape(oldId)}"]`);
+      if(oldCard) oldCard.disabled = false;
+    }
+    state.order[Number(slot.dataset.slotIndex)] = undefined;
+    slot.dataset.value = '';
+    slot.classList.remove('filled');
+    slot.innerHTML = `<span>${Number(slot.dataset.slotIndex) + 1}</span><em>Toque ou solte aqui</em>`;
+  };
+
+  const placeOrder = (id, label, slot = null) => {
+    const targetSlot = slot || Array.from(overlay.querySelectorAll('.drop-slot')).find(item => !item.dataset.value);
+    if(!targetSlot) return;
+    const previousSlot = Array.from(overlay.querySelectorAll('.drop-slot')).find(item => item.dataset.value === id);
+    if(previousSlot && previousSlot !== targetSlot) clearSlot(previousSlot);
+    const replacedId = targetSlot.dataset.value;
+    if(replacedId && replacedId !== id) {
+      const replacedCard = overlay.querySelector(`[data-order-id="${CSS.escape(replacedId)}"]`);
+      if(replacedCard) replacedCard.disabled = false;
+      const replacedIndex = state.order.indexOf(replacedId);
+      if(replacedIndex >= 0) state.order[replacedIndex] = undefined;
+    }
+    state.order[Number(targetSlot.dataset.slotIndex)] = id;
+    targetSlot.dataset.value = id;
+    targetSlot.classList.add('filled');
+    targetSlot.innerHTML = `<strong>${Number(targetSlot.dataset.slotIndex) + 1}</strong><span>${this.escapeHTML(label)}</span>`;
+    const card = overlay.querySelector(`[data-order-id="${CSS.escape(id)}"]`);
+    if(card) card.disabled = true;
+  };
+
+  const getLinkPoint = (node, boardRect, side) => {
+    const rect = node.getBoundingClientRect();
+    return {
+      x: (side === 'left' ? rect.right : rect.left) - boardRect.left,
+      y: rect.top + (rect.height / 2) - boardRect.top
+    };
+  };
+
+  const linkPath = (start, end, index = 0, temporary = false) => {
+    const bend = Math.max(68, Math.abs(end.x - start.x) * 0.45);
+    const c1 = start.x + bend;
+    const c2 = end.x - bend;
+    return `<path d="M ${start.x} ${start.y} C ${c1} ${start.y}, ${c2} ${end.y}, ${end.x} ${end.y}" class="wire-line link-line link-line-${index % 4}${temporary ? ' link-line-temp' : ''}" marker-end="url(#linkArrow)"></path>`;
+  };
+
+  const drawLinkBoard = (board, temporary = null) => {
+    const svg = board.querySelector('[data-link-lines]');
+    if(!svg) return;
+    const boardRect = board.getBoundingClientRect();
+    svg.setAttribute('viewBox', `0 0 ${boardRect.width} ${boardRect.height}`);
+    const mode = board.dataset.linkMode;
+    const defs = `
+      <defs>
+        <marker id="linkArrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L0,6 L8,3 z" class="link-arrow-head"></path>
+        </marker>
+      </defs>`;
+    const lines = Object.entries(state.answers).map(([id, value], index) => {
+      const left = mode === 'quoteMatch'
+        ? board.querySelector(`[data-link-left="${CSS.escape(value)}"]`)
+        : board.querySelector(`[data-link-left="${CSS.escape(id)}"]`);
+      const right = mode === 'quoteMatch'
+        ? board.querySelector(`[data-link-right="${CSS.escape(id)}"]`)
+        : Array.from(board.querySelectorAll('[data-link-right]')).find(node => node.dataset.linkValue === value);
+      if(!left || !right) return '';
+      return linkPath(getLinkPoint(left, boardRect, 'left'), getLinkPoint(right, boardRect, 'right'), index);
+    });
+
+    if(temporary && temporary.board === board) {
+      const left = board.querySelector(`[data-link-left="${CSS.escape(temporary.leftId)}"]`);
+      if(left) lines.push(linkPath(getLinkPoint(left, boardRect, 'left'), { x: temporary.x, y: temporary.y }, lines.length, true));
+    }
+
+    svg.innerHTML = defs + lines.join('');
+  };
+
+  const refreshLinkBoard = (board) => {
+    if(!board) return;
+    const mode = board.dataset.linkMode;
+    board.querySelectorAll('[data-link-left], [data-link-right]').forEach(node => node.classList.remove('selected', 'answered', 'linked'));
+    Object.entries(state.answers).forEach(([id, value]) => {
+      const left = mode === 'quoteMatch'
+        ? board.querySelector(`[data-link-left="${CSS.escape(value)}"]`)
+        : board.querySelector(`[data-link-left="${CSS.escape(id)}"]`);
+      const right = mode === 'quoteMatch'
+        ? board.querySelector(`[data-link-right="${CSS.escape(id)}"]`)
+        : Array.from(board.querySelectorAll('[data-link-right]')).find(node => node.dataset.linkValue === value);
+      left?.classList.add('answered', 'linked');
+      right?.classList.add('answered', 'linked');
+    });
+    if(state.activeLink?.board === board) state.activeLink.left?.classList.add('selected');
+    drawLinkBoard(board, state.dragLink);
+  };
+
+  const refreshAllLinkBoards = () => overlay.querySelectorAll('[data-link-board]').forEach(board => refreshLinkBoard(board));
+
+  const connectLinkNodes = (left, right) => {
+    const board = left.closest('[data-link-board]');
+    if(!board || right.closest('[data-link-board]') !== board) return;
+    const mode = board.dataset.linkMode;
+    const answerKey = mode === 'quoteMatch' ? right.dataset.linkRight : left.dataset.linkLeft;
+    const answerValue = mode === 'quoteMatch' ? left.dataset.linkValue : right.dataset.linkValue;
+
+    Object.keys(state.answers).forEach(key => {
+      if(key !== answerKey && state.answers[key] === answerValue) delete state.answers[key];
+    });
+    state.answers[answerKey] = answerValue;
+    state.activeLink = null;
+    state.dragLink = null;
+    showFeedback('');
+    refreshAllLinkBoards();
+  };
+
+  const resizeWireBoard = () => {
+    if(!document.body.contains(overlay)) {
+      window.removeEventListener('resize', resizeWireBoard);
+      return;
+    }
+    refreshAllLinkBoards();
+  };
+  window.addEventListener('resize', resizeWireBoard, { passive: true });
+
+  const revealWornPaper = (paper, event = null, force = false) => {
+    if(!paper) return;
+    const rect = paper.getBoundingClientRect();
+    const pointer = event?.touches?.[0] || event;
+    const rawX = pointer ? pointer.clientX - rect.left : rect.width / 2;
+    const rawY = pointer ? pointer.clientY - rect.top : rect.height / 2;
+    const x = Math.max(0, Math.min(rect.width, rawX));
+    const y = Math.max(0, Math.min(rect.height, rawY));
+
+    paper.style.setProperty('--reveal-x', `${x}px`);
+    paper.style.setProperty('--reveal-y', `${y}px`);
+    paper.classList.add('revealing');
+    state.restoredRegions.add('full');
+
+    const samples = force ? 18 : Math.min(18, Number(paper.dataset.revealSamples || 0) + 1);
+    paper.dataset.revealSamples = String(samples);
+    const centerPoints = [
+      [x, y],
+      [x - 48, y],
+      [x + 48, y],
+      [x, y - 34],
+      [x, y + 34]
+    ];
+    const previousPoints = (paper.dataset.revealPoints || '')
+      .split('|')
+      .filter(Boolean)
+      .map(point => point.split(':').map(Number));
+    const nextPoints = (force ? previousPoints.concat(centerPoints) : previousPoints.concat([[x, y]])).slice(-34);
+    const compactPoints = nextPoints.map(([px, py]) => `${Math.round(px)}:${Math.round(py)}`);
+    paper.dataset.revealPoints = compactPoints.join('|');
+    paper.style.setProperty('--reveal-mask', nextPoints.map(([px, py]) => `radial-gradient(circle 54px at ${Math.round(px)}px ${Math.round(py)}px, #000 0 68%, rgba(0,0,0,0.65) 74%, transparent 100%)`).join(', '));
+    if(samples >= 10) paper.classList.add('restored');
+  };
+
+  overlay.querySelectorAll('[data-source-tab]').forEach(button => {
+    button.addEventListener('click', () => {
+      const tab = button.dataset.sourceTab;
+      overlay.querySelectorAll('[data-source-tab]').forEach(item => item.classList.toggle('active', item === button));
+      overlay.querySelectorAll('[data-source-panel]').forEach(panel => panel.classList.toggle('active', panel.dataset.sourcePanel === tab));
+      GameLogic.recordGameEvent(tab === 'transcription' ? 'transcription_opened' : 'source_opened', data, { panel: tab });
+    });
+  });
+
+  overlay.querySelector('[data-reset-activity]')?.addEventListener('click', () => {
+    resetAfterWrong();
+    showFeedback('');
+  });
+
+  overlay.querySelectorAll('[data-order-id]').forEach(button => {
+    button.addEventListener('click', () => placeOrder(button.dataset.orderId, button.dataset.orderLabel || button.innerText.trim()));
+    button.addEventListener('dragstart', event => event.dataTransfer.setData('text/plain', button.dataset.orderId));
+  });
+
+  overlay.querySelectorAll('.drop-slot').forEach(slot => {
+    slot.addEventListener('click', () => {
+      const selected = Array.from(overlay.querySelectorAll('[data-order-id]')).find(card => !card.disabled);
+      if(selected) placeOrder(selected.dataset.orderId, selected.dataset.orderLabel || selected.innerText.trim(), slot);
+    });
+    slot.addEventListener('dragover', event => event.preventDefault());
+    slot.addEventListener('drop', event => {
+      event.preventDefault();
+      const id = event.dataTransfer.getData('text/plain');
+      const card = overlay.querySelector(`[data-order-id="${CSS.escape(id)}"]`);
+      if(card) placeOrder(id, card.dataset.orderLabel || card.innerText.trim(), slot);
+    });
+  });
+
+  overlay.querySelectorAll('[data-quiz-index]').forEach(button => {
+    button.addEventListener('click', () => {
+      state.quizIndex = Number(button.dataset.quizIndex);
+      overlay.querySelectorAll('[data-quiz-index]').forEach(btn => {
+        btn.classList.remove('selected');
+        const box = btn.querySelector('.check-box');
+        if(box) box.innerHTML = '';
+      });
+      button.classList.add('selected');
+      button.querySelector('.check-box').innerHTML = '<span style="font-weight:900; color:var(--wine);">X</span>';
+    });
+  });
+
+  let marking = false;
+  const markToken = (button) => {
+    if(state.selected.has(button.dataset.tokenId)) {
+      state.selected.delete(button.dataset.tokenId);
+      button.classList.remove('selected');
+      return;
+    }
+    state.selected.add(button.dataset.tokenId);
+    button.classList.add('selected');
+  };
+  overlay.querySelectorAll('.mark-token').forEach(button => {
+    button.addEventListener('pointerdown', event => {
+      event.preventDefault();
+      marking = true;
+      markToken(button);
+      document.addEventListener('pointerup', () => { marking = false; }, { once: true });
+    });
+    button.addEventListener('pointerenter', () => {
+      if(marking && !button.classList.contains('selected')) markToken(button);
+    });
+  });
+
+  overlay.querySelectorAll('[data-highlight-id]').forEach(button => {
+    button.addEventListener('click', () => {
+      const id = button.dataset.highlightId;
+      if(state.selected.has(id)) state.selected.delete(id);
+      else state.selected.add(id);
+      button.classList.toggle('selected');
+    });
+  });
+
+  const renderAssociationChip = (game, value) => {
+    if(game.dataset.assocMode === 'quoteMatch') {
+      const person = (data.people || []).find(item => item.id === value) || { id: value, name: value };
+      return `${EvidenceSystem.renderPersonPortrait(person, 'tiny')}<strong>${EvidenceSystem.escapeHTML(person.name)}</strong>`;
+    }
+    return `<strong>${EvidenceSystem.escapeHTML(value)}</strong>`;
+  };
+
+  const refreshAssociationGame = (game) => {
+    if(!game) return;
+    game.querySelectorAll('[data-assoc-drop]').forEach(drop => {
+      const value = state.answers[drop.dataset.assocDrop];
+      drop.innerHTML = value ? renderAssociationChip(game, value) : '<span>Solte aqui</span>';
+      drop.classList.toggle('assoc-filled', Boolean(value));
+      drop.closest('[data-assoc-target]')?.classList.toggle('assoc-filled', Boolean(value));
+    });
+    game.querySelectorAll('[data-assoc-token]').forEach(token => {
+      const used = Object.values(state.answers).includes(token.dataset.assocToken);
+      const active = state.activeAssoc?.game === game && state.activeAssoc.value === token.dataset.assocToken;
+      token.classList.toggle('assoc-used', used);
+      token.classList.toggle('assoc-selected', active);
+    });
+  };
+
+  const refreshAllAssociationGames = () => overlay.querySelectorAll('[data-assoc-game]').forEach(game => refreshAssociationGame(game));
+
+  const assignAssociation = (game, targetId, value) => {
+    if(!game || !targetId || !value) return;
+    Object.keys(state.answers).forEach(key => {
+      if(key !== targetId && state.answers[key] === value) delete state.answers[key];
+    });
+    state.answers[targetId] = value;
+    state.activeAssoc = null;
+    showFeedback('');
+    refreshAllAssociationGames();
+  };
+
+  overlay.querySelectorAll('[data-assoc-token]').forEach(token => {
+    token.addEventListener('click', () => {
+      state.activeAssoc = {
+        game: token.closest('[data-assoc-game]'),
+        value: token.dataset.assocToken
+      };
+      refreshAllAssociationGames();
+    });
+    token.addEventListener('dragstart', event => {
+      state.activeAssoc = {
+        game: token.closest('[data-assoc-game]'),
+        value: token.dataset.assocToken
+      };
+      event.dataTransfer.setData('text/plain', token.dataset.assocToken);
+      event.dataTransfer.effectAllowed = 'move';
+      token.classList.add('assoc-selected');
+    });
+    token.addEventListener('dragend', () => {
+      refreshAllAssociationGames();
+    });
+  });
+
+  overlay.querySelectorAll('[data-assoc-target], [data-assoc-drop]').forEach(target => {
+    target.addEventListener('dragover', event => {
+      event.preventDefault();
+      target.closest('[data-assoc-target]')?.classList.add('assoc-hover');
+    });
+    target.addEventListener('dragleave', () => {
+      target.closest('[data-assoc-target]')?.classList.remove('assoc-hover');
+    });
+    target.addEventListener('drop', event => {
+      event.preventDefault();
+      const card = target.closest('[data-assoc-target]');
+      const game = target.closest('[data-assoc-game]');
+      const value = event.dataTransfer.getData('text/plain') || state.activeAssoc?.value;
+      card?.classList.remove('assoc-hover');
+      assignAssociation(game, card?.dataset.assocTarget, value);
+    });
+  });
+
+  overlay.querySelectorAll('[data-assoc-drop]').forEach(drop => {
+    drop.addEventListener('click', () => {
+      const game = drop.closest('[data-assoc-game]');
+      if(state.activeAssoc?.game === game) assignAssociation(game, drop.dataset.assocDrop, state.activeAssoc.value);
+      else showIncomplete('Escolha uma ficha de cima e encaixe aqui.');
+    });
+  });
+
+  const moveLinkDrag = (event) => {
+    if(!state.dragLink) return;
+    if(!document.body.contains(overlay)) {
+      document.removeEventListener('pointermove', moveLinkDrag);
+      document.removeEventListener('pointerup', endLinkDrag);
+      return;
+    }
+    const rect = state.dragLink.board.getBoundingClientRect();
+    state.dragLink.x = Math.max(0, Math.min(rect.width, event.clientX - rect.left));
+    state.dragLink.y = Math.max(0, Math.min(rect.height, event.clientY - rect.top));
+    drawLinkBoard(state.dragLink.board, state.dragLink);
+  };
+
+  function endLinkDrag(event) {
+    if(!state.dragLink) return;
+    const drag = state.dragLink;
+    const target = document.elementFromPoint(event.clientX, event.clientY)?.closest('[data-link-right]');
+    if(target && target.closest('[data-link-board]') === drag.board) {
+      connectLinkNodes(drag.left, target);
+    } else {
+      state.dragLink = null;
+      refreshLinkBoard(drag.board);
+    }
+    document.removeEventListener('pointermove', moveLinkDrag);
+    document.removeEventListener('pointerup', endLinkDrag);
+  }
+
+  overlay.querySelectorAll('[data-link-left]').forEach(left => {
+    left.addEventListener('pointerdown', event => {
+      event.preventDefault();
+      const board = left.closest('[data-link-board]');
+      const rect = board.getBoundingClientRect();
+      state.activeLink = { board, left };
+      state.dragLink = {
+        board,
+        left,
+        leftId: left.dataset.linkLeft,
+        x: Math.max(0, Math.min(rect.width, event.clientX - rect.left)),
+        y: Math.max(0, Math.min(rect.height, event.clientY - rect.top))
+      };
+      left.setPointerCapture?.(event.pointerId);
+      refreshLinkBoard(board);
+      document.addEventListener('pointermove', moveLinkDrag);
+      document.addEventListener('pointerup', endLinkDrag);
+    });
+  });
+
+  overlay.querySelectorAll('[data-link-right]').forEach(right => {
+    right.addEventListener('click', () => {
+      if(state.activeLink?.board === right.closest('[data-link-board]')) connectLinkNodes(state.activeLink.left, right);
+    });
+  });
+
+  overlay.querySelectorAll('[data-statement-id], [data-pair-id], [data-quote-id]').forEach(card => {
+    card.querySelectorAll('[data-value]').forEach(button => {
+      button.addEventListener('click', () => {
+        const id = card.dataset.statementId || card.dataset.pairId || card.dataset.quoteId;
+        state.answers[id] = button.dataset.value;
+        card.classList.add('answered');
+        card.querySelectorAll('[data-value]').forEach(btn => btn.classList.remove('selected'));
+        button.classList.add('selected');
+
+        if(card.dataset.quoteId) {
+          const selectedPerson = (data.people || []).find(person => person.id === button.dataset.value);
+          const preview = card.querySelector('[data-quote-preview]');
+          if(selectedPerson && preview) {
+            preview.innerHTML = `${EvidenceSystem.renderPersonPortrait(selectedPerson, 'small')}<strong>${EvidenceSystem.escapeHTML(selectedPerson.name)}</strong>`;
+          }
+        }
+      });
+    });
+  });
+
+  overlay.querySelectorAll('[data-wire-clue]').forEach(button => {
+    button.addEventListener('click', () => {
+      state.activeWire = button.dataset.wireClue;
+      overlay.querySelectorAll('[data-wire-clue]').forEach(item => item.classList.toggle('selected', item === button));
+    });
+  });
+
+  overlay.querySelectorAll('[data-wire-option]').forEach(button => {
+    button.addEventListener('click', () => {
+      if(!state.activeWire) {
+        showIncomplete('Escolha primeiro uma pista da coluna esquerda.');
+        return;
+      }
+
+      state.answers[state.activeWire] = button.dataset.wireOption;
+      const clue = overlay.querySelector(`[data-wire-clue="${CSS.escape(state.activeWire)}"]`);
+      if(clue) clue.classList.add('answered');
+      overlay.querySelectorAll('[data-wire-option]').forEach(item => {
+        const isUsed = Object.values(state.answers).includes(item.dataset.wireOption);
+        item.classList.toggle('answered', isUsed);
+        item.classList.toggle('selected', isUsed);
+      });
+      state.activeWire = null;
+      overlay.querySelectorAll('[data-wire-clue]').forEach(item => item.classList.remove('selected'));
+      refreshAllLinkBoards();
+    });
+  });
+
+  overlay.querySelectorAll('.word-chip').forEach(button => {
+    button.addEventListener('click', () => {
+      if(overlay.querySelector('[data-headline-line]')) {
+        state.headline.push(button.dataset.word);
+        button.disabled = true;
+        button.classList.add('used');
+        overlay.querySelector('[data-headline-line]').innerHTML = state.headline.map(word => `<strong>${this.escapeHTML(word)}</strong>`).join(' ');
+        return;
+      }
+      state.blankWord = button.dataset.word;
+      overlay.querySelectorAll('.word-chip').forEach(chip => chip.classList.remove('selected'));
+      button.classList.add('selected');
+    });
+    button.addEventListener('dragstart', event => event.dataTransfer.setData('text/plain', button.dataset.word));
+  });
+
+  overlay.querySelectorAll('.blank-slot').forEach(slot => {
+    const assign = (word) => {
+      if(!word) return;
+      slot.textContent = word;
+      slot.dataset.value = word;
+      state.blanks[slot.dataset.blankId] = word;
+    };
+    slot.addEventListener('click', () => assign(state.blankWord));
+    slot.addEventListener('dragover', event => event.preventDefault());
+    slot.addEventListener('drop', event => {
+      event.preventDefault();
+      assign(event.dataTransfer.getData('text/plain'));
+    });
+  });
+
+  overlay.querySelectorAll('[data-booth-id]').forEach(button => {
+    button.addEventListener('click', () => {
+      state.answers.booth = button.dataset.correct === 'true' ? 'correct' : button.innerText.trim();
+      overlay.querySelectorAll('[data-booth-id]').forEach(btn => btn.classList.remove('selected'));
+      button.classList.add('selected');
+    });
+  });
+
+  overlay.querySelectorAll('[data-restore-region]').forEach(button => {
+    button.addEventListener('click', () => {
+      state.restoredRegions.add(button.dataset.restoreRegion);
+      button.classList.add('selected');
+      button.classList.add('used');
+      const textPanel = overlay.querySelector('[data-worn-text]');
+      if(textPanel) textPanel.hidden = false;
+      const paper = overlay.querySelector('[data-worn-paper]');
+      if(paper) paper.classList.add('restored');
+    });
+  });
+
+  overlay.querySelectorAll('[data-worn-paper]').forEach(paper => {
+    paper.addEventListener('pointerdown', event => {
+      event.preventDefault();
+      paper.setPointerCapture?.(event.pointerId);
+      revealWornPaper(paper, event);
+    });
+    paper.addEventListener('pointermove', event => {
+      if(event.pointerType === 'mouse' || event.buttons || paper.classList.contains('revealing')) {
+        revealWornPaper(paper, event);
+      }
+    });
+    paper.addEventListener('pointerleave', () => {
+      paper.classList.remove('revealing');
+    });
+    paper.addEventListener('keydown', event => {
+      if(event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        revealWornPaper(paper, null, true);
+      }
+    });
+  });
+
+  overlay.querySelectorAll('[data-open-source]').forEach(button => {
+    button.addEventListener('click', () => {
+      state.openedSources.add(button.dataset.openSource);
+      button.classList.add('selected');
+      GameLogic.recordGameEvent('source_opened', data, { sourceId: button.dataset.openSource });
+    });
+  });
+
+  overlay.querySelectorAll('[data-fake-classification]').forEach(button => {
+    button.addEventListener('click', () => {
+      state.answers.fakeNews = button.dataset.fakeClassification;
+      overlay.querySelectorAll('[data-fake-classification]').forEach(btn => btn.classList.remove('selected'));
+      button.classList.add('selected');
+    });
+  });
+
+  overlay.querySelectorAll('[data-thesis]').forEach(button => {
+    button.addEventListener('click', () => {
+      state.thesis = button.dataset.thesis;
+      overlay.querySelectorAll('[data-thesis]').forEach(btn => btn.classList.remove('selected'));
+      button.classList.add('selected');
+    });
+  });
+
+  overlay.querySelectorAll('[data-final-evidence]').forEach(button => {
+    button.addEventListener('click', () => {
+      const value = button.dataset.finalEvidence;
+      if(state.finalEvidence.has(value)) state.finalEvidence.delete(value);
+      else state.finalEvidence.add(value);
+      button.classList.toggle('selected');
+    });
+  });
+
+  overlay.querySelectorAll('[data-limitation]').forEach(button => {
+    button.addEventListener('click', () => {
+      state.limitation = button.dataset.limitation;
+      overlay.querySelectorAll('[data-limitation]').forEach(btn => btn.classList.remove('selected'));
+      button.classList.add('selected');
+    });
+  });
+
+  overlay.querySelector('[data-submit-activity]')?.addEventListener('click', () => {
+    if(data.mode === 'chronology' || data.mode === 'rightsStack') {
+      const selectedOrder = state.order.filter(Boolean);
+      if(selectedOrder.length !== data.correctOrder.length) return showIncomplete('Ainda ha espacos sem ficha.');
+      finish(selectedOrder.join('|') === data.correctOrder.join('|'), selectedOrder.join(' -> '));
+    } else if(data.mode === 'textHighlight') {
+      const result = this.gradeTextHighlight(overlay, data);
+      finish(result.isCorrect, result.selectedAnswer);
+    } else if(data.mode === 'quoteMatch') {
+      const complete = data.quotes.every(item => state.answers[item.id]);
+      if(!complete) return showIncomplete('Associe todas as falas antes de confirmar.');
+      finish(data.quotes.every(item => state.answers[item.id] === item.answer), data.quotes.map(item => `${item.text}: ${state.answers[item.id]}`).join(' | '));
+    } else if(data.mode === 'restoreText') {
+      const complete = data.blanks.every(blank => state.blanks[blank.id]);
+      if(!complete) return showIncomplete('Complete todas as lacunas antes de confirmar.');
+      finish(data.blanks.every(blank => state.blanks[blank.id] === blank.answer), data.blanks.map(blank => `${blank.id}: ${state.blanks[blank.id]}`).join(' | '));
+    } else if(data.mode === 'votingBooth') {
+      if(!state.answers.booth) return showIncomplete('Escolha uma decisao da cabine.');
+      finish(state.answers.booth === 'correct', state.answers.booth);
+    } else if(data.mode === 'headlineOrder') {
+      if(state.headline.length !== data.correctOrder.length) return showIncomplete('Monte a manchete completa antes de confirmar.');
+      finish(state.headline.join('|') === data.correctOrder.join('|'), state.headline.join(' '));
+    } else if(data.mode === 'wireBoard' || data.mode === 'connections') {
+      const complete = data.pairs.every(item => state.answers[item.id]);
+      if(!complete) return showIncomplete('Ligue todas as pistas antes de confirmar.');
+      finish(data.pairs.every(item => state.answers[item.id] === item.answer), data.pairs.map(item => `${item.clue}: ${state.answers[item.id]}`).join(' | '));
+    } else if(data.mode === 'factOpinion') {
+      const complete = data.statements.every(item => state.answers[item.id]);
+      if(!complete) return showIncomplete('Classifique todas as frases antes de confirmar.');
+      finish(complete && data.statements.every(item => state.answers[item.id] === item.answer), data.statements.map(item => `${item.text}: ${state.answers[item.id]}`).join(' | '));
+    } else if(data.mode === 'highlight') {
+      const correctIds = data.snippets.filter(item => item.important).map(item => item.id).sort();
+      const selectedIds = Array.from(state.selected).sort();
+      if(!selectedIds.length) return showIncomplete('Selecione pelo menos um trecho.');
+      finish(correctIds.join('|') === selectedIds.join('|'), selectedIds.map(id => data.snippets.find(item => item.id === id)?.text || id).join(' | '));
+    } else if(data.mode === 'wornDocument') {
+      if(state.restoredRegions.size === 0) return showIncomplete('Restaure ao menos uma area do documento antes de interpretar.');
+      if(state.quizIndex === null) return showIncomplete('Escolha uma interpretacao.');
+      finish(state.quizIndex === data.correctIndex, data.options[state.quizIndex]);
+    } else if(data.mode === 'fakeNews') {
+      if(state.openedSources.size === 0) return showIncomplete('Abra pelo menos uma fonte antes de classificar.');
+      if(!state.answers.fakeNews) return showIncomplete('Escolha uma classificacao.');
+      finish(state.answers.fakeNews === data.correctClassification, state.answers.fakeNews);
+    } else if(data.mode === 'finalDossier') {
+      const conclusion = overlay.querySelector('[data-final-conclusion]')?.value.trim() || '';
+      if(!state.thesis) return showIncomplete('Escolha uma tese para o dossie.');
+      if(state.finalEvidence.size < 5) return showIncomplete('Selecione pelo menos cinco evidencias.');
+      if(!state.limitation) return showIncomplete('Reconheca uma limitacao da fonte.');
+      if(conclusion.length < 40) return showIncomplete('Escreva uma conclusao um pouco mais completa.');
+      finish(true, `Tese: ${state.thesis} | Evidencias: ${Array.from(state.finalEvidence).join(', ')} | Limitacao: ${state.limitation} | Conclusao: ${conclusion}`);
+    } else {
+      if(state.quizIndex === null) return showIncomplete('Selecione uma alternativa antes de confirmar.');
+      finish(state.quizIndex === data.correctIndex, data.options[state.quizIndex]);
+    }
+  });
+};
+
+GameLogic.finalEndingVersion = 'final-letter-20260811c';
+
+GameLogic.isGameFinished = function() {
+  const total = this.getPhaseList().length;
+  return Boolean(this.progress?.unlockedPhases?.includes(total + 1));
+};
+
+GameLogic.getPlayerDisplayName = function() {
+  return this.user?.fullName || this.user?.name || 'investigadora';
+};
+
+GameLogic.getEndingBackdropMarkup = function() {
+  return `
+    <div class="ending-backdrop-details" aria-hidden="true">
+      <figure class="ending-polaroid ending-polaroid-vote">
+        <img src="assets/mulheres_voto.jpg" alt="">
+        <figcaption>O primeiro voto • 1933</figcaption>
+      </figure>
+      <figure class="ending-polaroid ending-polaroid-queue">
+        <img src="assets/mulheres_nas_urnas.webp" alt="">
+        <figcaption>Eleitoras • Rio de Janeiro</figcaption>
+      </figure>
+      <figure class="ending-polaroid ending-polaroid-carlota">
+        <img src="assets/carlota.jpg" alt="">
+        <figcaption>Carlota • Constituinte</figcaption>
+      </figure>
+      <figure class="ending-polaroid ending-polaroid-map">
+        <img src="assets/muzambinho.webp" alt="">
+        <figcaption>Muzambinho • Minas Gerais</figcaption>
+      </figure>
+      <span class="ending-backdrop-postmark">Arquivo Central<br>Muzambinho • 1933</span>
+      <span class="ending-backdrop-reference">REF. 004/33</span>
+      <span class="ending-backdrop-caption">Memória • Cidadania • História</span>
+      <span class="ending-document-date ending-document-date-one">24 • FEV • 1932</span>
+      <span class="ending-document-date ending-document-date-two">03 • MAI • 1933</span>
+      <span class="ending-document-name ending-document-name-one">Bertha Lutz</span>
+      <span class="ending-document-name ending-document-name-two">Carlota Pereira de Queirós</span>
+      <span class="ending-document-signature">Aline</span>
+      <span class="ending-document-stamp ending-document-stamp-one">Voto<br>feminino</span>
+      <span class="ending-document-stamp ending-document-stamp-two">Memória<br>preservada</span>
+    </div>
+  `;
+};
+
+GameLogic.persistFinalFlag = function(key, value = this.finalEndingVersion) {
+  if(!this.progress) return;
+  this.progress[key] = value;
+  this.saveGameProgress();
+};
+
+GameLogic.getFinalLetterParagraphs = function() {
+  return [
+    'Uma lei abriu a porta, mas foram mulheres, ao longo de décadas, que a empurraram até que ela finalmente cedesse.',
+    'Antes de o voto feminino ser reconhecido pelo Código Eleitoral de 1932, essa conquista já vinha sendo disputada em jornais, associações, petições, manifestações e outros espaços públicos. Mulheres questionaram uma sociedade que as considerava cidadãs em tantos aspectos, mas ainda resistia à ideia de vê-las participando das decisões políticas.',
+    'Em 1933, quando mulheres chegaram às urnas também em Muzambinho, elas não estavam simplesmente recebendo um direito concedido pelo Estado. Estavam ocupando um espaço que havia sido negado a elas por muito tempo — e que só se tornou possível porque outras mulheres haviam lutado antes.',
+    'Os documentos desta investigação registram essa mudança, mas também revelam seus limites.',
+    'Os jornais mencionam a presença feminina, elogiam o “patriotismo” das eleitoras e anunciam uma “nova era”. Ao mesmo tempo, informam quantos eleitores compareceram às urnas sem dizer quantas eram mulheres, quase não registram seus nomes e continuam reservando aos homens a maior parte do protagonismo político.',
+    'As mulheres estavam lá.',
+    'Mas estar presente ainda não significava ser plenamente vista, ouvida ou reconhecida.',
+    'Essa talvez seja uma das maiores lições deixadas por 1933: <strong><em>conquistar um direito é fundamental, mas transformá-lo em participação efetiva é uma tarefa muito maior.</em></strong>',
+    'A legislação pode mudar rapidamente. As estruturas de poder, os costumes e as ideias sobre quem “pertence” a determinados espaços mudam de forma muito mais lenta.',
+    'É por isso que esta história não termina com o direito ao voto.',
+    'Democracia também significa participar, questionar, acompanhar decisões, defender direitos, formar opiniões com responsabilidade e ocupar espaços de representação. Significa compreender que a política não pertence apenas a candidatos, partidos ou instituições: ela também é construída pelas pessoas que decidem não permanecer indiferentes.',
+    'E, para as mulheres, ocupar esses espaços possui um significado ainda mais profundo.',
+    'Por muito tempo, disseram que política não era lugar de mulher. Que decisões importantes deveriam permanecer nas mãos dos homens. Que algumas vozes deveriam ser ouvidas e outras apenas representadas.',
+    'A história das eleitoras de 1933 mostra justamente o contrário.',
+    'Espaços que foram negados às mulheres não precisam continuar sem elas.',
+    'Na política, na ciência, na educação, nas instituições, nas lideranças e em qualquer lugar onde decisões sobre a sociedade sejam tomadas, mulheres têm o direito não apenas de estar presentes, mas de falar, decidir, liderar e transformar.',
+    'Se você chegou até aqui, obrigada por percorrer esta história.',
+    'Obrigada por conhecer essas mulheres, observar seus documentos, questionar seus silêncios e perceber que, por trás de uma data como 1933, existem décadas de luta, resistência e transformação.',
+    'E, especialmente às mulheres que chegaram até aqui: sejam fortes, sejam resistentes e não se acostumem ao silêncio. Suas vozes merecem ser ouvidas, suas escolhas merecem ser respeitadas e os espaços que um dia lhes foram negados também pertencem a vocês.',
+    'Espero que este jogo não termine apenas com aquilo que você aprendeu.',
+    'Espero que termine também com aquilo que você passou a questionar.',
+    'Porque conhecer a história de um direito é também compreender o valor de exercê-lo.',
+    'A urna de 1933 encerrou uma votação.',
+    'Não encerrou a disputa pela cidadania.',
+    'Então, agora que você conhece essa história, fica uma última pergunta:',
+    '<strong><em>Que espaço você escolhe ocupar a partir daqui?</em></strong>'
+  ];
+};
+
+GameLogic.showFinalLetter = function() {
+  if(!this.user || !this.progress) return;
+  document.getElementById('finalLetterOverlay')?.remove();
+  document.getElementById('finalThanksScreen')?.remove();
+  if(this.isDialogueActive && typeof this.dismissDialogueLayer === 'function') this.dismissDialogueLayer();
+
+  const overlay = document.createElement('section');
+  overlay.id = 'finalLetterOverlay';
+  overlay.className = 'final-letter-overlay final-ending-stage';
+  overlay.setAttribute('role', 'dialog');
+  overlay.setAttribute('aria-modal', 'true');
+  overlay.setAttribute('aria-labelledby', 'finalLetterTitle');
+  overlay.innerHTML = `
+    ${this.getEndingBackdropMarkup()}
+    <div class="ending-envelope-back" aria-hidden="true"></div>
+    <article class="ending-letter-paper">
+      <span class="ending-paper-reference" aria-hidden="true">REF. MUZ-1933 • CARTA 01</span>
+      <div class="ending-paper-ornaments" aria-hidden="true">
+        <span class="ending-ornament ending-ornament-tl">❦</span>
+        <span class="ending-ornament ending-ornament-tr">❦</span>
+        <span class="ending-ornament ending-ornament-bl">❦</span>
+        <span class="ending-ornament ending-ornament-br">❦</span>
+      </div>
+      <header class="ending-letter-heading">
+        <span>Mensagem final</span>
+        <h2 id="finalLetterTitle">Para quem chegou até<br>aqui</h2>
+      </header>
+      <div class="ending-letter-body" tabindex="0" aria-label="Carta de encerramento. Role para continuar a leitura.">
+        ${this.getFinalLetterParagraphs().map(paragraph => `<p>${paragraph}</p>`).join('')}
+        <p class="ending-letter-signature"><span>Com carinho,</span><strong>Aline</strong></p>
+      </div>
+    </article>
+    <div class="ending-envelope-front" aria-hidden="true">
+      <span class="ending-envelope-caption">Arquivo Central • Muzambinho, 1933</span>
+      <span class="ending-envelope-flourish">❦</span>
+    </div>
+    <button class="ending-letter-seal final-letter-continue" type="button" aria-label="Fechar esta folha e continuar para a mensagem final">
+      <span>Continuar</span>
+      <small>a leitura</small>
+    </button>
+  `;
+
+  document.body.classList.add('final-ending-open');
+  document.body.appendChild(overlay);
+  const close = () => this.closeFinalLetter();
+  overlay.querySelector('.final-letter-continue')?.addEventListener('click', close);
+  requestAnimationFrame(() => {
+    overlay.classList.add('active');
+    overlay.querySelector('.ending-letter-body')?.focus({ preventScroll: true });
+  });
+};
+
+GameLogic.closeFinalLetter = function() {
+  const overlay = document.getElementById('finalLetterOverlay');
+  if(overlay?.dataset.closing === 'true') return;
+
+  if(overlay) {
+    overlay.dataset.closing = 'true';
+    overlay.querySelector('.ending-letter-seal')?.setAttribute('disabled', '');
+    overlay.classList.add('closing-letter');
+  }
+
+  this.persistFinalFlag('finalLetterSeenVersion');
+
+  setTimeout(() => {
+    overlay?.classList.add('leaving');
+    this.showFinalThanksPage({ fromLetter: true });
+  }, 520);
+
+  setTimeout(() => {
+    overlay?.remove();
+  }, 780);
+};
+
+GameLogic.showFinalThanksPage = function({ fromLetter = false } = {}) {
+  if(!this.user || !this.progress) return;
+  document.getElementById('finalThanksScreen')?.remove();
+  const isAdmin = Boolean(this.user.isAdmin);
+  const screen = document.createElement('section');
+  screen.id = 'finalThanksScreen';
+  screen.className = `final-thanks-screen final-ending-stage final-ending-thanks ${fromLetter ? 'from-letter' : ''} ${isAdmin ? 'admin-mode' : 'player-mode'}`;
+  screen.setAttribute('aria-labelledby', 'finalThanksTitle');
+  screen.innerHTML = `
+    ${this.getEndingBackdropMarkup()}
+    <div class="ending-envelope-back" aria-hidden="true"></div>
+    <article class="ending-thanks-paper ending-farewell-paper">
+      <span class="ending-paper-reference" aria-hidden="true">REF. MUZ-1933 • CARTA 02</span>
+      <div class="ending-paper-ornaments" aria-hidden="true">
+        <span class="ending-ornament ending-ornament-tl">❦</span>
+        <span class="ending-ornament ending-ornament-tr">❦</span>
+        <span class="ending-ornament ending-ornament-bl">❦</span>
+        <span class="ending-ornament ending-ornament-br">❦</span>
+      </div>
+      <span class="ending-thanks-kicker">Uma última página</span>
+      <h2 id="finalThanksTitle">Obrigada por chegar até aqui</h2>
+      <div class="ending-farewell-copy">
+        <p class="ending-farewell-lead">e caminhar conosco por essa história.</p>
+        <p>Esperamos que esta experiência tenha ajudado você a conhecer um pouco mais sobre o voto feminino em Muzambinho e sobre as mulheres que fizeram parte dessa conquista.</p>
+        <p>A história continua além do jogo. Leia nosso artigo completo em:</p>
+        <a class="ending-article-link" href="https://example.com/artigo-luzes-de-maio" target="_blank" rel="noopener noreferrer">
+          <span class="ending-article-staple" aria-hidden="true"></span>
+          <span class="ending-article-copy">
+            <small>Fonte complementar</small>
+            <strong>Leia o artigo completo</strong>
+          </span>
+          <span class="ending-article-arrow" aria-hidden="true">↗</span>
+        </a>
+        <p class="ending-review-invite">E, antes de ir, conte para nós como foi viver essa experiência. <strong>Sua avaliação também faz parte dessa história.</strong></p>
+        <button class="ending-review-link final-review-link" type="button">
+          <span>Avaliar esta experiência</span>
+          <span aria-hidden="true">→</span>
+        </button>
+      </div>
+    </article>
+    <div class="ending-envelope-front" aria-hidden="true">
+      <span class="ending-envelope-caption">Arquivo Central • Muzambinho, 1933</span>
+      <span class="ending-envelope-flourish">❦</span>
+    </div>
+    <button class="ending-letter-seal final-review-btn" type="button" aria-label="Abrir a avaliação do jogo">
+      <span>Avaliar</span>
+      <small>experiência</small>
+    </button>
+  `;
+
+  document.body.classList.add('final-ending-open');
+  document.body.appendChild(screen);
+  this.persistFinalFlag('finalThanksShownVersion');
+  const openReview = () => {
+    if(screen.dataset.closing === 'true') return;
+    screen.dataset.closing = 'true';
+    screen.querySelector('.ending-letter-seal')?.setAttribute('disabled', '');
+    screen.querySelector('.final-review-link')?.setAttribute('disabled', '');
+    screen.classList.add('closing-letter');
+    this.persistFinalFlag('finalThanksDismissedVersion');
+    setTimeout(() => screen.classList.add('leaving'), 520);
+    setTimeout(() => {
+      screen.remove();
+      document.body.classList.remove('final-ending-open');
+      if(typeof this.openModal === 'function') this.openModal('review');
+    }, 780);
+  };
+  screen.querySelector('.final-review-btn')?.addEventListener('click', openReview);
+  screen.querySelector('.final-review-link')?.addEventListener('click', openReview);
+  requestAnimationFrame(() => screen.classList.add('active'));
+};
+
+GameLogic.dismissFinalThanks = function() {
+  this.persistFinalFlag('finalThanksDismissedVersion');
+  const screen = document.getElementById('finalThanksScreen');
+  if(screen) {
+    screen.classList.remove('active');
+    setTimeout(() => {
+      screen.remove();
+      document.body.classList.remove('final-ending-open');
+    }, 260);
+  }
+};
+
+GameLogic.showEndingIfNeeded = function() {
+  if(!this.user || !this.progress || !this.isGameFinished()) return false;
+  if(document.getElementById('finalLetterOverlay') || document.getElementById('finalThanksScreen')) return true;
+
+  const seenLetter = this.progress.finalLetterSeenVersion === this.finalEndingVersion;
+  const dismissedThanks = this.progress.finalThanksDismissedVersion === this.finalEndingVersion;
+
+  if(seenLetter && dismissedThanks) return false;
+  if(!seenLetter) {
+    this.showFinalLetter();
+    return true;
+  }
+
+  this.showFinalThanksPage();
+  return true;
+};
+
+const LMFinalOriginalInit = GameLogic.init;
+GameLogic.init = function() {
+  LMFinalOriginalInit.call(this);
+  if(this.user && this.progress) {
+    setTimeout(() => this.showEndingIfNeeded(), 760);
+  }
+};
+
+const LMPhaseFeedbackAdvanceDialogue = GameLogic.advanceDialogue;
+GameLogic.advanceDialogue = function() {
+  const contextBefore = this.dialogueContext;
+  LMPhaseFeedbackAdvanceDialogue.call(this);
+
+  if (!this.isDialogueActive && contextBefore === 'phase_feedback' && this.pendingPhaseAfterDialogue) {
+    const pending = this.pendingPhaseAfterDialogue;
+    this.pendingPhaseAfterDialogue = null;
+    const isFinalEnding = pending.nextChapterIndex === null && this.isGameFinished();
+    setTimeout(() => {
+      if(isFinalEnding) this.showFinalLetter();
+      else this.showChapterTimeline(pending.chapterIndex, pending.nextChapterIndex);
+    }, 250);
+  }
+};
+
+GameLogic.startBackTransition = function(href = 'index.html') {
+    if(document.querySelector('.back-transition-overlay')) return;
+    const existing = document.querySelector('.back-transition-overlay');
+    if(existing) existing.remove();
+
+    const overlay = document.createElement('div');
+    overlay.className = 'back-transition-overlay';
+    overlay.innerHTML = `
+      <div class="back-time-tunnel" aria-hidden="true"></div>
+      <div class="back-time-vignette" aria-hidden="true"></div>
+      <div class="back-year-counter" id="backYearCounter">1933</div>
+      <div class="back-return-card" aria-hidden="true">
+        <span>Arquivo Central</span>
+        <strong>Retorno ao presente</strong>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+    requestAnimationFrame(() => overlay.classList.add('active'));
+
+    const counter = overlay.querySelector('#backYearCounter');
+    const startYear = 1933;
+    const endYear = 2026;
+    const duration = 1040;
+    let startTime = null;
+
+    const tick = (timestamp) => {
+      if(!startTime) startTime = timestamp;
+      const progress = Math.min((timestamp - startTime) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const year = Math.floor(startYear + ((endYear - startYear) * eased));
+
+      if(counter) {
+        counter.innerText = String(year);
+        if(progress > 0.22 && progress < 0.86) {
+          counter.style.transform = `translate(${Math.random() * 4 - 2}px, ${Math.random() * 4 - 2}px) scale(1.16)`;
+        } else {
+          counter.style.transform = progress > 0.86 ? 'scale(1.34)' : 'scale(1)';
+        }
+      }
+
+      if(progress < 1) window.requestAnimationFrame(tick);
+      else if(counter) counter.innerText = String(endYear);
+    };
+
+    window.requestAnimationFrame(tick);
+    setTimeout(() => overlay.classList.add('blackout'), 1100);
+    setTimeout(() => { window.location.href = href; }, 1480);
+};
+
+GameLogic.bindBackTransition = function() {
+  if(this.backTransitionBound) return;
+  this.backTransitionBound = true;
+
+  document.addEventListener('click', (event) => {
+    const link = event.target.closest('[data-back-transition]');
+    if(!link || event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+
+    event.preventDefault();
+    this.startBackTransition(link.getAttribute('href') || 'index.html');
+  });
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  GameLogic.bindBackTransition();
+  GameLogic.loadPhaseContent().finally(() => GameLogic.init());
+});

@@ -81,8 +81,13 @@ h1 { font-family: var(--font-serif); font-size: clamp(4rem, 8vw, 7.5rem); line-h
 .clipping { background: var(--blush); padding: 15px; border: 1px solid var(--charcoal); margin-bottom: 20px; transform: rotate(-2deg); box-shadow: 2px 2px 0 rgba(0,0,0,0.1); }
 .news-title { font-family: var(--font-serif); font-size: 1.2rem; margin-bottom: 5px; }
 .news-body { font-size: 0.9rem; font-family: var(--font-mono); }
-.polaroid { background: #fff; padding: 10px 10px 25px 10px; border: 1px solid var(--charcoal); width: 140px; transform: rotate(5deg) translateZ(40px); box-shadow: 3px 3px 5px rgba(0,0,0,0.2); position: absolute; bottom: 40px; right: -30px; }
-.polaroid-img { width: 100%; height: 100px; background: var(--olive); border: 1px solid var(--charcoal); }
+.polaroid { background: #fff; padding: 10px 10px 25px 10px; border: 1px solid var(--charcoal); width: 158px; margin: 0; transform: rotate(5deg) translateZ(40px); box-shadow: 3px 3px 5px rgba(0,0,0,0.2); position: absolute; bottom: 40px; right: -30px; }
+.polaroid-img { width: 100%; height: 108px; background: var(--olive); border: 1px solid var(--charcoal); overflow: hidden; }
+.polaroid-img img { width: 100%; height: 100%; display: block; object-fit: cover; filter: sepia(0.18) contrast(0.96); transition: transform 0.35s ease, filter 0.35s ease; }
+.polaroid:hover .polaroid-img img,
+.polaroid-mini:hover .polaroid-img img,
+.polaroid:focus-visible .polaroid-img img,
+.polaroid-mini:focus-visible .polaroid-img img { transform: scale(1.05); filter: sepia(0.05) contrast(1.02); }
 .polaroid-caption { font-family: 'Nothing You Could Do', cursive, var(--font-mono); font-size: 0.8rem; display: block; text-align: center; margin-top: 5px; color: var(--charcoal); }
 .interactive-stamp { position: absolute; bottom: 30px; left: 30px; background: var(--sage); border: 2px solid var(--charcoal); padding: 10px; font-family: var(--font-mono); font-weight: bold; cursor: pointer; transform: translateZ(50px); box-shadow: 2px 2px 0 var(--charcoal); transition: var(--transition); }
 .interactive-stamp:hover { background: var(--olive); color: var(--cream); }
@@ -113,8 +118,8 @@ h1 { font-family: var(--font-serif); font-size: clamp(4rem, 8vw, 7.5rem); line-h
 .straight-card p { font-size: 1.1rem; line-height: 1.7; color: var(--charcoal); text-align: justify; }
 
 /* Polaroids na Direita */
-.polaroid-mini { position: absolute; right: 15px; top: -30px; background: #fff; padding: 8px 8px 25px 8px; border: 1px solid var(--charcoal); box-shadow: 4px 4px 0 rgba(0,0,0,0.15); width: 110px; z-index: 5; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s; }
-.polaroid-mini .polaroid-img { width: 100%; height: 80px; background: var(--blush); border: 1px solid var(--charcoal); }
+.polaroid-mini { position: absolute; right: 15px; top: -30px; background: #fff; padding: 8px 8px 25px 8px; border: 1px solid var(--charcoal); box-shadow: 4px 4px 0 rgba(0,0,0,0.15); width: 120px; margin: 0; z-index: 5; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s; }
+.polaroid-mini .polaroid-img { width: 100%; height: 86px; background: var(--blush); border: 1px solid var(--charcoal); }
 .polaroid-alt .polaroid-img { background: var(--rose); }
 
 .card-right-polaroid .pin-right { transform: rotate(5deg); }

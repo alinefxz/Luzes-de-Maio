@@ -1,25 +1,3 @@
 {
-  "reviews": [
-    {
-      "name": "aline",
-      "rating": 4.5,
-      "learned": "oi",
-      "favorite": "oi",
-      "date": "2026-02-27T11:52:19.305Z"
-    },
-    {
-      "name": "aline",
-      "rating": 5,
-      "learned": "muita coisa",
-      "favorite": "todos\n\n",
-      "date": "2026-02-17T21:40:18.671Z"
-    },
-    {
-      "name": "a",
-      "rating": 5,
-      "learned": "",
-      "favorite": "",
-      "date": "2026-02-17T21:14:16.247Z"
-    }
-  ]
+  "reviews": []
 }

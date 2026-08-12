@@ -1,175 +1,1826 @@
 {
   "current": {
-    "name": "alinehjabjdvaj",
-    "fullName": "alinef",
-    "password": "123456",
-    "knowledgeLevel": 3,
+    "name": "admin",
+    "fullName": "Admin do Arquivo",
+    "password": "admin",
+    "knowledgeLevel": "5",
     "ageGroup": "25 a 34",
-    "gender": "Feminino",
-    "location": "Outro",
-    "occupation": "Outros",
-    "avatar": "mietta",
+    "gender": "Prefiro nao informar",
+    "location": "Muzambinho",
+    "occupation": "Pesquisador",
+    "avatar": "bertha",
+    "isAdmin": true,
+    "updatedAt": "2026-08-10T14:19:17.682Z",
+    "username": "admin",
+    "level": "5",
+    "age": "25 a 34",
     "progress": {
-      "tutorialCompleted": false,
+      "tutorialCompleted": true,
       "unlockedPhases": [
-        1
-      ]
-    },
-    "updatedAt": "2026-05-18T22:45:30.444Z"
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28
+      ],
+      "collectedEvidence": [
+        {
+          "id": "EV-C3F1",
+          "title": "Limites dos resultados",
+          "text": "<b>TABELA/ATA:</b> Os resultados mostram participacao registrada, mas nao contam automaticamente todas as experiencias individuais das eleitoras.",
+          "summary": "Numeros documentam participacao, mas precisam ser interpretados com outras fontes.",
+          "category": "consequencia politica",
+          "chapter": "Repercussoes",
+          "origin": "Fonte a inserir",
+          "explanation": "Ajuda a reconhecer lacunas documentais.",
+          "answer": {
+            "phaseNum": 19,
+            "title": "Resultados eleitorais de 1933",
+            "chapterTitle": "Repercussoes",
+            "question": "Qual cuidado interpretativo e necessario ao ler resultados eleitorais?",
+            "selectedAnswer": "Numeros permitem algumas conclusoes, mas nao revelam todas as experiencias sociais.",
+            "isCorrect": true,
+            "attempts": 1,
+            "hintsUsed": 0,
+            "score": 100,
+            "completedByExplanation": false,
+            "completedAt": "2026-08-10T14:19:13.018Z",
+            "source": {
+              "type": "Tabela/ata adaptada",
+              "date": "1933",
+              "author": "Mesa eleitoral",
+              "place": "Brasil/Muzambinho",
+              "collection": "Fonte a inserir",
+              "note": "Inserir tabela ou ata referenciada na versao final."
+            },
+            "evidenceReward": {
+              "id": "EV-C3F1",
+              "title": "Limites dos resultados",
+              "category": "consequencia politica",
+              "summary": "Numeros documentam participacao, mas precisam ser interpretados com outras fontes.",
+              "explanation": "Ajuda a reconhecer lacunas documentais."
+            }
+          }
+        },
+        {
+          "id": "EV-C3F9",
+          "title": "Dossie final",
+          "text": "<b>PERGUNTA FINAL:</b> Como a conquista nacional chegou a Muzambinho e quais foram suas repercussoes?",
+          "summary": "O jogador produziu uma conclusao historica sustentada por evidencias.",
+          "category": "consequencia politica",
+          "chapter": "Repercussoes",
+          "origin": "Luzes de Maio",
+          "explanation": "Encerra o percurso como investigacao documentada.",
+          "answer": {
+            "phaseNum": 27,
+            "title": "Dossie investigativo final",
+            "chapterTitle": "Repercussoes",
+            "question": "Monte uma conclusao historica coerente.",
+            "selectedAnswer": "Tese: A participacao feminina em 1933 resultou de mobilizacoes anteriores, mas continuou limitada por resistencias sociais. | Evidencias: Codigo Eleitoral de 1932, Registro eleitoral local, Crivo do jornal, Resistencias locais, Direito formal e barreira pratica | Limitacao: O jornal apresenta apenas parte das opinioes existentes. | Conclusao: quando terminar de avaliar o jogo, o modal será fechado e voltará para a página inicial (todo o jogo, as fases e etc, terão de estar salvas, para que funcione bem a dinâmica. quando voltar para a página inicial, aquela animação de voltar para 2026 deve acontecer",
+            "isCorrect": true,
+            "attempts": 1,
+            "hintsUsed": 0,
+            "score": 100,
+            "completedByExplanation": false,
+            "completedAt": "2026-08-11T15:35:26.073Z",
+            "source": {
+              "type": "Dossie final do jogador",
+              "date": "Conclusao da partida",
+              "author": "Jogador",
+              "place": "Mesa de investigacao",
+              "collection": "Luzes de Maio",
+              "note": "Resultado pedagogico produzido a partir das evidencias do jogo."
+            },
+            "evidenceReward": {
+              "id": "EV-C3F9",
+              "title": "Dossie final",
+              "category": "consequencia politica",
+              "summary": "O jogador produziu uma conclusao historica sustentada por evidencias.",
+              "explanation": "Encerra o percurso como investigacao documentada."
+            }
+          }
+        }
+      ],
+      "answers": [
+        {
+          "phaseNum": 19,
+          "title": "Resultados eleitorais de 1933",
+          "chapterTitle": "Repercussoes",
+          "question": "Qual cuidado interpretativo e necessario ao ler resultados eleitorais?",
+          "selectedAnswer": "Numeros permitem algumas conclusoes, mas nao revelam todas as experiencias sociais.",
+          "isCorrect": true,
+          "attempts": 1,
+          "hintsUsed": 0,
+          "score": 100,
+          "completedByExplanation": false,
+          "completedAt": "2026-08-10T14:19:13.018Z",
+          "source": {
+            "type": "Tabela/ata adaptada",
+            "date": "1933",
+            "author": "Mesa eleitoral",
+            "place": "Brasil/Muzambinho",
+            "collection": "Fonte a inserir",
+            "note": "Inserir tabela ou ata referenciada na versao final."
+          },
+          "evidenceReward": {
+            "id": "EV-C3F1",
+            "title": "Limites dos resultados",
+            "category": "consequencia politica",
+            "summary": "Numeros documentam participacao, mas precisam ser interpretados com outras fontes.",
+            "explanation": "Ajuda a reconhecer lacunas documentais."
+          },
+          "answeredAt": "2026-08-10T14:19:13.018Z"
+        },
+        {
+          "phaseNum": 27,
+          "title": "Dossie investigativo final",
+          "chapterTitle": "Repercussoes",
+          "question": "Monte uma conclusao historica coerente.",
+          "selectedAnswer": "Tese: A participacao feminina em 1933 resultou de mobilizacoes anteriores, mas continuou limitada por resistencias sociais. | Evidencias: Codigo Eleitoral de 1932, Registro eleitoral local, Crivo do jornal, Resistencias locais, Direito formal e barreira pratica | Limitacao: O jornal apresenta apenas parte das opinioes existentes. | Conclusao: quando terminar de avaliar o jogo, o modal será fechado e voltará para a página inicial (todo o jogo, as fases e etc, terão de estar salvas, para que funcione bem a dinâmica. quando voltar para a página inicial, aquela animação de voltar para 2026 deve acontecer",
+          "isCorrect": true,
+          "attempts": 1,
+          "hintsUsed": 0,
+          "score": 100,
+          "completedByExplanation": false,
+          "completedAt": "2026-08-11T15:35:26.073Z",
+          "source": {
+            "type": "Dossie final do jogador",
+            "date": "Conclusao da partida",
+            "author": "Jogador",
+            "place": "Mesa de investigacao",
+            "collection": "Luzes de Maio",
+            "note": "Resultado pedagogico produzido a partir das evidencias do jogo."
+          },
+          "evidenceReward": {
+            "id": "EV-C3F9",
+            "title": "Dossie final",
+            "category": "consequencia politica",
+            "summary": "O jogador produziu uma conclusao historica sustentada por evidencias.",
+            "explanation": "Encerra o percurso como investigacao documentada."
+          },
+          "answeredAt": "2026-08-11T15:35:26.073Z"
+        }
+      ],
+      "fieldNotes": {},
+      "finalReview": {
+        "name": "admin",
+        "rating": 5,
+        "mechanics": "llllllllllObrigada por chegar até aqui e caminhar conosco por essa história.\n\nEsperamos que esta experiência tenha ajudado você a conhecer um pouco mais sobre o voto feminino em Muzambinho e sobre as mulheres que fizeram parte dessa conquista.\n\nA história continua além do jogo. Leia nosso artigo completo em: **[inserir link]**\n\nE, antes de ir, conte para nós como foi viver essa experiência. **Sua avaliação também faz parte dessa história.**\n",
+        "immersion": "Obrigada por chegar até aqui e caminhar conosco por essa história.\n\nEsperamos que esta experiência tenha ajudado você a conhecer um pouco mais sobre o voto feminino em Muzambinho e sobre as mulheres que fizeram parte dessa conquista.\n\nA história continua além do jogo. Leia nosso artigo completo em: **[inserir link]**\n\nE, antes de ir, conte para nós como foi viver essa experiência. **Sua avaliação também faz parte dessa história.**\n",
+        "improvements": "Obrigada por chegar até aqui e caminhar conosco por essa história.\n\nEsperamos que esta experiência tenha ajudado você a conhecer um pouco mais sobre o voto feminino em Muzambinho e sobre as mulheres que fizeram parte dessa conquista.\n\nA história continua além do jogo. Leia nosso artigo completo em: **[inserir link]**\n\nE, antes de ir, conte para nós como foi viver essa experiência. **Sua avaliação também faz parte dessa história.**\n",
+        "date": "2026-08-11T15:30:51.753Z"
+      },
+      "badges": [
+        "primeira-pista",
+        "linha-do-tempo",
+        "leitura-local",
+        "voz-publica",
+        "guardia-do-dossie"
+      ],
+      "notebookIntroduced": true,
+      "phaseRecords": {
+        "1": {
+          "state": "INTRO",
+          "startedAt": "2026-08-05T22:44:01.432Z",
+          "gameId": "C1F1",
+          "title": "A Politica Negada"
+        },
+        "2": {
+          "state": "INTRO",
+          "startedAt": "2026-08-05T22:44:04.681Z",
+          "gameId": "C1F2",
+          "title": "Primeiras Reivindicacoes"
+        },
+        "3": {
+          "state": "INTRO",
+          "startedAt": "2026-08-05T22:44:07.971Z",
+          "gameId": "C1F3",
+          "title": "Vozes Pioneiras"
+        },
+        "4": {
+          "state": "INTRO",
+          "startedAt": "2026-08-05T22:44:12.112Z",
+          "gameId": "C1F4",
+          "title": "Bertha e a Federacao"
+        },
+        "5": {
+          "state": "INTRO",
+          "startedAt": "2026-08-05T22:44:22.961Z",
+          "gameId": "C1F5",
+          "title": "Codigo de 1932"
+        },
+        "6": {
+          "state": "INTRO",
+          "startedAt": "2026-08-05T22:44:25.811Z",
+          "gameId": "C1F6",
+          "title": "Quem Podia Votar?"
+        },
+        "7": {
+          "state": "INTRO",
+          "startedAt": "2026-08-05T22:44:28.721Z",
+          "gameId": "C1F7",
+          "title": "Preparacao de 1933"
+        },
+        "8": {
+          "state": "INTRO",
+          "startedAt": "2026-08-05T22:44:31.354Z",
+          "gameId": "C1F8",
+          "title": "Primeiros Espacos Politicos"
+        },
+        "9": {
+          "state": "INTRO",
+          "startedAt": "2026-08-05T22:44:33.802Z",
+          "gameId": "C1F9",
+          "title": "Escada da Conquista"
+        },
+        "10": {
+          "state": "INTRO",
+          "startedAt": "2026-08-05T22:44:37.577Z",
+          "gameId": "C2F1",
+          "title": "Muzambinho em 1933"
+        },
+        "11": {
+          "state": "INTRO",
+          "startedAt": "2026-08-05T22:46:10.494Z",
+          "gameId": "C2F2",
+          "title": "O Muzambinhense"
+        },
+        "12": {
+          "state": "INTRO",
+          "startedAt": "2026-08-05T22:45:04.875Z",
+          "gameId": "C2F3",
+          "title": "Manchete Embaralhada"
+        },
+        "13": {
+          "state": "INTRO",
+          "startedAt": "2026-08-05T22:45:08.986Z",
+          "gameId": "C2F4",
+          "title": "Fato ou Opiniao"
+        },
+        "14": {
+          "state": "INTRO",
+          "startedAt": "2026-08-05T22:45:11.617Z",
+          "gameId": "C2F5",
+          "title": "Resistencias no Texto"
+        },
+        "15": {
+          "state": "INTRO",
+          "startedAt": "2026-08-05T22:45:13.801Z",
+          "gameId": "C2F6",
+          "title": "Registro com Lacunas"
+        },
+        "16": {
+          "state": "INTRO",
+          "startedAt": "2026-08-05T22:45:16.452Z",
+          "gameId": "C2F7",
+          "title": "3 de Maio de 1933"
+        },
+        "17": {
+          "state": "INTRO",
+          "startedAt": "2026-08-05T22:45:18.703Z",
+          "gameId": "C2F8",
+          "title": "Local e Nacional"
+        },
+        "18": {
+          "state": "INTRO",
+          "startedAt": "2026-08-05T22:45:20.754Z",
+          "gameId": "C2F9",
+          "title": "O Que os Documentos Revelam"
+        },
+        "19": {
+          "state": "CORRECT",
+          "startedAt": "2026-08-05T22:45:25.346Z",
+          "gameId": "C3F1",
+          "title": "Resultados de 1933",
+          "attempts": 1,
+          "hintsUsed": 0,
+          "score": 100,
+          "selectedAnswer": "Numeros permitem algumas conclusoes, mas nao revelam todas as experiencias sociais.",
+          "completedAt": "2026-08-10T14:19:13.018Z"
+        },
+        "20": {
+          "state": "INTRO",
+          "startedAt": "2026-08-05T22:45:38.000Z",
+          "gameId": "C3F2",
+          "title": "Constituicao de 1934"
+        },
+        "21": {
+          "state": "INTRO",
+          "startedAt": "2026-08-05T22:45:40.088Z",
+          "gameId": "C3F3",
+          "title": "Mulheres na Politica"
+        },
+        "22": {
+          "state": "INTRO",
+          "startedAt": "2026-08-05T22:45:45.150Z",
+          "gameId": "C3F4",
+          "title": "Resistencias Permanentes"
+        },
+        "23": {
+          "state": "INTRO",
+          "startedAt": "2026-08-05T22:45:47.503Z",
+          "gameId": "C3F5",
+          "title": "Direito e Pratica"
+        },
+        "24": {
+          "state": "INTRO",
+          "startedAt": "2026-08-05T22:45:50.052Z",
+          "gameId": "C3F6",
+          "title": "Escada Incompleta"
+        },
+        "25": {
+          "state": "INTRO",
+          "startedAt": "2026-08-05T22:45:53.057Z",
+          "gameId": "C3F7",
+          "title": "Detector Historico"
+        },
+        "26": {
+          "state": "INTRO",
+          "startedAt": "2026-08-05T22:46:00.074Z",
+          "gameId": "C3F8",
+          "title": "Evidencias Fortes"
+        },
+        "27": {
+          "state": "CORRECT",
+          "startedAt": "2026-08-10T22:06:11.616Z",
+          "gameId": "C3F9",
+          "title": "Monte o Dossie Final",
+          "attempts": 1,
+          "hintsUsed": 0,
+          "score": 100,
+          "selectedAnswer": "Tese: A participacao feminina em 1933 resultou de mobilizacoes anteriores, mas continuou limitada por resistencias sociais. | Evidencias: Codigo Eleitoral de 1932, Registro eleitoral local, Crivo do jornal, Resistencias locais, Direito formal e barreira pratica | Limitacao: O jornal apresenta apenas parte das opinioes existentes. | Conclusao: quando terminar de avaliar o jogo, o modal será fechado e voltará para a página inicial (todo o jogo, as fases e etc, terão de estar salvas, para que funcione bem a dinâmica. quando voltar para a página inicial, aquela animação de voltar para 2026 deve acontecer",
+          "completedAt": "2026-08-11T15:35:26.073Z"
+        }
+      },
+      "gameEvents": [
+        {
+          "event": "game_started",
+          "gameId": "C1F1",
+          "phaseNum": 1,
+          "userId": "admin",
+          "timestamp": "2026-08-05T22:44:01.432Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C1F2",
+          "phaseNum": 2,
+          "userId": "admin",
+          "timestamp": "2026-08-05T22:44:04.681Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C1F3",
+          "phaseNum": 3,
+          "userId": "admin",
+          "timestamp": "2026-08-05T22:44:07.971Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C1F4",
+          "phaseNum": 4,
+          "userId": "admin",
+          "timestamp": "2026-08-05T22:44:12.112Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C1F5",
+          "phaseNum": 5,
+          "userId": "admin",
+          "timestamp": "2026-08-05T22:44:22.961Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C1F6",
+          "phaseNum": 6,
+          "userId": "admin",
+          "timestamp": "2026-08-05T22:44:25.811Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C1F7",
+          "phaseNum": 7,
+          "userId": "admin",
+          "timestamp": "2026-08-05T22:44:28.721Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C1F8",
+          "phaseNum": 8,
+          "userId": "admin",
+          "timestamp": "2026-08-05T22:44:31.354Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C1F9",
+          "phaseNum": 9,
+          "userId": "admin",
+          "timestamp": "2026-08-05T22:44:33.802Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C2F1",
+          "phaseNum": 10,
+          "userId": "admin",
+          "timestamp": "2026-08-05T22:44:37.577Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C2F1",
+          "phaseNum": 10,
+          "userId": "admin",
+          "timestamp": "2026-08-05T22:44:40.846Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C2F3",
+          "phaseNum": 12,
+          "userId": "admin",
+          "timestamp": "2026-08-05T22:45:04.875Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C2F4",
+          "phaseNum": 13,
+          "userId": "admin",
+          "timestamp": "2026-08-05T22:45:08.986Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C2F5",
+          "phaseNum": 14,
+          "userId": "admin",
+          "timestamp": "2026-08-05T22:45:11.617Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C2F6",
+          "phaseNum": 15,
+          "userId": "admin",
+          "timestamp": "2026-08-05T22:45:13.801Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C2F7",
+          "phaseNum": 16,
+          "userId": "admin",
+          "timestamp": "2026-08-05T22:45:16.452Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C2F8",
+          "phaseNum": 17,
+          "userId": "admin",
+          "timestamp": "2026-08-05T22:45:18.703Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C2F9",
+          "phaseNum": 18,
+          "userId": "admin",
+          "timestamp": "2026-08-05T22:45:20.754Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C3F1",
+          "phaseNum": 19,
+          "userId": "admin",
+          "timestamp": "2026-08-05T22:45:25.346Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C3F2",
+          "phaseNum": 20,
+          "userId": "admin",
+          "timestamp": "2026-08-05T22:45:38.000Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C3F3",
+          "phaseNum": 21,
+          "userId": "admin",
+          "timestamp": "2026-08-05T22:45:40.088Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C3F4",
+          "phaseNum": 22,
+          "userId": "admin",
+          "timestamp": "2026-08-05T22:45:45.150Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C3F5",
+          "phaseNum": 23,
+          "userId": "admin",
+          "timestamp": "2026-08-05T22:45:47.503Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C3F6",
+          "phaseNum": 24,
+          "userId": "admin",
+          "timestamp": "2026-08-05T22:45:50.052Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C3F7",
+          "phaseNum": 25,
+          "userId": "admin",
+          "timestamp": "2026-08-05T22:45:53.057Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C3F7",
+          "phaseNum": 25,
+          "userId": "admin",
+          "timestamp": "2026-08-05T22:45:54.858Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C3F8",
+          "phaseNum": 26,
+          "userId": "admin",
+          "timestamp": "2026-08-05T22:46:00.074Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C2F2",
+          "phaseNum": 11,
+          "userId": "admin",
+          "timestamp": "2026-08-05T22:46:10.494Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C3F3",
+          "phaseNum": 21,
+          "userId": "admin",
+          "timestamp": "2026-08-05T23:09:49.822Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C2F9",
+          "phaseNum": 18,
+          "userId": "admin",
+          "timestamp": "2026-08-05T23:09:59.628Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C3F1",
+          "phaseNum": 19,
+          "userId": "admin",
+          "timestamp": "2026-08-07T11:00:32.979Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C1F3",
+          "phaseNum": 3,
+          "userId": "admin",
+          "timestamp": "2026-08-07T11:00:53.450Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C1F1",
+          "phaseNum": 1,
+          "userId": "admin",
+          "timestamp": "2026-08-07T12:23:30.286Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C1F2",
+          "phaseNum": 2,
+          "userId": "admin",
+          "timestamp": "2026-08-07T12:23:34.964Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C3F1",
+          "phaseNum": 19,
+          "userId": "admin",
+          "timestamp": "2026-08-10T14:18:08.689Z"
+        },
+        {
+          "event": "transcription_opened",
+          "gameId": "C3F1",
+          "phaseNum": 19,
+          "userId": "admin",
+          "timestamp": "2026-08-10T14:18:10.872Z",
+          "panel": "transcription"
+        },
+        {
+          "event": "source_opened",
+          "gameId": "C3F1",
+          "phaseNum": 19,
+          "userId": "admin",
+          "timestamp": "2026-08-10T14:18:12.325Z",
+          "panel": "info"
+        },
+        {
+          "event": "transcription_opened",
+          "gameId": "C3F1",
+          "phaseNum": 19,
+          "userId": "admin",
+          "timestamp": "2026-08-10T14:18:50.956Z",
+          "panel": "transcription"
+        },
+        {
+          "event": "answer_submitted",
+          "gameId": "C3F1",
+          "phaseNum": 19,
+          "userId": "admin",
+          "timestamp": "2026-08-10T14:19:13.017Z",
+          "attempt": 1,
+          "answer": "Numeros permitem algumas conclusoes, mas nao revelam todas as experiencias sociais."
+        },
+        {
+          "event": "answer_correct",
+          "gameId": "C3F1",
+          "phaseNum": 19,
+          "userId": "admin",
+          "timestamp": "2026-08-10T14:19:13.032Z",
+          "attempt": 1,
+          "score": 100
+        },
+        {
+          "event": "evidence_collected",
+          "gameId": "C3F1",
+          "phaseNum": 19,
+          "userId": "admin",
+          "timestamp": "2026-08-10T14:19:13.035Z",
+          "evidenceId": "EV-C3F1"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C3F2",
+          "phaseNum": 20,
+          "userId": "admin",
+          "timestamp": "2026-08-10T14:19:17.677Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C3F1",
+          "phaseNum": 19,
+          "userId": "admin",
+          "timestamp": "2026-08-10T21:41:44.663Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C3F9",
+          "phaseNum": 27,
+          "userId": "admin",
+          "timestamp": "2026-08-10T22:06:11.616Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C3F9",
+          "phaseNum": 27,
+          "userId": "admin",
+          "timestamp": "2026-08-10T22:06:18.298Z"
+        },
+        {
+          "event": "answer_submitted",
+          "gameId": "C3F9",
+          "phaseNum": 27,
+          "userId": "admin",
+          "timestamp": "2026-08-10T22:06:49.369Z",
+          "attempt": 1,
+          "answer": "Tese: Os documentos de Muzambinho mostram que a conquista legal ganhou forma local por registros, jornais e disputas de memoria. | Evidencias: Exclusao politica na Republica Velha, Codigo Eleitoral de 1932, Registro eleitoral local, Resistencias locais, Direito formal e barreira pratica | Limitacao: O jornal apresenta apenas parte das opinioes existentes. | Conclusao: ggfgdhgdhghghgdhdgfdgf jhsfdhfh fjhdsajgdgsgud gsaugdhgsdhjghjgfjgahsuifywuiuifhesa jsgfugsugfugefuesgf"
+        },
+        {
+          "event": "answer_correct",
+          "gameId": "C3F9",
+          "phaseNum": 27,
+          "userId": "admin",
+          "timestamp": "2026-08-10T22:06:49.380Z",
+          "attempt": 1,
+          "score": 100
+        },
+        {
+          "event": "evidence_collected",
+          "gameId": "C3F9",
+          "phaseNum": 27,
+          "userId": "admin",
+          "timestamp": "2026-08-10T22:06:49.386Z",
+          "evidenceId": "EV-C3F9"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C3F2",
+          "phaseNum": 20,
+          "userId": "admin",
+          "timestamp": "2026-08-10T22:30:27.832Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C3F3",
+          "phaseNum": 21,
+          "userId": "admin",
+          "timestamp": "2026-08-10T22:30:33.847Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C3F9",
+          "phaseNum": 27,
+          "userId": "admin",
+          "timestamp": "2026-08-10T23:13:46.281Z"
+        },
+        {
+          "event": "answer_submitted",
+          "gameId": "C3F9",
+          "phaseNum": 27,
+          "userId": "admin",
+          "timestamp": "2026-08-10T23:14:07.603Z",
+          "attempt": 1,
+          "answer": "Tese: A participacao feminina em 1933 resultou de mobilizacoes anteriores, mas continuou limitada por resistencias sociais. | Evidencias: Codigo Eleitoral de 1932, Exclusao politica na Republica Velha, Registro eleitoral local, Crivo do jornal, Resistencias locais | Limitacao: A ausencia de informacao nao prova que algo nao aconteceu. | Conclusao: Questão 1\nTipo: trecho historiográfico\nAutoria: Teresa Cristina de Novaes Marques\nObra: O voto feminino no Brasil\nEdição: 2. ed.\nData: 2019\nLocal/Editora: Brasília: Câmara dos Deputados, Edições Câmara\nPágina: 28\nCapítulo: “Cidadão: substantivo masculino”\nReferência: MARQUES, Teresa Cristina de Novaes. O voto feminino no Brasil. 2. ed. Brasília: Câmara dos Deputados, Edições Câmara, 2019.\n\nFonte didática:\nTipo: texto histórico-narrativo de apoio\nAutoria: Equipe de desenvolvimento do webjogo Luzes de Maio\nData: 2026\nNatureza: material pedagógico produzido especificamente para o jogo; não constitui fonte histórica primária.\nBase historiográfica principal: MARQUES, Teresa Cristina de Novaes. O voto feminino no Brasil. 2. ed. Brasília: Câmara dos Deputados, Edições Câmara, 2019, especialmente p. 27–29.\n\nTexto de apoio (criado pelos autores, com base no livro de Teresa):\nNo Brasil do século XIX, descobrir quem podia participar da política não era tão simples quanto procurar na lei uma frase dizendo “mulheres não podem votar”.\nA Constituição de 1824 utilizava a expressão “cidadãos ativos” para definir aqueles que poderiam exercer direitos políticos. Mas uma questão permanecia: quando a lei dizia “cidadãos”, as mulheres também estavam incluídas nessa palavra?\nEssa dúvida não era apenas gramatical. Ela decidia quem poderia se apresentar como sujeito político.\nMarques mostra que juristas da época, como Pimenta Bueno, interpretavam as mulheres como pertencentes à categoria dos cidadãos inativos, reconhecendo-lhes direitos civis, mas não direitos políticos. Essa interpretação se relacionava a uma tradição jurídica inspirada no modelo francês, no qual as mulheres também eram afastadas da cidadania política. A própria Constituição brasileira, porém, não dizia expressamente que as mulheres eram “cidadãs passivas” nem declarava literalmente que elas estavam proibidas de votar. Ainda assim, predominava a interpretação de que os legisladores não pretendiam incluí-las entre os cidadãos com direitos políticos.\nO desafio desta fase está em perceber que o silêncio de uma lei não significa, necessariamente, igualdade.\n\nPergunta:\nConsiderando a fonte e o contexto apresentado, por que a ausência de uma proibição explícita ao voto feminino não significava que as mulheres estavam automaticamente incluídas na cidadania política?\n\nA) Porque a Constituição de 1824 declarava expressamente que todas as mulheres pertenciam à categoria dos “cidadãos passivos” e, por isso, eram proibidas de votar.\nB) Porque expressões como “cidadão” e “cidadão ativo” eram interpretadas dentro de uma tradição política e jurídica que não reconhecia mulheres e homens da mesma maneira como sujeitos de direitos políticos. Assim, a exclusão podia existir mesmo sem uma frase que proibisse diretamente o voto feminino.\nC) Porque homens e mulheres eram juridicamente considerados cidadãos ativos, mas somente os homens conseguiam cumprir os critérios de renda estabelecidos para participar das eleições.\nD) Porque as mulheres já possuíam direitos políticos garantidos pela Constituição, mas ainda não existiam instituições eleitorais capazes de registrar seus votos.\n\nResposta correta: B\n\nFeedback da Sufragista\nSe o jogador acertar:\nSufragista:\nVocê encontrou a chave. A exclusão nem sempre precisa estar escrita como uma proibição. Às vezes, ela começa antes: na própria definição de quem é reconhecido como cidadão. Na História, o silêncio de uma lei também precisa ser investigado.\n\nSe o jogador errar:\nSufragista:\nObserve novamente a palavra “cidadãos”.\nO problema não é apenas descobrir se havia uma frase proibindo as mulheres de votar. É entender quem era reconhecido como parte da cidadania política quando essa palavra era usada. Leia a fonte outra vez e tente descobrir a diferença entre o que a lei dizia e como ela era interpretada.\n\nQuestão 2\n\nTipo: trecho historiográfico\nAutoria: Teresa Cristina de Novaes Marques\nObra: O voto feminino no Brasil\nEdição: 2. ed.\nData: 2019\nLocal/Editora: Brasília: Câmara dos Deputados, Edições Câmara\nSeção: “Um longo caminho até as urnas”\nReferência: MARQUES, Teresa Cristina de Novaes. O voto feminino no Brasil. 2. ed. Brasília: Câmara dos Deputados, Edições Câmara, 2019.\n\nFonte didática\nTipo: texto histórico-narrativo de apoio.\nAutoria: Equipe de desenvolvimento do webjogo Luzes de Maio.\nData: 2026.\nNatureza: material pedagógico produzido especificamente para o jogo; não constitui fonte histórica primária.\nBase historiográfica principal:\nMARQUES, Teresa Cristina de Novaes. O voto feminino no Brasil. 2. ed. Brasília: Câmara dos Deputados, Edições Câmara, 2019.\nMOTTA, José Flávio; LOPES, Luciana Suarez. “A mulher votante! Que calamidade! É o reinado das saias!”: sobre a conquista do voto feminino no Brasil. Informações Fipe, São Paulo, p. 45-52, nov. 2015.\n\nTexto de apoio: \n[CRIAÇÃO DOS DESENVOLVEDORES — baseada em MARQUES, 2019; MOTTA; LOPES, 2015]\n\nQuando o voto feminino foi reconhecido nacionalmente em 1932, a reivindicação já tinha uma história.\nDécadas antes, mulheres haviam ocupado jornais, recorrido às leis, procurado juntas eleitorais, escrito peças de teatro, organizado associações e pressionado o poder público. Nem todas essas iniciativas terminaram em vitória. Algumas foram rejeitadas, outras produziram brechas temporárias e muitas obrigaram políticos e juristas a se posicionarem diante de uma pergunta que insistia em retornar: por que as mulheres continuavam fora da decisão política?\nEm 1873, a professora mineira Francisca Senhorinha da Motta Diniz fundou O Sexo Feminino. Dois anos depois, uma edição inteira do periódico foi dedicada à defesa do sufrágio. A reivindicação começava a circular publicamente pela imprensa, muito antes de existir uma organização sufragista nacional.\nNa década seguinte, a cirurgiã-dentista Isabel de Sousa Mattos encontrou uma possível brecha na Lei Saraiva. A legislação reconhecia diplomas científicos como forma de comprovação da qualificação exigida aos eleitores. Isabel requereu seu alistamento em 1885 e conseguiu registrar-se como eleitora em São José do Norte, no Rio Grande do Sul, em 1887. Mas, quando levou esse registro à junta eleitoral em 1890, já durante a República, o presidente da mesa não permitiu que ela votasse.\nA disputa também chegou aos palcos. A jornalista Josefina Álvares de Azevedo, que desde 1888 publicava o jornal sufragista A Família, escreveu a comédia O voto feminino. Encenada em 1890, a peça transformava em humor e conflito doméstico uma questão que estava sendo debatida no mundo político: mulheres deveriam poder votar e ser eleitas?\nEm 1910, Leolinda Daltro e outras mulheres deram outro passo: organizaram formalmente o Partido Republicano Feminino. Registrado em 17 de dezembro daquele ano, o partido defendia o sufrágio feminino e passou a atuar em audiências, manifestações públicas e representações dirigidas ao Legislativo. A reivindicação já não estava somente nos jornais ou em pedidos individuais: transformava-se também em organização política coletiva.\nEm 1922, outra articulação ganhou alcance nacional. Bertha Lutz e suas companheiras reorganizaram a Liga para a Emancipação Intelectual da Mulher, dando origem à Federação Brasileira pelo Progresso Feminino (FBPF). A entidade combinou campanhas públicas, congressos, abaixo-assinados e pressão sobre parlamentares para defender os direitos políticos das mulheres.\nEntão, em 1928, algo diferente aconteceu no Rio Grande do Norte: mulheres não apenas reivindicaram o direito — foram às urnas. Após o Judiciário estadual admitir o alistamento feminino, eleitoras potiguares participaram de uma eleição complementar para o Senado. A experiência, porém, não se tornou imediatamente um precedente nacional: a validade daqueles votos foi contestada e eles acabaram anulados.\nEsses acontecimentos não formam uma sequência de vitórias. Formam uma sequência de tentativas, conflitos, avanços e recuos.\nAgora, seu desafio é reconstruir esse caminho.\n\nInstrução ao jogador\nAs datas desapareceram dos documentos.\nArraste os cartões e coloque os acontecimentos na ordem em que ocorreram.\nAtenção: não procure apenas “quem venceu primeiro”. Alguns desses acontecimentos terminaram em impedimentos ou derrotas. O que importa é reconstruir como a reivindicação pelo voto feminino foi mudando ao longo do tempo.\n\nCartões do jogador\nEmbaralhar — sem exibir datas\nCARTÃO A\n A reivindicação chega à imprensa\n O Sexo Feminino, de Francisca Senhorinha da Motta Diniz, passa a defender publicamente o direito político das mulheres.\nCARTÃO B\n Uma eleitora testa os limites da lei\n Isabel de Sousa Mattos consegue registrar-se como eleitora, mas posteriormente é impedida de exercer o voto.\nCARTÃO C\n O voto sobe ao palco\n Josefina Álvares de Azevedo transforma a controvérsia sobre a participação política feminina em uma peça teatral.\nCARTÃO D\n A reivindicação torna-se organização política\n Leolinda Daltro e outras mulheres organizam o Partido Republicano Feminino para defender o sufrágio e a emancipação feminina.\nCARTÃO E\n A mobilização ganha alcance nacional\n Bertha Lutz e outras ativistas organizam a Federação Brasileira pelo Progresso Feminino.\nCARTÃO F\n  Mulheres finalmente chegam às urnas — mas a disputa continua\n Eleitoras do Rio Grande do Norte participam de uma eleição, porém seus votos acabam anulados.\n\nGabarito interno do desenvolvedor\n1.º — Imprensa: Francisca Senhorinha da Motta Diniz\n 1873/1875 — O Sexo Feminino é fundado em 1873; em 7 de abril de 1875, uma edição é dedicada à defesa do sufrágio feminino.\n2.º — Isabel de Sousa Mattos\n 1885/1887/1890 — requer alistamento em 1885; obtém registro eleitoral em 1887; em 1890 apresenta seu documento para votar na eleição constituinte, mas é impedida pelo presidente da mesa.\n3.º — Josefina Álvares de Azevedo\n 1890 — a peça O voto feminino é levada ao palco e posteriormente publicada em A Família.\n4.º — Partido Republicano Feminino\n 1910 — registrado em 17 de dezembro, sob a presidência de Leolinda Daltro.\n5.º — Federação Brasileira pelo Progresso Feminino\n 1922 — em agosto, a antiga Liga para a Emancipação Intelectual da Mulher passa a se chamar FBPF.\n6.º — Rio Grande do Norte\n 1928 — mulheres potiguares votam nas eleições complementares para o Senado; seus votos são posteriormente anulados.\nRegra de interface\nAs datas não aparecem nos cartões antes da resposta.\nDepois que o jogador acerta a sequência, elas podem surgir gradualmente sobre a linha do tempo:\n1873/75 → 1885/87/90 → 1890 → 1910 → 1922 → 1928\n\nFeedback ao jogador\nSe acertar\nSufragista:\nVocê encontrou o fio que liga esses acontecimentos.\n1932 não começou em 1932.\nAntes da mudança da lei, mulheres já haviam escrito, requerido, protestado, organizado-se e até chegado às urnas.\nAlgumas portas se abriram. Outras foram fechadas novamente.\nA conquista foi construída justamente porque a reivindicação não desapareceu diante dessas recusas.\nSe errar\nSufragista:\nObserve novamente os cartões.\nEles não mostram uma única organização nem uma sequência contínua de vitórias. Mostram mulheres atuando em espaços diferentes e com estratégias diferentes.\nTente identificar o que permanece igual entre todos eles:\na reivindicação de participar das decisões políticas.\n\nQuestão 3\n\nVozes Pioneiras\nTipo de jogo: Associação entre personagem e atuação\nObjetivo histórico: Reconhecer que a luta pelo sufrágio feminino foi construída por mulheres que recorreram a estratégias diferentes — imprensa, teatro, organização política, requerimentos e articulação institucional — evitando reduzir a conquista a uma única liderança.\nTipo: trecho historiográfico com reprodução de fonte histórica\nAutoria: Teresa Cristina de Novaes Marques\nObra: O voto feminino no Brasil\nEdição: 2. ed.\nData: 2019\nLocal/Editora: Brasília: Câmara dos Deputados, Edições Câmara\nPágina: 61\nCapítulo: “Lei Saraiva”\nReferência: MARQUES, Teresa Cristina de Novaes. O voto feminino no Brasil. 2. ed. Brasília: Câmara dos Deputados, Edições Câmara, 2019.\nTrecho apresentado ao jogador\n“Queremos o direito de intervir nas eleições, de eleger e ser eleitas, como os homens, em igualdade de condições.”\n— Josefina Álvares de Azevedo, 1889, apud Marques, 2019, p. 61.\n\nFonte didática\nTipo: texto histórico-narrativo de apoio.\nAutoria: Equipe de desenvolvimento do webjogo Luzes de Maio.\nData: 2026.\nNatureza: material pedagógico produzido especificamente para o jogo; não constitui fonte histórica primária.\nBase historiográfica principal:\nMARQUES, Teresa Cristina de Novaes. O voto feminino no Brasil. 2. ed. Brasília: Câmara dos Deputados, Edições Câmara, 2019.\nMOTTA, José Flávio; LOPES, Luciana Suarez. “A mulher votante! Que calamidade! É o reinado das saias!”: sobre a conquista do voto feminino no Brasil. Informações Fipe, São Paulo, p. 45-52, nov. 2015.\n\nTexto de apoio\n[CRIAÇÃO DOS DESENVOLVEDORES — baseado em MARQUES, 2019; MOTTA; LOPES, 2015]\nA luta pelo voto feminino no Brasil não teve uma única voz — nem um único caminho.\nAinda no século XIX, Francisca Senhorinha da Motta Diniz utilizou a imprensa para questionar a posição ocupada pelas mulheres na sociedade. Professora e jornalista, fundou O Sexo Feminino em 1873 e, poucos anos depois, o periódico já defendia abertamente o direito das mulheres ao voto. O jornal transformava uma reivindicação ainda distante das urnas em tema de discussão pública.\nJosefina Álvares de Azevedo também fez da imprensa um espaço de atuação política. A partir de 1888, publicou o jornal sufragista A Família e defendeu que a igualdade política não poderia existir se as mulheres continuassem impedidas de eleger e ser eleitas. Mas sua atuação não ficou restrita às páginas do jornal: Josefina levou o debate também ao teatro, escrevendo a peça O voto feminino.\nAnos depois, Leolinda Daltro seguiu uma estratégia mais marcada pela mobilização pública e pela organização política. Professora, participou da criação do Partido Republicano Feminino, presidido por ela e registrado em 1910. Sua atuação envolveu representações ao Legislativo e outras formas de pressão pública. Marques mostra que Leolinda não se limitava aos abaixo-assinados: levava a reivindicação também às ruas e buscava chamar a atenção das autoridades para a exclusão política feminina.\nEm 1916, a professora mineira Mariana de Noronha Horta seguiu outro percurso. Em vez de fundar uma organização ou atuar por meio de um jornal, encaminhou diretamente à Câmara dos Deputados um requerimento solicitando a aprovação do sufrágio feminino. Segundo Marques, trata-se da primeira manifestação formal de uma mulher solicitando direitos políticos localizada no acervo da Câmara dos Deputados.\nNa década seguinte, Bertha Lutz e outras ativistas ampliaram a articulação do movimento. Em 1922, a organização da qual participavam passou a se chamar Federação Brasileira pelo Progresso Feminino (FBPF). A Federação promoveu congressos e buscou interlocução com figuras do mundo político, fortalecendo uma estratégia de pressão institucional pelo reconhecimento dos direitos femininos. Marques também destaca que Bertha e Leolinda defendiam o voto feminino, mas divergiam especialmente sobre como conquistá-lo.\nEssas trajetórias não precisam ser transformadas em uma disputa sobre quem foi “a responsável” pela conquista. Elas mostram algo mais importante: mulheres diferentes encontraram formas diferentes de entrar em uma arena política que ainda tentava mantê-las de fora.\nAgora, seu desafio é descobrir qual estratégia está ligada a cada uma dessas vozes.\n\nInstrução ao jogador\nNa tela aparecem cinco mulheres e cinco formas de atuação política, em cartões separados.\nArraste cada estratégia até a personagem correspondente.\nAtenção: mais de uma dessas mulheres atuou em diferentes frentes ao longo da vida. Nesta atividade, associe cada personagem à estratégia destacada pelas fontes para esta fase.\nEsse aviso é importante para não criar a falsa impressão de que cada uma delas só praticou uma única forma de militância.\n\nPersonagens\nFRANCISCA SENHORINHA DA MOTTA DINIZ\nProfessora e jornalista mineira. Utilizou um periódico dirigido por ela própria para colocar em circulação debates sobre educação, emancipação e direitos políticos das mulheres. A defesa do sufrágio apareceu nas páginas de O Sexo Feminino ainda no período imperial.\nJOSEFINA ÁLVARES DE AZEVEDO\nJornalista, escritora e dramaturga. Dirigiu o jornal A Família, defendeu explicitamente o direito de as mulheres votarem e serem eleitas e levou a discussão sufragista também aos palcos.\nLEOLINDA DALTRO\nProfessora e ativista. Esteve ligada ao Partido Republicano Feminino e adotou formas públicas de mobilização, pressão sobre autoridades e reivindicação direta dos direitos políticos femininos.\nBERTHA LUTZ\nBióloga e ativista feminista. Participou da formação da Federação Brasileira pelo Progresso Feminino, que articulou mulheres em torno de uma entidade de alcance nacional e buscou ampliar a pressão institucional pela conquista de direitos.\nMARIANA DE NORONHA HORTA\nProfessora de Belo Horizonte. Em 1916, utilizou uma via formal de participação política: encaminhou à Câmara dos Deputados um requerimento solicitando o reconhecimento do sufrágio feminino.\n\nCartões de atuação\nEmbaralhar\nCARTÃO A — IMPRENSA E CIDADANIA\n Utilizou O Sexo Feminino para levar ao debate público a emancipação e os direitos políticos das mulheres.\nCARTÃO B — IMPRENSA E TEATRO\n Defendeu que mulheres pudessem eleger e ser eleitas e transformou a controvérsia sobre o voto feminino também em uma peça teatral.\nCARTÃO C — ORGANIZAÇÃO E MOBILIZAÇÃO PÚBLICA\n Atuou por meio do Partido Republicano Feminino, de representações políticas e de manifestações públicas em defesa do sufrágio.\nCARTÃO D — FEDERAÇÃO E ARTICULAÇÃO INSTITUCIONAL\n Participou da organização de uma entidade nacional que promoveu congressos e pressionou o poder político pelo reconhecimento dos direitos femininos.\nCARTÃO E — REQUERIMENTO FORMAL\n Encaminhou diretamente aos deputados um pedido para que o direito político das mulheres fosse reconhecido.\n\nGabarito interno do desenvolvedor\nFrancisca Senhorinha da Motta Diniz\n ↔ CARTÃO A — Imprensa e cidadania\nO Sexo Feminino funcionou como espaço de defesa pública da emancipação feminina e do sufrágio. Motta e Lopes registram que o jornal foi fundado em 1873 e já em 1875 dedicava suas páginas à defesa do direito de voto.\nJosefina Álvares de Azevedo\n ↔ CARTÃO B — Imprensa e teatro\nDirigiu A Família e escreveu O voto feminino. Sua defesa ia além do direito de depositar um voto: reivindicava que as mulheres pudessem eleger e também ser eleitas.\nLeolinda Daltro\n ↔ CARTÃO C — Organização e mobilização pública\nLigada ao Partido Republicano Feminino, combinou representações dirigidas ao poder público com formas mais visíveis de mobilização. Em 1916, por exemplo, enviou representação à Câmara em nome do partido.\nBertha Lutz\n ↔ CARTÃO D — Federação e articulação institucional\nParticipou da formação da FBPF, registrada sob esse nome em 1922. A entidade promoveu congressos e buscou articulação com representantes políticos e outros atores públicos.\nMariana de Noronha Horta\n ↔ CARTÃO E — Requerimento formal\nEm agosto de 1916, encaminhou requerimento à Câmara dos Deputados solicitando a aprovação do sufrágio feminino. Marques o identifica como a primeira manifestação formal desse tipo encontrada no acervo da Câmara.\nFeedback ao jogador\nSe acertar\nSufragista:\nVocê percebeu o que os nomes, sozinhos, não mostram.\nUma conquista coletiva pode ter muitas vozes.\nAlgumas escreveram. Outras organizaram. Algumas foram diretamente ao Parlamento. Outras transformaram jornais, palcos e associações em espaços de disputa.\nNenhuma trajetória, sozinha, conta toda essa história.\nSe errar\nSufragista:\nObserve novamente as formas de atuação.\nElas não repetiram exatamente o mesmo caminho: há jornais, teatro, partidos, requerimentos e articulações institucionais.\nA pergunta não é apenas quem lutou, mas também como cada uma encontrou uma forma de fazer a reivindicação chegar ao espaço público.\n\n\n\nQuestão \nQuestão 4\nBertha e a Federação\nTipo de jogo: Conexões entre estratégia e impacto\nObjetivo histórico: Compreender como a Federação Brasileira pelo Progresso Feminino transformou reivindicações sufragistas já existentes em uma atuação nacional mais coordenada e institucional, reconhecendo a importância de Bertha Lutz sem atribuir a ela, isoladamente, a conquista do voto feminino.\n\nFonte histórica\nTipo: manifestação política da Federação Brasileira pelo Progresso Feminino, reproduzida em obra historiográfica.\nAutoria: Federação Brasileira pelo Progresso Feminino (FBPF).\nObra de consulta: O voto feminino no Brasil, de Teresa Cristina de Novaes Marques.\nEdição: 2. ed.\nData da obra de consulta: 2019.\nLocal/Editora: Brasília: Câmara dos Deputados, Edições Câmara.\nPáginas: 99–100.\nReferência: MARQUES, Teresa Cristina de Novaes. O voto feminino no Brasil. 2. ed. Brasília: Câmara dos Deputados, Edições Câmara, 2019.\nTrecho apresentado ao jogador\n“[...] àqueles que obedecem às leis, pagam impostos, assiste o direito de colaborar [...] na elaboração dessas mesmas leis.”\n— Federação Brasileira pelo Progresso Feminino, apud Marques, 2019, p. 99–100.\n\nFonte didática\nTipo: texto histórico-narrativo de apoio.\nAutoria: Equipe de desenvolvimento do webjogo Luzes de Maio.\nData: 2026.\nNatureza: material pedagógico produzido especificamente para o jogo; não constitui fonte histórica primária.\nBase historiográfica principal:\nMARQUES, Teresa Cristina de Novaes. O voto feminino no Brasil. 2. ed. Brasília: Câmara dos Deputados, Edições Câmara, 2019.\nMOTTA, José Flávio; LOPES, Luciana Suarez. “A mulher votante! Que calamidade! É o reinado das saias!”: sobre a conquista do voto feminino no Brasil. Informações Fipe, São Paulo, p. 45-52, nov. 2015.\n\nTexto de apoio\n[CRIAÇÃO DOS DESENVOLVEDORES — baseado em MARQUES, 2019; MOTTA; LOPES, 2015]\nQuando Bertha Lutz começou a ganhar projeção no movimento sufragista, a reivindicação pelo voto feminino no Brasil já tinha décadas de história. Jornais haviam defendido a participação política das mulheres, requerimentos tinham chegado ao Parlamento e outras militantes, como Leolinda Daltro, já haviam criado organizações e realizado manifestações públicas.\nA novidade não estava, portanto, em Bertha ter “inventado” a luta pelo voto. Estava também na maneira como ela e outras mulheres ajudaram a ampliar, organizar e levar essa reivindicação para diferentes espaços institucionais.\nEm agosto de 1922, a Liga para a Emancipação Intelectual da Mulher foi reorganizada e passou a chamar-se Federação Brasileira pelo Progresso Feminino (FBPF), presidida por Bertha Lutz. Em dezembro daquele mesmo ano, a entidade promoveu o Primeiro Congresso Internacional Feminista, no Rio de Janeiro, convidando inclusive figuras da política para discutir publicamente o sufrágio feminino.\nA Federação buscava dialogar diretamente com os espaços em que as decisões políticas eram tomadas. Em 1927, por exemplo, suas integrantes acompanharam a discussão de um projeto de sufrágio feminino na Comissão de Justiça do Senado, enviaram cartas aos senadores tentando convencê-los e protocolaram um abaixo-assinado com cerca de duas mil assinaturas. A proposta não foi aprovada naquele momento, mas a mobilização obrigava parlamentares favoráveis e contrários ao voto feminino a se posicionarem publicamente sobre o tema.\nUm dos argumentos utilizados pela Federação aparece no documento apresentado nesta fase: se as mulheres obedeciam às leis e pagavam impostos, por que não poderiam participar da elaboração dessas mesmas leis?\nA estratégia deslocava a discussão para uma contradição da própria cidadania: exigir deveres das mulheres enquanto lhes negava direitos políticos.\nEssa atuação ajudou a ampliar a presença organizada das sufragistas nos espaços de decisão. Mas isso não significa que Bertha Lutz ou a FBPF possam ser tratadas como responsáveis únicas pela conquista. A própria trajetória reconstruída nas fases anteriores mostra que a Federação entrou em uma luta que já possuía imprensa, ativistas, organizações, requerimentos e experiências anteriores.\nA importância da FBPF está justamente em compreender o que sua forma de organização acrescentou a essa história.\n\nInstrução ao jogador\nVocê encontrou diferentes estratégias utilizadas pela Federação e diferentes efeitos que elas poderiam produzir na disputa política.\nArraste cada estratégia até sua consequência histórica mais coerente.\nAtenção: uma estratégia política não garante automaticamente uma vitória. Relacione cada ação ao efeito que ela poderia produzir dentro da luta pelo sufrágio.\n\nCartões de estratégia\nEmbaralhar\nCARTÃO A — ORGANIZAÇÃO NACIONAL\nReunir militantes em uma federação e articular ações em torno de uma pauta comum.\nCARTÃO B — PRESSÃO SOBRE O PARLAMENTO\nAcompanhar debates legislativos, enviar cartas a senadores e apresentar abaixo-assinados.\nCARTÃO C — DEVERES E DIREITOS\nArgumentar que mulheres submetidas às leis e aos impostos também deveriam participar das decisões políticas.\nCARTÃO D — CONGRESSOS E DEBATE PÚBLICO\nPromover encontros e levar a reivindicação sufragista a espaços de discussão com militantes, intelectuais e representantes políticos.\nCARTÃO E — INTERLOCUÇÃO COM AUTORIDADES\nBuscar contato direto com aqueles que ocupavam espaços institucionais capazes de alterar a legislação.\n\nCartões de impacto\nEmbaralhar separadamente\nIMPACTO 1 — COORDENAÇÃO DA REIVINDICAÇÃO\nPermitiu articular ações e reivindicações para além de iniciativas exclusivamente individuais ou locais.\nIMPACTO 2 — PRESSÃO DIRETA SOBRE QUEM LEGISLAVA\nColocou parlamentares diante de demandas organizadas e os obrigou a posicionar-se sobre o sufrágio feminino.\nIMPACTO 3 — QUESTIONAMENTO DA CIDADANIA DESIGUAL\nEvidenciou a contradição entre exigir obrigações civis das mulheres e negar-lhes participação na elaboração das leis.\nIMPACTO 4 — AMPLIAÇÃO DA VISIBILIDADE DO SUFRÁGIO\nContribuiu para manter a reivindicação em circulação pública e colocá-la em diálogo com diferentes setores da sociedade.\nIMPACTO 5 — ACESSO A ESPAÇOS FORMAIS DE DECISÃO\nAproximou representantes do movimento dos ambientes em que reformas eleitorais e constitucionais eram discutidas.\n\nGabarito interno do desenvolvedor\nCARTÃO A — Organização nacional\n ↔ IMPACTO 1 — Coordenação da reivindicação\nA criação da FBPF deu maior estrutura organizativa e alcance à atuação de um grupo de sufragistas. Em 1922, a entidade foi formalizada sob esse nome e passou a desenvolver diferentes iniciativas políticas.\nCARTÃO B — Pressão sobre o Parlamento\n ↔ IMPACTO 2 — Pressão direta sobre quem legislava\nEm 1927, integrantes da Federação acompanharam a Comissão de Justiça, enviaram cartas a senadores e protocolaram um abaixo-assinado com aproximadamente duas mil assinaturas em apoio ao sufrágio. Apesar disso, a proposta discutida naquele momento não foi aprovada.\nCARTÃO C — Deveres e direitos\n ↔ IMPACTO 3 — Questionamento da cidadania desigual\nA FBPF utilizou a própria lógica da cidadania para questionar a exclusão: se as mulheres obedeciam às leis e contribuíam por meio de impostos, também deveriam participar das decisões sobre essas leis.\nCARTÃO D — Congressos e debate público\n ↔ IMPACTO 4 — Ampliação da visibilidade do sufrágio\nEm dezembro de 1922, a Federação promoveu o Primeiro Congresso Internacional Feminista no Rio de Janeiro e convidou figuras de destaque político para falar em defesa do sufrágio feminino.\nCARTÃO E — Interlocução com autoridades\n ↔ IMPACTO 5 — Acesso a espaços formais de decisão\nA atuação da Federação envolveu aproximação com parlamentares e autoridades, inclusive nos momentos de reforma das regras eleitorais. Mais tarde, quando Vargas indicou que pretendia reformular a legislação eleitoral, integrantes da FBPF e de outras organizações femininas buscaram conversar diretamente com o governo.\n\nDepois de completar as conexões\nA Sufragista aparece:\nNenhuma dessas estratégias garantia uma vitória.\nEm 1927, por exemplo, houve cartas, acompanhamento do Senado e milhares de assinaturas — e, ainda assim, a proposta defendida pelas sufragistas não avançou.\nEntão, por que essa mobilização importa?\nPorque uma derrota legislativa não apaga a pressão política construída durante o caminho.\n\nPergunta\nQual interpretação explica melhor o papel de Bertha Lutz e da Federação Brasileira pelo Progresso Feminino na conquista dos direitos políticos das mulheres?\nA) Bertha Lutz iniciou a luta pelo voto feminino no Brasil e tornou desnecessárias as reivindicações desenvolvidas por mulheres antes da criação da FBPF.\nB) A FBPF contribuiu para coordenar e ampliar institucionalmente uma reivindicação que já possuía uma trajetória anterior; Bertha Lutz foi uma liderança importante dentro de um processo histórico mais longo e coletivo.\nC) A aproximação da FBPF com autoridades garantiu que suas propostas fossem aceitas sempre que apresentadas ao Parlamento.\nD) A existência de uma federação nacional demonstra que mulheres de diferentes regiões e condições sociais participavam igualmente dos espaços políticos e das organizações sufragistas.\nResposta correta: B\n\nGabarito do desenvolvedor\nB.\nA atuação da Federação foi importante porque tornou mais organizada e visível uma parte da pressão pelo sufrágio, utilizando congressos, cartas, abaixo-assinados, acompanhamento parlamentar e interlocução com autoridades. Em 1927, por exemplo, a FBPF acompanhou diretamente a tramitação de uma proposta no Senado e apresentou cerca de duas mil assinaturas em sua defesa.\nEntretanto, Marques mostra que essas ações coexistiram com iniciativas anteriores e contemporâneas. A própria obra afirma que nem as ações de Leolinda Daltro nem as movimentações da FBPF haviam conseguido, naquele momento, assegurar o sufrágio, evidenciando que a conquista resultou de um processo de pressão, disputa e acumulação de iniciativas, e não da ação isolada de uma personagem.\n\nFeedback ao jogador\nSe acertar\nSufragista:\nVocê percebeu a diferença entre liderança e autoria exclusiva de uma conquista.\nBertha Lutz tornou-se uma figura central, e a Federação ampliou a pressão organizada sobre os espaços políticos.\nMas quando a FBPF entrou nessa disputa, outras mulheres já haviam aberto caminhos.\nReconhecer uma liderança não exige apagar quem veio antes — nem quem lutou ao lado dela.\nSe errar\nSufragista:\nVolte às conexões.\nA Federação organizou congressos, enviou cartas, reuniu assinaturas e pressionou parlamentares. Nem todas essas iniciativas foram vitoriosas.\nIsso mostra duas coisas ao mesmo tempo:\na FBPF teve importância política real, mas nenhuma organização explica sozinha uma conquista construída durante décadas."
+        },
+        {
+          "event": "answer_correct",
+          "gameId": "C3F9",
+          "phaseNum": 27,
+          "userId": "admin",
+          "timestamp": "2026-08-10T23:14:07.634Z",
+          "attempt": 1,
+          "score": 100
+        },
+        {
+          "event": "evidence_collected",
+          "gameId": "C3F9",
+          "phaseNum": 27,
+          "userId": "admin",
+          "timestamp": "2026-08-10T23:14:07.638Z",
+          "evidenceId": "EV-C3F9"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C3F9",
+          "phaseNum": 27,
+          "userId": "admin",
+          "timestamp": "2026-08-11T00:11:41.885Z"
+        },
+        {
+          "event": "answer_submitted",
+          "gameId": "C3F9",
+          "phaseNum": 27,
+          "userId": "admin",
+          "timestamp": "2026-08-11T00:11:56.974Z",
+          "attempt": 1,
+          "answer": "Tese: A participacao feminina em 1933 resultou de mobilizacoes anteriores, mas continuou limitada por resistencias sociais. | Evidencias: Exclusao politica na Republica Velha, Codigo Eleitoral de 1932, Registro eleitoral local, Crivo do jornal, Resistencias locais | Limitacao: Algumas mulheres nao deixaram registros escritos. | Conclusao: Obrigada por chegar até aqui e caminhar conosco por essa história.\n\nEsperamos que esta experiência tenha ajudado você a conhecer um pouco mais sobre o voto feminino em Muzambinho e sobre as mulheres que fizeram parte dessa conquista.\n\nA história continua além do jogo. Leia nosso artigo completo em: **[inserir link]**\n\nE, antes de ir, conte para nós como foi viver essa experiência. **Sua avaliação também faz parte dessa história.**"
+        },
+        {
+          "event": "answer_correct",
+          "gameId": "C3F9",
+          "phaseNum": 27,
+          "userId": "admin",
+          "timestamp": "2026-08-11T00:11:57.005Z",
+          "attempt": 1,
+          "score": 100
+        },
+        {
+          "event": "evidence_collected",
+          "gameId": "C3F9",
+          "phaseNum": 27,
+          "userId": "admin",
+          "timestamp": "2026-08-11T00:11:57.010Z",
+          "evidenceId": "EV-C3F9"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C3F9",
+          "phaseNum": 27,
+          "userId": "admin",
+          "timestamp": "2026-08-11T14:15:43.362Z"
+        },
+        {
+          "event": "answer_submitted",
+          "gameId": "C3F9",
+          "phaseNum": 27,
+          "userId": "admin",
+          "timestamp": "2026-08-11T14:15:59.409Z",
+          "attempt": 1,
+          "answer": "Tese: A participacao feminina em 1933 resultou de mobilizacoes anteriores, mas continuou limitada por resistencias sociais. | Evidencias: Exclusao politica na Republica Velha, Codigo Eleitoral de 1932, Registro eleitoral local, Crivo do jornal, Resistencias locais | Limitacao: O jornal apresenta apenas parte das opinioes existentes. | Conclusao: Obrigada por chegar até aqui e caminhar conosco por essa história.\n\nEsperamos que esta experiência tenha ajudado você a conhecer um pouco mais sobre o voto feminino em Muzambinho e sobre as mulheres que fizeram parte dessa conquista.\n\nA história continua além do jogo. Leia nosso artigo completo em: **[inserir link]**\n\nE, antes de ir, conte para nós como foi viver essa experiência. **Sua avaliação também faz parte dessa história.**"
+        },
+        {
+          "event": "answer_correct",
+          "gameId": "C3F9",
+          "phaseNum": 27,
+          "userId": "admin",
+          "timestamp": "2026-08-11T14:15:59.463Z",
+          "attempt": 1,
+          "score": 100
+        },
+        {
+          "event": "evidence_collected",
+          "gameId": "C3F9",
+          "phaseNum": 27,
+          "userId": "admin",
+          "timestamp": "2026-08-11T14:15:59.470Z",
+          "evidenceId": "EV-C3F9"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C3F9",
+          "phaseNum": 27,
+          "userId": "admin",
+          "timestamp": "2026-08-11T14:36:35.744Z"
+        },
+        {
+          "event": "answer_submitted",
+          "gameId": "C3F9",
+          "phaseNum": 27,
+          "userId": "admin",
+          "timestamp": "2026-08-11T14:36:49.254Z",
+          "attempt": 1,
+          "answer": "Tese: A participacao feminina em 1933 resultou de mobilizacoes anteriores, mas continuou limitada por resistencias sociais. | Evidencias: Exclusao politica na Republica Velha, Codigo Eleitoral de 1932, Registro eleitoral local, Crivo do jornal, Resistencias locais | Limitacao: O jornal apresenta apenas parte das opinioes existentes. | Conclusao: Obrigada por chegar até aqui e caminhar conosco por essa história.\n\nEsperamos que esta experiência tenha ajudado você a conhecer um pouco mais sobre o voto feminino em Muzambinho e sobre as mulheres que fizeram parte dessa conquista.\n\nA história continua além do jogo. Leia nosso artigo completo em: **[inserir link]**\n\nE, antes de ir, conte para nós como foi viver essa experiência. **Sua avaliação também faz parte dessa história.**"
+        },
+        {
+          "event": "answer_correct",
+          "gameId": "C3F9",
+          "phaseNum": 27,
+          "userId": "admin",
+          "timestamp": "2026-08-11T14:36:49.306Z",
+          "attempt": 1,
+          "score": 100
+        },
+        {
+          "event": "evidence_collected",
+          "gameId": "C3F9",
+          "phaseNum": 27,
+          "userId": "admin",
+          "timestamp": "2026-08-11T14:36:49.309Z",
+          "evidenceId": "EV-C3F9"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C3F9",
+          "phaseNum": 27,
+          "userId": "admin",
+          "timestamp": "2026-08-11T15:35:14.868Z"
+        },
+        {
+          "event": "answer_submitted",
+          "gameId": "C3F9",
+          "phaseNum": 27,
+          "userId": "admin",
+          "timestamp": "2026-08-11T15:35:26.072Z",
+          "attempt": 1,
+          "answer": "Tese: A participacao feminina em 1933 resultou de mobilizacoes anteriores, mas continuou limitada por resistencias sociais. | Evidencias: Codigo Eleitoral de 1932, Registro eleitoral local, Crivo do jornal, Resistencias locais, Direito formal e barreira pratica | Limitacao: O jornal apresenta apenas parte das opinioes existentes. | Conclusao: quando terminar de avaliar o jogo, o modal será fechado e voltará para a página inicial (todo o jogo, as fases e etc, terão de estar salvas, para que funcione bem a dinâmica. quando voltar para a página inicial, aquela animação de voltar para 2026 deve acontecer"
+        },
+        {
+          "event": "answer_correct",
+          "gameId": "C3F9",
+          "phaseNum": 27,
+          "userId": "admin",
+          "timestamp": "2026-08-11T15:35:26.109Z",
+          "attempt": 1,
+          "score": 100
+        },
+        {
+          "event": "evidence_collected",
+          "gameId": "C3F9",
+          "phaseNum": 27,
+          "userId": "admin",
+          "timestamp": "2026-08-11T15:35:26.113Z",
+          "evidenceId": "EV-C3F9"
+        }
+      ],
+      "finalLetterSeenVersion": "final-letter-20260811b",
+      "finalThanksShownVersion": "final-letter-20260811b",
+      "finalThanksDismissedVersion": "final-letter-20260811b"
+    }
   },
   "users": [
     {
-      "name": "Aline Fernanda de Oliveira",
-      "knowledgeLevel": 3,
-      "updatedAt": "2026-02-17T19:17:34.127Z"
-    },
-    {
-      "name": "Aline ",
-      "knowledgeLevel": 3,
-      "updatedAt": "2026-02-17T20:06:51.557Z"
-    },
-    {
-      "name": "alinefxz",
-      "knowledgeLevel": 5,
-      "updatedAt": "2026-02-17T20:50:40.790Z"
-    },
-    {
-      "name": "aline",
-      "knowledgeLevel": 3,
-      "updatedAt": "2026-03-31T23:07:22.676Z",
+      "name": "admin",
+      "fullName": "Admin do Arquivo",
+      "password": "admin",
+      "knowledgeLevel": "5",
       "ageGroup": "25 a 34",
-      "gender": "Feminino",
-      "location": "Outro",
-      "occupation": "Outros",
-      "avatar": "bertha"
-    },
-    {
-      "name": "a",
-      "knowledgeLevel": 4,
-      "ageGroup": "25 a 34",
-      "gender": "Feminino",
-      "location": "Outro",
-      "occupation": "Outros",
-      "avatar": "leolinda",
-      "updatedAt": "2026-03-31T23:35:59.281Z"
-    },
-    {
-      "name": "k",
-      "knowledgeLevel": 4,
-      "ageGroup": "Menos de 18",
-      "gender": "Feminino",
-      "location": "Sul de Minas",
-      "occupation": "Estudante",
-      "avatar": "leolinda",
-      "updatedAt": "2026-02-17T22:48:44.010Z"
-    },
-    {
-      "name": "aline :)",
-      "knowledgeLevel": 4,
-      "ageGroup": "Menos de 18",
-      "gender": "Feminino",
-      "location": "Sul de Minas",
-      "occupation": "Estudante",
-      "avatar": "antonieta",
-      "updatedAt": "2026-02-19T10:09:55.312Z"
-    },
-    {
-      "name": "oi",
-      "knowledgeLevel": 3,
-      "ageGroup": "Menos de 18",
-      "gender": "Feminino",
-      "location": "Sul de Minas",
-      "occupation": "Estudante",
+      "gender": "Prefiro nao informar",
+      "location": "Muzambinho",
+      "occupation": "Pesquisador",
       "avatar": "bertha",
-      "updatedAt": "2026-03-17T23:07:10.885Z"
-    },
-    {
-      "name": "lj",
-      "knowledgeLevel": 3,
-      "ageGroup": "25 a 34",
-      "gender": "Feminino",
-      "location": "Outro",
-      "occupation": "Outros",
-      "avatar": "bertha",
-      "updatedAt": "2026-03-31T23:02:13.777Z"
-    },
-    {
-      "name": "alinefxzzz",
-      "fullName": "Aline FErnanda de Olivera",
-      "password": "1234",
-      "knowledgeLevel": 3,
-      "ageGroup": "25 a 34",
-      "gender": "Feminino",
-      "location": "Outro",
-      "occupation": "Outros",
-      "avatar": "leolinda",
-      "updatedAt": "2026-04-02T19:45:29.036Z"
-    },
-    {
-      "name": "alinefkka",
-      "fullName": "Aline fernanda de oliveira",
-      "password": "12345",
-      "knowledgeLevel": 3,
-      "ageGroup": "25 a 34",
-      "gender": "Feminino",
-      "location": "Outro",
-      "occupation": "Outros",
-      "avatar": "leolinda",
-      "updatedAt": "2026-04-05T12:46:41.613Z"
-    },
-    {
-      "name": "alinefernanda",
-      "fullName": "Aline Oliveira",
-      "password": "12345678",
-      "knowledgeLevel": 3,
-      "ageGroup": "Menos de 18",
-      "gender": "Feminino",
-      "location": "Sul de Minas",
-      "occupation": "Estudante",
-      "avatar": "mietta",
+      "isAdmin": true,
+      "updatedAt": "2026-08-10T14:19:17.682Z",
+      "username": "admin",
+      "level": "5",
+      "age": "25 a 34",
       "progress": {
-        "tutorialCompleted": false,
+        "tutorialCompleted": true,
         "unlockedPhases": [
-          1
-        ]
-      },
-      "updatedAt": "2026-04-05T21:19:55.905Z"
-    },
-    {
-      "name": "kdhak",
-      "fullName": "aline",
-      "password": "1234",
-      "knowledgeLevel": 3,
-      "ageGroup": "25 a 34",
-      "gender": "Feminino",
-      "location": "Outro",
-      "occupation": "Outros",
-      "avatar": "celina",
-      "progress": {
-        "tutorialCompleted": false,
-        "unlockedPhases": [
-          1
-        ]
-      },
-      "updatedAt": "2026-05-11T01:42:50.029Z"
-    },
-    {
-      "name": "alinehjabjdvaj",
-      "fullName": "alinef",
-      "password": "123456",
-      "knowledgeLevel": 3,
-      "ageGroup": "25 a 34",
-      "gender": "Feminino",
-      "location": "Outro",
-      "occupation": "Outros",
-      "avatar": "mietta",
-      "progress": {
-        "tutorialCompleted": false,
-        "unlockedPhases": [
-          1
-        ]
-      },
-      "updatedAt": "2026-05-18T22:45:30.444Z"
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28
+        ],
+        "collectedEvidence": [
+          {
+            "id": "EV-C3F1",
+            "title": "Limites dos resultados",
+            "text": "<b>TABELA/ATA:</b> Os resultados mostram participacao registrada, mas nao contam automaticamente todas as experiencias individuais das eleitoras.",
+            "summary": "Numeros documentam participacao, mas precisam ser interpretados com outras fontes.",
+            "category": "consequencia politica",
+            "chapter": "Repercussoes",
+            "origin": "Fonte a inserir",
+            "explanation": "Ajuda a reconhecer lacunas documentais.",
+            "answer": {
+              "phaseNum": 19,
+              "title": "Resultados eleitorais de 1933",
+              "chapterTitle": "Repercussoes",
+              "question": "Qual cuidado interpretativo e necessario ao ler resultados eleitorais?",
+              "selectedAnswer": "Numeros permitem algumas conclusoes, mas nao revelam todas as experiencias sociais.",
+              "isCorrect": true,
+              "attempts": 1,
+              "hintsUsed": 0,
+              "score": 100,
+              "completedByExplanation": false,
+              "completedAt": "2026-08-10T14:19:13.018Z",
+              "source": {
+                "type": "Tabela/ata adaptada",
+                "date": "1933",
+                "author": "Mesa eleitoral",
+                "place": "Brasil/Muzambinho",
+                "collection": "Fonte a inserir",
+                "note": "Inserir tabela ou ata referenciada na versao final."
+              },
+              "evidenceReward": {
+                "id": "EV-C3F1",
+                "title": "Limites dos resultados",
+                "category": "consequencia politica",
+                "summary": "Numeros documentam participacao, mas precisam ser interpretados com outras fontes.",
+                "explanation": "Ajuda a reconhecer lacunas documentais."
+              }
+            }
+          },
+          {
+            "id": "EV-C3F9",
+            "title": "Dossie final",
+            "text": "<b>PERGUNTA FINAL:</b> Como a conquista nacional chegou a Muzambinho e quais foram suas repercussoes?",
+            "summary": "O jogador produziu uma conclusao historica sustentada por evidencias.",
+            "category": "consequencia politica",
+            "chapter": "Repercussoes",
+            "origin": "Luzes de Maio",
+            "explanation": "Encerra o percurso como investigacao documentada.",
+            "answer": {
+              "phaseNum": 27,
+              "title": "Dossie investigativo final",
+              "chapterTitle": "Repercussoes",
+              "question": "Monte uma conclusao historica coerente.",
+              "selectedAnswer": "Tese: A participacao feminina em 1933 resultou de mobilizacoes anteriores, mas continuou limitada por resistencias sociais. | Evidencias: Codigo Eleitoral de 1932, Registro eleitoral local, Crivo do jornal, Resistencias locais, Direito formal e barreira pratica | Limitacao: O jornal apresenta apenas parte das opinioes existentes. | Conclusao: quando terminar de avaliar o jogo, o modal será fechado e voltará para a página inicial (todo o jogo, as fases e etc, terão de estar salvas, para que funcione bem a dinâmica. quando voltar para a página inicial, aquela animação de voltar para 2026 deve acontecer",
+              "isCorrect": true,
+              "attempts": 1,
+              "hintsUsed": 0,
+              "score": 100,
+              "completedByExplanation": false,
+              "completedAt": "2026-08-11T15:35:26.073Z",
+              "source": {
+                "type": "Dossie final do jogador",
+                "date": "Conclusao da partida",
+                "author": "Jogador",
+                "place": "Mesa de investigacao",
+                "collection": "Luzes de Maio",
+                "note": "Resultado pedagogico produzido a partir das evidencias do jogo."
+              },
+              "evidenceReward": {
+                "id": "EV-C3F9",
+                "title": "Dossie final",
+                "category": "consequencia politica",
+                "summary": "O jogador produziu uma conclusao historica sustentada por evidencias.",
+                "explanation": "Encerra o percurso como investigacao documentada."
+              }
+            }
+          }
+        ],
+        "answers": [
+          {
+            "phaseNum": 19,
+            "title": "Resultados eleitorais de 1933",
+            "chapterTitle": "Repercussoes",
+            "question": "Qual cuidado interpretativo e necessario ao ler resultados eleitorais?",
+            "selectedAnswer": "Numeros permitem algumas conclusoes, mas nao revelam todas as experiencias sociais.",
+            "isCorrect": true,
+            "attempts": 1,
+            "hintsUsed": 0,
+            "score": 100,
+            "completedByExplanation": false,
+            "completedAt": "2026-08-10T14:19:13.018Z",
+            "source": {
+              "type": "Tabela/ata adaptada",
+              "date": "1933",
+              "author": "Mesa eleitoral",
+              "place": "Brasil/Muzambinho",
+              "collection": "Fonte a inserir",
+              "note": "Inserir tabela ou ata referenciada na versao final."
+            },
+            "evidenceReward": {
+              "id": "EV-C3F1",
+              "title": "Limites dos resultados",
+              "category": "consequencia politica",
+              "summary": "Numeros documentam participacao, mas precisam ser interpretados com outras fontes.",
+              "explanation": "Ajuda a reconhecer lacunas documentais."
+            },
+            "answeredAt": "2026-08-10T14:19:13.018Z"
+          },
+          {
+            "phaseNum": 27,
+            "title": "Dossie investigativo final",
+            "chapterTitle": "Repercussoes",
+            "question": "Monte uma conclusao historica coerente.",
+            "selectedAnswer": "Tese: A participacao feminina em 1933 resultou de mobilizacoes anteriores, mas continuou limitada por resistencias sociais. | Evidencias: Codigo Eleitoral de 1932, Registro eleitoral local, Crivo do jornal, Resistencias locais, Direito formal e barreira pratica | Limitacao: O jornal apresenta apenas parte das opinioes existentes. | Conclusao: quando terminar de avaliar o jogo, o modal será fechado e voltará para a página inicial (todo o jogo, as fases e etc, terão de estar salvas, para que funcione bem a dinâmica. quando voltar para a página inicial, aquela animação de voltar para 2026 deve acontecer",
+            "isCorrect": true,
+            "attempts": 1,
+            "hintsUsed": 0,
+            "score": 100,
+            "completedByExplanation": false,
+            "completedAt": "2026-08-11T15:35:26.073Z",
+            "source": {
+              "type": "Dossie final do jogador",
+              "date": "Conclusao da partida",
+              "author": "Jogador",
+              "place": "Mesa de investigacao",
+              "collection": "Luzes de Maio",
+              "note": "Resultado pedagogico produzido a partir das evidencias do jogo."
+            },
+            "evidenceReward": {
+              "id": "EV-C3F9",
+              "title": "Dossie final",
+              "category": "consequencia politica",
+              "summary": "O jogador produziu uma conclusao historica sustentada por evidencias.",
+              "explanation": "Encerra o percurso como investigacao documentada."
+            },
+            "answeredAt": "2026-08-11T15:35:26.073Z"
+          }
+        ],
+        "fieldNotes": {},
+        "finalReview": {
+          "name": "admin",
+          "rating": 5,
+          "mechanics": "llllllllllObrigada por chegar até aqui e caminhar conosco por essa história.\n\nEsperamos que esta experiência tenha ajudado você a conhecer um pouco mais sobre o voto feminino em Muzambinho e sobre as mulheres que fizeram parte dessa conquista.\n\nA história continua além do jogo. Leia nosso artigo completo em: **[inserir link]**\n\nE, antes de ir, conte para nós como foi viver essa experiência. **Sua avaliação também faz parte dessa história.**\n",
+          "immersion": "Obrigada por chegar até aqui e caminhar conosco por essa história.\n\nEsperamos que esta experiência tenha ajudado você a conhecer um pouco mais sobre o voto feminino em Muzambinho e sobre as mulheres que fizeram parte dessa conquista.\n\nA história continua além do jogo. Leia nosso artigo completo em: **[inserir link]**\n\nE, antes de ir, conte para nós como foi viver essa experiência. **Sua avaliação também faz parte dessa história.**\n",
+          "improvements": "Obrigada por chegar até aqui e caminhar conosco por essa história.\n\nEsperamos que esta experiência tenha ajudado você a conhecer um pouco mais sobre o voto feminino em Muzambinho e sobre as mulheres que fizeram parte dessa conquista.\n\nA história continua além do jogo. Leia nosso artigo completo em: **[inserir link]**\n\nE, antes de ir, conte para nós como foi viver essa experiência. **Sua avaliação também faz parte dessa história.**\n",
+          "date": "2026-08-11T15:30:51.753Z"
+        },
+        "badges": [
+          "primeira-pista",
+          "linha-do-tempo",
+          "leitura-local",
+          "voz-publica",
+          "guardia-do-dossie"
+        ],
+        "notebookIntroduced": true,
+        "phaseRecords": {
+          "1": {
+            "state": "INTRO",
+            "startedAt": "2026-08-05T22:44:01.432Z",
+            "gameId": "C1F1",
+            "title": "A Politica Negada"
+          },
+          "2": {
+            "state": "INTRO",
+            "startedAt": "2026-08-05T22:44:04.681Z",
+            "gameId": "C1F2",
+            "title": "Primeiras Reivindicacoes"
+          },
+          "3": {
+            "state": "INTRO",
+            "startedAt": "2026-08-05T22:44:07.971Z",
+            "gameId": "C1F3",
+            "title": "Vozes Pioneiras"
+          },
+          "4": {
+            "state": "INTRO",
+            "startedAt": "2026-08-05T22:44:12.112Z",
+            "gameId": "C1F4",
+            "title": "Bertha e a Federacao"
+          },
+          "5": {
+            "state": "INTRO",
+            "startedAt": "2026-08-05T22:44:22.961Z",
+            "gameId": "C1F5",
+            "title": "Codigo de 1932"
+          },
+          "6": {
+            "state": "INTRO",
+            "startedAt": "2026-08-05T22:44:25.811Z",
+            "gameId": "C1F6",
+            "title": "Quem Podia Votar?"
+          },
+          "7": {
+            "state": "INTRO",
+            "startedAt": "2026-08-05T22:44:28.721Z",
+            "gameId": "C1F7",
+            "title": "Preparacao de 1933"
+          },
+          "8": {
+            "state": "INTRO",
+            "startedAt": "2026-08-05T22:44:31.354Z",
+            "gameId": "C1F8",
+            "title": "Primeiros Espacos Politicos"
+          },
+          "9": {
+            "state": "INTRO",
+            "startedAt": "2026-08-05T22:44:33.802Z",
+            "gameId": "C1F9",
+            "title": "Escada da Conquista"
+          },
+          "10": {
+            "state": "INTRO",
+            "startedAt": "2026-08-05T22:44:37.577Z",
+            "gameId": "C2F1",
+            "title": "Muzambinho em 1933"
+          },
+          "11": {
+            "state": "INTRO",
+            "startedAt": "2026-08-05T22:46:10.494Z",
+            "gameId": "C2F2",
+            "title": "O Muzambinhense"
+          },
+          "12": {
+            "state": "INTRO",
+            "startedAt": "2026-08-05T22:45:04.875Z",
+            "gameId": "C2F3",
+            "title": "Manchete Embaralhada"
+          },
+          "13": {
+            "state": "INTRO",
+            "startedAt": "2026-08-05T22:45:08.986Z",
+            "gameId": "C2F4",
+            "title": "Fato ou Opiniao"
+          },
+          "14": {
+            "state": "INTRO",
+            "startedAt": "2026-08-05T22:45:11.617Z",
+            "gameId": "C2F5",
+            "title": "Resistencias no Texto"
+          },
+          "15": {
+            "state": "INTRO",
+            "startedAt": "2026-08-05T22:45:13.801Z",
+            "gameId": "C2F6",
+            "title": "Registro com Lacunas"
+          },
+          "16": {
+            "state": "INTRO",
+            "startedAt": "2026-08-05T22:45:16.452Z",
+            "gameId": "C2F7",
+            "title": "3 de Maio de 1933"
+          },
+          "17": {
+            "state": "INTRO",
+            "startedAt": "2026-08-05T22:45:18.703Z",
+            "gameId": "C2F8",
+            "title": "Local e Nacional"
+          },
+          "18": {
+            "state": "INTRO",
+            "startedAt": "2026-08-05T22:45:20.754Z",
+            "gameId": "C2F9",
+            "title": "O Que os Documentos Revelam"
+          },
+          "19": {
+            "state": "CORRECT",
+            "startedAt": "2026-08-05T22:45:25.346Z",
+            "gameId": "C3F1",
+            "title": "Resultados de 1933",
+            "attempts": 1,
+            "hintsUsed": 0,
+            "score": 100,
+            "selectedAnswer": "Numeros permitem algumas conclusoes, mas nao revelam todas as experiencias sociais.",
+            "completedAt": "2026-08-10T14:19:13.018Z"
+          },
+          "20": {
+            "state": "INTRO",
+            "startedAt": "2026-08-05T22:45:38.000Z",
+            "gameId": "C3F2",
+            "title": "Constituicao de 1934"
+          },
+          "21": {
+            "state": "INTRO",
+            "startedAt": "2026-08-05T22:45:40.088Z",
+            "gameId": "C3F3",
+            "title": "Mulheres na Politica"
+          },
+          "22": {
+            "state": "INTRO",
+            "startedAt": "2026-08-05T22:45:45.150Z",
+            "gameId": "C3F4",
+            "title": "Resistencias Permanentes"
+          },
+          "23": {
+            "state": "INTRO",
+            "startedAt": "2026-08-05T22:45:47.503Z",
+            "gameId": "C3F5",
+            "title": "Direito e Pratica"
+          },
+          "24": {
+            "state": "INTRO",
+            "startedAt": "2026-08-05T22:45:50.052Z",
+            "gameId": "C3F6",
+            "title": "Escada Incompleta"
+          },
+          "25": {
+            "state": "INTRO",
+            "startedAt": "2026-08-05T22:45:53.057Z",
+            "gameId": "C3F7",
+            "title": "Detector Historico"
+          },
+          "26": {
+            "state": "INTRO",
+            "startedAt": "2026-08-05T22:46:00.074Z",
+            "gameId": "C3F8",
+            "title": "Evidencias Fortes"
+          },
+          "27": {
+            "state": "CORRECT",
+            "startedAt": "2026-08-10T22:06:11.616Z",
+            "gameId": "C3F9",
+            "title": "Monte o Dossie Final",
+            "attempts": 1,
+            "hintsUsed": 0,
+            "score": 100,
+            "selectedAnswer": "Tese: A participacao feminina em 1933 resultou de mobilizacoes anteriores, mas continuou limitada por resistencias sociais. | Evidencias: Codigo Eleitoral de 1932, Registro eleitoral local, Crivo do jornal, Resistencias locais, Direito formal e barreira pratica | Limitacao: O jornal apresenta apenas parte das opinioes existentes. | Conclusao: quando terminar de avaliar o jogo, o modal será fechado e voltará para a página inicial (todo o jogo, as fases e etc, terão de estar salvas, para que funcione bem a dinâmica. quando voltar para a página inicial, aquela animação de voltar para 2026 deve acontecer",
+            "completedAt": "2026-08-11T15:35:26.073Z"
+          }
+        },
+        "gameEvents": [
+          {
+            "event": "game_started",
+            "gameId": "C1F1",
+            "phaseNum": 1,
+            "userId": "admin",
+            "timestamp": "2026-08-05T22:44:01.432Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C1F2",
+            "phaseNum": 2,
+            "userId": "admin",
+            "timestamp": "2026-08-05T22:44:04.681Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C1F3",
+            "phaseNum": 3,
+            "userId": "admin",
+            "timestamp": "2026-08-05T22:44:07.971Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C1F4",
+            "phaseNum": 4,
+            "userId": "admin",
+            "timestamp": "2026-08-05T22:44:12.112Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C1F5",
+            "phaseNum": 5,
+            "userId": "admin",
+            "timestamp": "2026-08-05T22:44:22.961Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C1F6",
+            "phaseNum": 6,
+            "userId": "admin",
+            "timestamp": "2026-08-05T22:44:25.811Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C1F7",
+            "phaseNum": 7,
+            "userId": "admin",
+            "timestamp": "2026-08-05T22:44:28.721Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C1F8",
+            "phaseNum": 8,
+            "userId": "admin",
+            "timestamp": "2026-08-05T22:44:31.354Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C1F9",
+            "phaseNum": 9,
+            "userId": "admin",
+            "timestamp": "2026-08-05T22:44:33.802Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C2F1",
+            "phaseNum": 10,
+            "userId": "admin",
+            "timestamp": "2026-08-05T22:44:37.577Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C2F1",
+            "phaseNum": 10,
+            "userId": "admin",
+            "timestamp": "2026-08-05T22:44:40.846Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C2F3",
+            "phaseNum": 12,
+            "userId": "admin",
+            "timestamp": "2026-08-05T22:45:04.875Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C2F4",
+            "phaseNum": 13,
+            "userId": "admin",
+            "timestamp": "2026-08-05T22:45:08.986Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C2F5",
+            "phaseNum": 14,
+            "userId": "admin",
+            "timestamp": "2026-08-05T22:45:11.617Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C2F6",
+            "phaseNum": 15,
+            "userId": "admin",
+            "timestamp": "2026-08-05T22:45:13.801Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C2F7",
+            "phaseNum": 16,
+            "userId": "admin",
+            "timestamp": "2026-08-05T22:45:16.452Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C2F8",
+            "phaseNum": 17,
+            "userId": "admin",
+            "timestamp": "2026-08-05T22:45:18.703Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C2F9",
+            "phaseNum": 18,
+            "userId": "admin",
+            "timestamp": "2026-08-05T22:45:20.754Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C3F1",
+            "phaseNum": 19,
+            "userId": "admin",
+            "timestamp": "2026-08-05T22:45:25.346Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C3F2",
+            "phaseNum": 20,
+            "userId": "admin",
+            "timestamp": "2026-08-05T22:45:38.000Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C3F3",
+            "phaseNum": 21,
+            "userId": "admin",
+            "timestamp": "2026-08-05T22:45:40.088Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C3F4",
+            "phaseNum": 22,
+            "userId": "admin",
+            "timestamp": "2026-08-05T22:45:45.150Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C3F5",
+            "phaseNum": 23,
+            "userId": "admin",
+            "timestamp": "2026-08-05T22:45:47.503Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C3F6",
+            "phaseNum": 24,
+            "userId": "admin",
+            "timestamp": "2026-08-05T22:45:50.052Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C3F7",
+            "phaseNum": 25,
+            "userId": "admin",
+            "timestamp": "2026-08-05T22:45:53.057Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C3F7",
+            "phaseNum": 25,
+            "userId": "admin",
+            "timestamp": "2026-08-05T22:45:54.858Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C3F8",
+            "phaseNum": 26,
+            "userId": "admin",
+            "timestamp": "2026-08-05T22:46:00.074Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C2F2",
+            "phaseNum": 11,
+            "userId": "admin",
+            "timestamp": "2026-08-05T22:46:10.494Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C3F3",
+            "phaseNum": 21,
+            "userId": "admin",
+            "timestamp": "2026-08-05T23:09:49.822Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C2F9",
+            "phaseNum": 18,
+            "userId": "admin",
+            "timestamp": "2026-08-05T23:09:59.628Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C3F1",
+            "phaseNum": 19,
+            "userId": "admin",
+            "timestamp": "2026-08-07T11:00:32.979Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C1F3",
+            "phaseNum": 3,
+            "userId": "admin",
+            "timestamp": "2026-08-07T11:00:53.450Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C1F1",
+            "phaseNum": 1,
+            "userId": "admin",
+            "timestamp": "2026-08-07T12:23:30.286Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C1F2",
+            "phaseNum": 2,
+            "userId": "admin",
+            "timestamp": "2026-08-07T12:23:34.964Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C3F1",
+            "phaseNum": 19,
+            "userId": "admin",
+            "timestamp": "2026-08-10T14:18:08.689Z"
+          },
+          {
+            "event": "transcription_opened",
+            "gameId": "C3F1",
+            "phaseNum": 19,
+            "userId": "admin",
+            "timestamp": "2026-08-10T14:18:10.872Z",
+            "panel": "transcription"
+          },
+          {
+            "event": "source_opened",
+            "gameId": "C3F1",
+            "phaseNum": 19,
+            "userId": "admin",
+            "timestamp": "2026-08-10T14:18:12.325Z",
+            "panel": "info"
+          },
+          {
+            "event": "transcription_opened",
+            "gameId": "C3F1",
+            "phaseNum": 19,
+            "userId": "admin",
+            "timestamp": "2026-08-10T14:18:50.956Z",
+            "panel": "transcription"
+          },
+          {
+            "event": "answer_submitted",
+            "gameId": "C3F1",
+            "phaseNum": 19,
+            "userId": "admin",
+            "timestamp": "2026-08-10T14:19:13.017Z",
+            "attempt": 1,
+            "answer": "Numeros permitem algumas conclusoes, mas nao revelam todas as experiencias sociais."
+          },
+          {
+            "event": "answer_correct",
+            "gameId": "C3F1",
+            "phaseNum": 19,
+            "userId": "admin",
+            "timestamp": "2026-08-10T14:19:13.032Z",
+            "attempt": 1,
+            "score": 100
+          },
+          {
+            "event": "evidence_collected",
+            "gameId": "C3F1",
+            "phaseNum": 19,
+            "userId": "admin",
+            "timestamp": "2026-08-10T14:19:13.035Z",
+            "evidenceId": "EV-C3F1"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C3F2",
+            "phaseNum": 20,
+            "userId": "admin",
+            "timestamp": "2026-08-10T14:19:17.677Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C3F1",
+            "phaseNum": 19,
+            "userId": "admin",
+            "timestamp": "2026-08-10T21:41:44.663Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C3F9",
+            "phaseNum": 27,
+            "userId": "admin",
+            "timestamp": "2026-08-10T22:06:11.616Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C3F9",
+            "phaseNum": 27,
+            "userId": "admin",
+            "timestamp": "2026-08-10T22:06:18.298Z"
+          },
+          {
+            "event": "answer_submitted",
+            "gameId": "C3F9",
+            "phaseNum": 27,
+            "userId": "admin",
+            "timestamp": "2026-08-10T22:06:49.369Z",
+            "attempt": 1,
+            "answer": "Tese: Os documentos de Muzambinho mostram que a conquista legal ganhou forma local por registros, jornais e disputas de memoria. | Evidencias: Exclusao politica na Republica Velha, Codigo Eleitoral de 1932, Registro eleitoral local, Resistencias locais, Direito formal e barreira pratica | Limitacao: O jornal apresenta apenas parte das opinioes existentes. | Conclusao: ggfgdhgdhghghgdhdgfdgf jhsfdhfh fjhdsajgdgsgud gsaugdhgsdhjghjgfjgahsuifywuiuifhesa jsgfugsugfugefuesgf"
+          },
+          {
+            "event": "answer_correct",
+            "gameId": "C3F9",
+            "phaseNum": 27,
+            "userId": "admin",
+            "timestamp": "2026-08-10T22:06:49.380Z",
+            "attempt": 1,
+            "score": 100
+          },
+          {
+            "event": "evidence_collected",
+            "gameId": "C3F9",
+            "phaseNum": 27,
+            "userId": "admin",
+            "timestamp": "2026-08-10T22:06:49.386Z",
+            "evidenceId": "EV-C3F9"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C3F2",
+            "phaseNum": 20,
+            "userId": "admin",
+            "timestamp": "2026-08-10T22:30:27.832Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C3F3",
+            "phaseNum": 21,
+            "userId": "admin",
+            "timestamp": "2026-08-10T22:30:33.847Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C3F9",
+            "phaseNum": 27,
+            "userId": "admin",
+            "timestamp": "2026-08-10T23:13:46.281Z"
+          },
+          {
+            "event": "answer_submitted",
+            "gameId": "C3F9",
+            "phaseNum": 27,
+            "userId": "admin",
+            "timestamp": "2026-08-10T23:14:07.603Z",
+            "attempt": 1,
+            "answer": "Tese: A participacao feminina em 1933 resultou de mobilizacoes anteriores, mas continuou limitada por resistencias sociais. | Evidencias: Codigo Eleitoral de 1932, Exclusao politica na Republica Velha, Registro eleitoral local, Crivo do jornal, Resistencias locais | Limitacao: A ausencia de informacao nao prova que algo nao aconteceu. | Conclusao: Questão 1\nTipo: trecho historiográfico\nAutoria: Teresa Cristina de Novaes Marques\nObra: O voto feminino no Brasil\nEdição: 2. ed.\nData: 2019\nLocal/Editora: Brasília: Câmara dos Deputados, Edições Câmara\nPágina: 28\nCapítulo: “Cidadão: substantivo masculino”\nReferência: MARQUES, Teresa Cristina de Novaes. O voto feminino no Brasil. 2. ed. Brasília: Câmara dos Deputados, Edições Câmara, 2019.\n\nFonte didática:\nTipo: texto histórico-narrativo de apoio\nAutoria: Equipe de desenvolvimento do webjogo Luzes de Maio\nData: 2026\nNatureza: material pedagógico produzido especificamente para o jogo; não constitui fonte histórica primária.\nBase historiográfica principal: MARQUES, Teresa Cristina de Novaes. O voto feminino no Brasil. 2. ed. Brasília: Câmara dos Deputados, Edições Câmara, 2019, especialmente p. 27–29.\n\nTexto de apoio (criado pelos autores, com base no livro de Teresa):\nNo Brasil do século XIX, descobrir quem podia participar da política não era tão simples quanto procurar na lei uma frase dizendo “mulheres não podem votar”.\nA Constituição de 1824 utilizava a expressão “cidadãos ativos” para definir aqueles que poderiam exercer direitos políticos. Mas uma questão permanecia: quando a lei dizia “cidadãos”, as mulheres também estavam incluídas nessa palavra?\nEssa dúvida não era apenas gramatical. Ela decidia quem poderia se apresentar como sujeito político.\nMarques mostra que juristas da época, como Pimenta Bueno, interpretavam as mulheres como pertencentes à categoria dos cidadãos inativos, reconhecendo-lhes direitos civis, mas não direitos políticos. Essa interpretação se relacionava a uma tradição jurídica inspirada no modelo francês, no qual as mulheres também eram afastadas da cidadania política. A própria Constituição brasileira, porém, não dizia expressamente que as mulheres eram “cidadãs passivas” nem declarava literalmente que elas estavam proibidas de votar. Ainda assim, predominava a interpretação de que os legisladores não pretendiam incluí-las entre os cidadãos com direitos políticos.\nO desafio desta fase está em perceber que o silêncio de uma lei não significa, necessariamente, igualdade.\n\nPergunta:\nConsiderando a fonte e o contexto apresentado, por que a ausência de uma proibição explícita ao voto feminino não significava que as mulheres estavam automaticamente incluídas na cidadania política?\n\nA) Porque a Constituição de 1824 declarava expressamente que todas as mulheres pertenciam à categoria dos “cidadãos passivos” e, por isso, eram proibidas de votar.\nB) Porque expressões como “cidadão” e “cidadão ativo” eram interpretadas dentro de uma tradição política e jurídica que não reconhecia mulheres e homens da mesma maneira como sujeitos de direitos políticos. Assim, a exclusão podia existir mesmo sem uma frase que proibisse diretamente o voto feminino.\nC) Porque homens e mulheres eram juridicamente considerados cidadãos ativos, mas somente os homens conseguiam cumprir os critérios de renda estabelecidos para participar das eleições.\nD) Porque as mulheres já possuíam direitos políticos garantidos pela Constituição, mas ainda não existiam instituições eleitorais capazes de registrar seus votos.\n\nResposta correta: B\n\nFeedback da Sufragista\nSe o jogador acertar:\nSufragista:\nVocê encontrou a chave. A exclusão nem sempre precisa estar escrita como uma proibição. Às vezes, ela começa antes: na própria definição de quem é reconhecido como cidadão. Na História, o silêncio de uma lei também precisa ser investigado.\n\nSe o jogador errar:\nSufragista:\nObserve novamente a palavra “cidadãos”.\nO problema não é apenas descobrir se havia uma frase proibindo as mulheres de votar. É entender quem era reconhecido como parte da cidadania política quando essa palavra era usada. Leia a fonte outra vez e tente descobrir a diferença entre o que a lei dizia e como ela era interpretada.\n\nQuestão 2\n\nTipo: trecho historiográfico\nAutoria: Teresa Cristina de Novaes Marques\nObra: O voto feminino no Brasil\nEdição: 2. ed.\nData: 2019\nLocal/Editora: Brasília: Câmara dos Deputados, Edições Câmara\nSeção: “Um longo caminho até as urnas”\nReferência: MARQUES, Teresa Cristina de Novaes. O voto feminino no Brasil. 2. ed. Brasília: Câmara dos Deputados, Edições Câmara, 2019.\n\nFonte didática\nTipo: texto histórico-narrativo de apoio.\nAutoria: Equipe de desenvolvimento do webjogo Luzes de Maio.\nData: 2026.\nNatureza: material pedagógico produzido especificamente para o jogo; não constitui fonte histórica primária.\nBase historiográfica principal:\nMARQUES, Teresa Cristina de Novaes. O voto feminino no Brasil. 2. ed. Brasília: Câmara dos Deputados, Edições Câmara, 2019.\nMOTTA, José Flávio; LOPES, Luciana Suarez. “A mulher votante! Que calamidade! É o reinado das saias!”: sobre a conquista do voto feminino no Brasil. Informações Fipe, São Paulo, p. 45-52, nov. 2015.\n\nTexto de apoio: \n[CRIAÇÃO DOS DESENVOLVEDORES — baseada em MARQUES, 2019; MOTTA; LOPES, 2015]\n\nQuando o voto feminino foi reconhecido nacionalmente em 1932, a reivindicação já tinha uma história.\nDécadas antes, mulheres haviam ocupado jornais, recorrido às leis, procurado juntas eleitorais, escrito peças de teatro, organizado associações e pressionado o poder público. Nem todas essas iniciativas terminaram em vitória. Algumas foram rejeitadas, outras produziram brechas temporárias e muitas obrigaram políticos e juristas a se posicionarem diante de uma pergunta que insistia em retornar: por que as mulheres continuavam fora da decisão política?\nEm 1873, a professora mineira Francisca Senhorinha da Motta Diniz fundou O Sexo Feminino. Dois anos depois, uma edição inteira do periódico foi dedicada à defesa do sufrágio. A reivindicação começava a circular publicamente pela imprensa, muito antes de existir uma organização sufragista nacional.\nNa década seguinte, a cirurgiã-dentista Isabel de Sousa Mattos encontrou uma possível brecha na Lei Saraiva. A legislação reconhecia diplomas científicos como forma de comprovação da qualificação exigida aos eleitores. Isabel requereu seu alistamento em 1885 e conseguiu registrar-se como eleitora em São José do Norte, no Rio Grande do Sul, em 1887. Mas, quando levou esse registro à junta eleitoral em 1890, já durante a República, o presidente da mesa não permitiu que ela votasse.\nA disputa também chegou aos palcos. A jornalista Josefina Álvares de Azevedo, que desde 1888 publicava o jornal sufragista A Família, escreveu a comédia O voto feminino. Encenada em 1890, a peça transformava em humor e conflito doméstico uma questão que estava sendo debatida no mundo político: mulheres deveriam poder votar e ser eleitas?\nEm 1910, Leolinda Daltro e outras mulheres deram outro passo: organizaram formalmente o Partido Republicano Feminino. Registrado em 17 de dezembro daquele ano, o partido defendia o sufrágio feminino e passou a atuar em audiências, manifestações públicas e representações dirigidas ao Legislativo. A reivindicação já não estava somente nos jornais ou em pedidos individuais: transformava-se também em organização política coletiva.\nEm 1922, outra articulação ganhou alcance nacional. Bertha Lutz e suas companheiras reorganizaram a Liga para a Emancipação Intelectual da Mulher, dando origem à Federação Brasileira pelo Progresso Feminino (FBPF). A entidade combinou campanhas públicas, congressos, abaixo-assinados e pressão sobre parlamentares para defender os direitos políticos das mulheres.\nEntão, em 1928, algo diferente aconteceu no Rio Grande do Norte: mulheres não apenas reivindicaram o direito — foram às urnas. Após o Judiciário estadual admitir o alistamento feminino, eleitoras potiguares participaram de uma eleição complementar para o Senado. A experiência, porém, não se tornou imediatamente um precedente nacional: a validade daqueles votos foi contestada e eles acabaram anulados.\nEsses acontecimentos não formam uma sequência de vitórias. Formam uma sequência de tentativas, conflitos, avanços e recuos.\nAgora, seu desafio é reconstruir esse caminho.\n\nInstrução ao jogador\nAs datas desapareceram dos documentos.\nArraste os cartões e coloque os acontecimentos na ordem em que ocorreram.\nAtenção: não procure apenas “quem venceu primeiro”. Alguns desses acontecimentos terminaram em impedimentos ou derrotas. O que importa é reconstruir como a reivindicação pelo voto feminino foi mudando ao longo do tempo.\n\nCartões do jogador\nEmbaralhar — sem exibir datas\nCARTÃO A\n A reivindicação chega à imprensa\n O Sexo Feminino, de Francisca Senhorinha da Motta Diniz, passa a defender publicamente o direito político das mulheres.\nCARTÃO B\n Uma eleitora testa os limites da lei\n Isabel de Sousa Mattos consegue registrar-se como eleitora, mas posteriormente é impedida de exercer o voto.\nCARTÃO C\n O voto sobe ao palco\n Josefina Álvares de Azevedo transforma a controvérsia sobre a participação política feminina em uma peça teatral.\nCARTÃO D\n A reivindicação torna-se organização política\n Leolinda Daltro e outras mulheres organizam o Partido Republicano Feminino para defender o sufrágio e a emancipação feminina.\nCARTÃO E\n A mobilização ganha alcance nacional\n Bertha Lutz e outras ativistas organizam a Federação Brasileira pelo Progresso Feminino.\nCARTÃO F\n  Mulheres finalmente chegam às urnas — mas a disputa continua\n Eleitoras do Rio Grande do Norte participam de uma eleição, porém seus votos acabam anulados.\n\nGabarito interno do desenvolvedor\n1.º — Imprensa: Francisca Senhorinha da Motta Diniz\n 1873/1875 — O Sexo Feminino é fundado em 1873; em 7 de abril de 1875, uma edição é dedicada à defesa do sufrágio feminino.\n2.º — Isabel de Sousa Mattos\n 1885/1887/1890 — requer alistamento em 1885; obtém registro eleitoral em 1887; em 1890 apresenta seu documento para votar na eleição constituinte, mas é impedida pelo presidente da mesa.\n3.º — Josefina Álvares de Azevedo\n 1890 — a peça O voto feminino é levada ao palco e posteriormente publicada em A Família.\n4.º — Partido Republicano Feminino\n 1910 — registrado em 17 de dezembro, sob a presidência de Leolinda Daltro.\n5.º — Federação Brasileira pelo Progresso Feminino\n 1922 — em agosto, a antiga Liga para a Emancipação Intelectual da Mulher passa a se chamar FBPF.\n6.º — Rio Grande do Norte\n 1928 — mulheres potiguares votam nas eleições complementares para o Senado; seus votos são posteriormente anulados.\nRegra de interface\nAs datas não aparecem nos cartões antes da resposta.\nDepois que o jogador acerta a sequência, elas podem surgir gradualmente sobre a linha do tempo:\n1873/75 → 1885/87/90 → 1890 → 1910 → 1922 → 1928\n\nFeedback ao jogador\nSe acertar\nSufragista:\nVocê encontrou o fio que liga esses acontecimentos.\n1932 não começou em 1932.\nAntes da mudança da lei, mulheres já haviam escrito, requerido, protestado, organizado-se e até chegado às urnas.\nAlgumas portas se abriram. Outras foram fechadas novamente.\nA conquista foi construída justamente porque a reivindicação não desapareceu diante dessas recusas.\nSe errar\nSufragista:\nObserve novamente os cartões.\nEles não mostram uma única organização nem uma sequência contínua de vitórias. Mostram mulheres atuando em espaços diferentes e com estratégias diferentes.\nTente identificar o que permanece igual entre todos eles:\na reivindicação de participar das decisões políticas.\n\nQuestão 3\n\nVozes Pioneiras\nTipo de jogo: Associação entre personagem e atuação\nObjetivo histórico: Reconhecer que a luta pelo sufrágio feminino foi construída por mulheres que recorreram a estratégias diferentes — imprensa, teatro, organização política, requerimentos e articulação institucional — evitando reduzir a conquista a uma única liderança.\nTipo: trecho historiográfico com reprodução de fonte histórica\nAutoria: Teresa Cristina de Novaes Marques\nObra: O voto feminino no Brasil\nEdição: 2. ed.\nData: 2019\nLocal/Editora: Brasília: Câmara dos Deputados, Edições Câmara\nPágina: 61\nCapítulo: “Lei Saraiva”\nReferência: MARQUES, Teresa Cristina de Novaes. O voto feminino no Brasil. 2. ed. Brasília: Câmara dos Deputados, Edições Câmara, 2019.\nTrecho apresentado ao jogador\n“Queremos o direito de intervir nas eleições, de eleger e ser eleitas, como os homens, em igualdade de condições.”\n— Josefina Álvares de Azevedo, 1889, apud Marques, 2019, p. 61.\n\nFonte didática\nTipo: texto histórico-narrativo de apoio.\nAutoria: Equipe de desenvolvimento do webjogo Luzes de Maio.\nData: 2026.\nNatureza: material pedagógico produzido especificamente para o jogo; não constitui fonte histórica primária.\nBase historiográfica principal:\nMARQUES, Teresa Cristina de Novaes. O voto feminino no Brasil. 2. ed. Brasília: Câmara dos Deputados, Edições Câmara, 2019.\nMOTTA, José Flávio; LOPES, Luciana Suarez. “A mulher votante! Que calamidade! É o reinado das saias!”: sobre a conquista do voto feminino no Brasil. Informações Fipe, São Paulo, p. 45-52, nov. 2015.\n\nTexto de apoio\n[CRIAÇÃO DOS DESENVOLVEDORES — baseado em MARQUES, 2019; MOTTA; LOPES, 2015]\nA luta pelo voto feminino no Brasil não teve uma única voz — nem um único caminho.\nAinda no século XIX, Francisca Senhorinha da Motta Diniz utilizou a imprensa para questionar a posição ocupada pelas mulheres na sociedade. Professora e jornalista, fundou O Sexo Feminino em 1873 e, poucos anos depois, o periódico já defendia abertamente o direito das mulheres ao voto. O jornal transformava uma reivindicação ainda distante das urnas em tema de discussão pública.\nJosefina Álvares de Azevedo também fez da imprensa um espaço de atuação política. A partir de 1888, publicou o jornal sufragista A Família e defendeu que a igualdade política não poderia existir se as mulheres continuassem impedidas de eleger e ser eleitas. Mas sua atuação não ficou restrita às páginas do jornal: Josefina levou o debate também ao teatro, escrevendo a peça O voto feminino.\nAnos depois, Leolinda Daltro seguiu uma estratégia mais marcada pela mobilização pública e pela organização política. Professora, participou da criação do Partido Republicano Feminino, presidido por ela e registrado em 1910. Sua atuação envolveu representações ao Legislativo e outras formas de pressão pública. Marques mostra que Leolinda não se limitava aos abaixo-assinados: levava a reivindicação também às ruas e buscava chamar a atenção das autoridades para a exclusão política feminina.\nEm 1916, a professora mineira Mariana de Noronha Horta seguiu outro percurso. Em vez de fundar uma organização ou atuar por meio de um jornal, encaminhou diretamente à Câmara dos Deputados um requerimento solicitando a aprovação do sufrágio feminino. Segundo Marques, trata-se da primeira manifestação formal de uma mulher solicitando direitos políticos localizada no acervo da Câmara dos Deputados.\nNa década seguinte, Bertha Lutz e outras ativistas ampliaram a articulação do movimento. Em 1922, a organização da qual participavam passou a se chamar Federação Brasileira pelo Progresso Feminino (FBPF). A Federação promoveu congressos e buscou interlocução com figuras do mundo político, fortalecendo uma estratégia de pressão institucional pelo reconhecimento dos direitos femininos. Marques também destaca que Bertha e Leolinda defendiam o voto feminino, mas divergiam especialmente sobre como conquistá-lo.\nEssas trajetórias não precisam ser transformadas em uma disputa sobre quem foi “a responsável” pela conquista. Elas mostram algo mais importante: mulheres diferentes encontraram formas diferentes de entrar em uma arena política que ainda tentava mantê-las de fora.\nAgora, seu desafio é descobrir qual estratégia está ligada a cada uma dessas vozes.\n\nInstrução ao jogador\nNa tela aparecem cinco mulheres e cinco formas de atuação política, em cartões separados.\nArraste cada estratégia até a personagem correspondente.\nAtenção: mais de uma dessas mulheres atuou em diferentes frentes ao longo da vida. Nesta atividade, associe cada personagem à estratégia destacada pelas fontes para esta fase.\nEsse aviso é importante para não criar a falsa impressão de que cada uma delas só praticou uma única forma de militância.\n\nPersonagens\nFRANCISCA SENHORINHA DA MOTTA DINIZ\nProfessora e jornalista mineira. Utilizou um periódico dirigido por ela própria para colocar em circulação debates sobre educação, emancipação e direitos políticos das mulheres. A defesa do sufrágio apareceu nas páginas de O Sexo Feminino ainda no período imperial.\nJOSEFINA ÁLVARES DE AZEVEDO\nJornalista, escritora e dramaturga. Dirigiu o jornal A Família, defendeu explicitamente o direito de as mulheres votarem e serem eleitas e levou a discussão sufragista também aos palcos.\nLEOLINDA DALTRO\nProfessora e ativista. Esteve ligada ao Partido Republicano Feminino e adotou formas públicas de mobilização, pressão sobre autoridades e reivindicação direta dos direitos políticos femininos.\nBERTHA LUTZ\nBióloga e ativista feminista. Participou da formação da Federação Brasileira pelo Progresso Feminino, que articulou mulheres em torno de uma entidade de alcance nacional e buscou ampliar a pressão institucional pela conquista de direitos.\nMARIANA DE NORONHA HORTA\nProfessora de Belo Horizonte. Em 1916, utilizou uma via formal de participação política: encaminhou à Câmara dos Deputados um requerimento solicitando o reconhecimento do sufrágio feminino.\n\nCartões de atuação\nEmbaralhar\nCARTÃO A — IMPRENSA E CIDADANIA\n Utilizou O Sexo Feminino para levar ao debate público a emancipação e os direitos políticos das mulheres.\nCARTÃO B — IMPRENSA E TEATRO\n Defendeu que mulheres pudessem eleger e ser eleitas e transformou a controvérsia sobre o voto feminino também em uma peça teatral.\nCARTÃO C — ORGANIZAÇÃO E MOBILIZAÇÃO PÚBLICA\n Atuou por meio do Partido Republicano Feminino, de representações políticas e de manifestações públicas em defesa do sufrágio.\nCARTÃO D — FEDERAÇÃO E ARTICULAÇÃO INSTITUCIONAL\n Participou da organização de uma entidade nacional que promoveu congressos e pressionou o poder político pelo reconhecimento dos direitos femininos.\nCARTÃO E — REQUERIMENTO FORMAL\n Encaminhou diretamente aos deputados um pedido para que o direito político das mulheres fosse reconhecido.\n\nGabarito interno do desenvolvedor\nFrancisca Senhorinha da Motta Diniz\n ↔ CARTÃO A — Imprensa e cidadania\nO Sexo Feminino funcionou como espaço de defesa pública da emancipação feminina e do sufrágio. Motta e Lopes registram que o jornal foi fundado em 1873 e já em 1875 dedicava suas páginas à defesa do direito de voto.\nJosefina Álvares de Azevedo\n ↔ CARTÃO B — Imprensa e teatro\nDirigiu A Família e escreveu O voto feminino. Sua defesa ia além do direito de depositar um voto: reivindicava que as mulheres pudessem eleger e também ser eleitas.\nLeolinda Daltro\n ↔ CARTÃO C — Organização e mobilização pública\nLigada ao Partido Republicano Feminino, combinou representações dirigidas ao poder público com formas mais visíveis de mobilização. Em 1916, por exemplo, enviou representação à Câmara em nome do partido.\nBertha Lutz\n ↔ CARTÃO D — Federação e articulação institucional\nParticipou da formação da FBPF, registrada sob esse nome em 1922. A entidade promoveu congressos e buscou articulação com representantes políticos e outros atores públicos.\nMariana de Noronha Horta\n ↔ CARTÃO E — Requerimento formal\nEm agosto de 1916, encaminhou requerimento à Câmara dos Deputados solicitando a aprovação do sufrágio feminino. Marques o identifica como a primeira manifestação formal desse tipo encontrada no acervo da Câmara.\nFeedback ao jogador\nSe acertar\nSufragista:\nVocê percebeu o que os nomes, sozinhos, não mostram.\nUma conquista coletiva pode ter muitas vozes.\nAlgumas escreveram. Outras organizaram. Algumas foram diretamente ao Parlamento. Outras transformaram jornais, palcos e associações em espaços de disputa.\nNenhuma trajetória, sozinha, conta toda essa história.\nSe errar\nSufragista:\nObserve novamente as formas de atuação.\nElas não repetiram exatamente o mesmo caminho: há jornais, teatro, partidos, requerimentos e articulações institucionais.\nA pergunta não é apenas quem lutou, mas também como cada uma encontrou uma forma de fazer a reivindicação chegar ao espaço público.\n\n\n\nQuestão \nQuestão 4\nBertha e a Federação\nTipo de jogo: Conexões entre estratégia e impacto\nObjetivo histórico: Compreender como a Federação Brasileira pelo Progresso Feminino transformou reivindicações sufragistas já existentes em uma atuação nacional mais coordenada e institucional, reconhecendo a importância de Bertha Lutz sem atribuir a ela, isoladamente, a conquista do voto feminino.\n\nFonte histórica\nTipo: manifestação política da Federação Brasileira pelo Progresso Feminino, reproduzida em obra historiográfica.\nAutoria: Federação Brasileira pelo Progresso Feminino (FBPF).\nObra de consulta: O voto feminino no Brasil, de Teresa Cristina de Novaes Marques.\nEdição: 2. ed.\nData da obra de consulta: 2019.\nLocal/Editora: Brasília: Câmara dos Deputados, Edições Câmara.\nPáginas: 99–100.\nReferência: MARQUES, Teresa Cristina de Novaes. O voto feminino no Brasil. 2. ed. Brasília: Câmara dos Deputados, Edições Câmara, 2019.\nTrecho apresentado ao jogador\n“[...] àqueles que obedecem às leis, pagam impostos, assiste o direito de colaborar [...] na elaboração dessas mesmas leis.”\n— Federação Brasileira pelo Progresso Feminino, apud Marques, 2019, p. 99–100.\n\nFonte didática\nTipo: texto histórico-narrativo de apoio.\nAutoria: Equipe de desenvolvimento do webjogo Luzes de Maio.\nData: 2026.\nNatureza: material pedagógico produzido especificamente para o jogo; não constitui fonte histórica primária.\nBase historiográfica principal:\nMARQUES, Teresa Cristina de Novaes. O voto feminino no Brasil. 2. ed. Brasília: Câmara dos Deputados, Edições Câmara, 2019.\nMOTTA, José Flávio; LOPES, Luciana Suarez. “A mulher votante! Que calamidade! É o reinado das saias!”: sobre a conquista do voto feminino no Brasil. Informações Fipe, São Paulo, p. 45-52, nov. 2015.\n\nTexto de apoio\n[CRIAÇÃO DOS DESENVOLVEDORES — baseado em MARQUES, 2019; MOTTA; LOPES, 2015]\nQuando Bertha Lutz começou a ganhar projeção no movimento sufragista, a reivindicação pelo voto feminino no Brasil já tinha décadas de história. Jornais haviam defendido a participação política das mulheres, requerimentos tinham chegado ao Parlamento e outras militantes, como Leolinda Daltro, já haviam criado organizações e realizado manifestações públicas.\nA novidade não estava, portanto, em Bertha ter “inventado” a luta pelo voto. Estava também na maneira como ela e outras mulheres ajudaram a ampliar, organizar e levar essa reivindicação para diferentes espaços institucionais.\nEm agosto de 1922, a Liga para a Emancipação Intelectual da Mulher foi reorganizada e passou a chamar-se Federação Brasileira pelo Progresso Feminino (FBPF), presidida por Bertha Lutz. Em dezembro daquele mesmo ano, a entidade promoveu o Primeiro Congresso Internacional Feminista, no Rio de Janeiro, convidando inclusive figuras da política para discutir publicamente o sufrágio feminino.\nA Federação buscava dialogar diretamente com os espaços em que as decisões políticas eram tomadas. Em 1927, por exemplo, suas integrantes acompanharam a discussão de um projeto de sufrágio feminino na Comissão de Justiça do Senado, enviaram cartas aos senadores tentando convencê-los e protocolaram um abaixo-assinado com cerca de duas mil assinaturas. A proposta não foi aprovada naquele momento, mas a mobilização obrigava parlamentares favoráveis e contrários ao voto feminino a se posicionarem publicamente sobre o tema.\nUm dos argumentos utilizados pela Federação aparece no documento apresentado nesta fase: se as mulheres obedeciam às leis e pagavam impostos, por que não poderiam participar da elaboração dessas mesmas leis?\nA estratégia deslocava a discussão para uma contradição da própria cidadania: exigir deveres das mulheres enquanto lhes negava direitos políticos.\nEssa atuação ajudou a ampliar a presença organizada das sufragistas nos espaços de decisão. Mas isso não significa que Bertha Lutz ou a FBPF possam ser tratadas como responsáveis únicas pela conquista. A própria trajetória reconstruída nas fases anteriores mostra que a Federação entrou em uma luta que já possuía imprensa, ativistas, organizações, requerimentos e experiências anteriores.\nA importância da FBPF está justamente em compreender o que sua forma de organização acrescentou a essa história.\n\nInstrução ao jogador\nVocê encontrou diferentes estratégias utilizadas pela Federação e diferentes efeitos que elas poderiam produzir na disputa política.\nArraste cada estratégia até sua consequência histórica mais coerente.\nAtenção: uma estratégia política não garante automaticamente uma vitória. Relacione cada ação ao efeito que ela poderia produzir dentro da luta pelo sufrágio.\n\nCartões de estratégia\nEmbaralhar\nCARTÃO A — ORGANIZAÇÃO NACIONAL\nReunir militantes em uma federação e articular ações em torno de uma pauta comum.\nCARTÃO B — PRESSÃO SOBRE O PARLAMENTO\nAcompanhar debates legislativos, enviar cartas a senadores e apresentar abaixo-assinados.\nCARTÃO C — DEVERES E DIREITOS\nArgumentar que mulheres submetidas às leis e aos impostos também deveriam participar das decisões políticas.\nCARTÃO D — CONGRESSOS E DEBATE PÚBLICO\nPromover encontros e levar a reivindicação sufragista a espaços de discussão com militantes, intelectuais e representantes políticos.\nCARTÃO E — INTERLOCUÇÃO COM AUTORIDADES\nBuscar contato direto com aqueles que ocupavam espaços institucionais capazes de alterar a legislação.\n\nCartões de impacto\nEmbaralhar separadamente\nIMPACTO 1 — COORDENAÇÃO DA REIVINDICAÇÃO\nPermitiu articular ações e reivindicações para além de iniciativas exclusivamente individuais ou locais.\nIMPACTO 2 — PRESSÃO DIRETA SOBRE QUEM LEGISLAVA\nColocou parlamentares diante de demandas organizadas e os obrigou a posicionar-se sobre o sufrágio feminino.\nIMPACTO 3 — QUESTIONAMENTO DA CIDADANIA DESIGUAL\nEvidenciou a contradição entre exigir obrigações civis das mulheres e negar-lhes participação na elaboração das leis.\nIMPACTO 4 — AMPLIAÇÃO DA VISIBILIDADE DO SUFRÁGIO\nContribuiu para manter a reivindicação em circulação pública e colocá-la em diálogo com diferentes setores da sociedade.\nIMPACTO 5 — ACESSO A ESPAÇOS FORMAIS DE DECISÃO\nAproximou representantes do movimento dos ambientes em que reformas eleitorais e constitucionais eram discutidas.\n\nGabarito interno do desenvolvedor\nCARTÃO A — Organização nacional\n ↔ IMPACTO 1 — Coordenação da reivindicação\nA criação da FBPF deu maior estrutura organizativa e alcance à atuação de um grupo de sufragistas. Em 1922, a entidade foi formalizada sob esse nome e passou a desenvolver diferentes iniciativas políticas.\nCARTÃO B — Pressão sobre o Parlamento\n ↔ IMPACTO 2 — Pressão direta sobre quem legislava\nEm 1927, integrantes da Federação acompanharam a Comissão de Justiça, enviaram cartas a senadores e protocolaram um abaixo-assinado com aproximadamente duas mil assinaturas em apoio ao sufrágio. Apesar disso, a proposta discutida naquele momento não foi aprovada.\nCARTÃO C — Deveres e direitos\n ↔ IMPACTO 3 — Questionamento da cidadania desigual\nA FBPF utilizou a própria lógica da cidadania para questionar a exclusão: se as mulheres obedeciam às leis e contribuíam por meio de impostos, também deveriam participar das decisões sobre essas leis.\nCARTÃO D — Congressos e debate público\n ↔ IMPACTO 4 — Ampliação da visibilidade do sufrágio\nEm dezembro de 1922, a Federação promoveu o Primeiro Congresso Internacional Feminista no Rio de Janeiro e convidou figuras de destaque político para falar em defesa do sufrágio feminino.\nCARTÃO E — Interlocução com autoridades\n ↔ IMPACTO 5 — Acesso a espaços formais de decisão\nA atuação da Federação envolveu aproximação com parlamentares e autoridades, inclusive nos momentos de reforma das regras eleitorais. Mais tarde, quando Vargas indicou que pretendia reformular a legislação eleitoral, integrantes da FBPF e de outras organizações femininas buscaram conversar diretamente com o governo.\n\nDepois de completar as conexões\nA Sufragista aparece:\nNenhuma dessas estratégias garantia uma vitória.\nEm 1927, por exemplo, houve cartas, acompanhamento do Senado e milhares de assinaturas — e, ainda assim, a proposta defendida pelas sufragistas não avançou.\nEntão, por que essa mobilização importa?\nPorque uma derrota legislativa não apaga a pressão política construída durante o caminho.\n\nPergunta\nQual interpretação explica melhor o papel de Bertha Lutz e da Federação Brasileira pelo Progresso Feminino na conquista dos direitos políticos das mulheres?\nA) Bertha Lutz iniciou a luta pelo voto feminino no Brasil e tornou desnecessárias as reivindicações desenvolvidas por mulheres antes da criação da FBPF.\nB) A FBPF contribuiu para coordenar e ampliar institucionalmente uma reivindicação que já possuía uma trajetória anterior; Bertha Lutz foi uma liderança importante dentro de um processo histórico mais longo e coletivo.\nC) A aproximação da FBPF com autoridades garantiu que suas propostas fossem aceitas sempre que apresentadas ao Parlamento.\nD) A existência de uma federação nacional demonstra que mulheres de diferentes regiões e condições sociais participavam igualmente dos espaços políticos e das organizações sufragistas.\nResposta correta: B\n\nGabarito do desenvolvedor\nB.\nA atuação da Federação foi importante porque tornou mais organizada e visível uma parte da pressão pelo sufrágio, utilizando congressos, cartas, abaixo-assinados, acompanhamento parlamentar e interlocução com autoridades. Em 1927, por exemplo, a FBPF acompanhou diretamente a tramitação de uma proposta no Senado e apresentou cerca de duas mil assinaturas em sua defesa.\nEntretanto, Marques mostra que essas ações coexistiram com iniciativas anteriores e contemporâneas. A própria obra afirma que nem as ações de Leolinda Daltro nem as movimentações da FBPF haviam conseguido, naquele momento, assegurar o sufrágio, evidenciando que a conquista resultou de um processo de pressão, disputa e acumulação de iniciativas, e não da ação isolada de uma personagem.\n\nFeedback ao jogador\nSe acertar\nSufragista:\nVocê percebeu a diferença entre liderança e autoria exclusiva de uma conquista.\nBertha Lutz tornou-se uma figura central, e a Federação ampliou a pressão organizada sobre os espaços políticos.\nMas quando a FBPF entrou nessa disputa, outras mulheres já haviam aberto caminhos.\nReconhecer uma liderança não exige apagar quem veio antes — nem quem lutou ao lado dela.\nSe errar\nSufragista:\nVolte às conexões.\nA Federação organizou congressos, enviou cartas, reuniu assinaturas e pressionou parlamentares. Nem todas essas iniciativas foram vitoriosas.\nIsso mostra duas coisas ao mesmo tempo:\na FBPF teve importância política real, mas nenhuma organização explica sozinha uma conquista construída durante décadas."
+          },
+          {
+            "event": "answer_correct",
+            "gameId": "C3F9",
+            "phaseNum": 27,
+            "userId": "admin",
+            "timestamp": "2026-08-10T23:14:07.634Z",
+            "attempt": 1,
+            "score": 100
+          },
+          {
+            "event": "evidence_collected",
+            "gameId": "C3F9",
+            "phaseNum": 27,
+            "userId": "admin",
+            "timestamp": "2026-08-10T23:14:07.638Z",
+            "evidenceId": "EV-C3F9"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C3F9",
+            "phaseNum": 27,
+            "userId": "admin",
+            "timestamp": "2026-08-11T00:11:41.885Z"
+          },
+          {
+            "event": "answer_submitted",
+            "gameId": "C3F9",
+            "phaseNum": 27,
+            "userId": "admin",
+            "timestamp": "2026-08-11T00:11:56.974Z",
+            "attempt": 1,
+            "answer": "Tese: A participacao feminina em 1933 resultou de mobilizacoes anteriores, mas continuou limitada por resistencias sociais. | Evidencias: Exclusao politica na Republica Velha, Codigo Eleitoral de 1932, Registro eleitoral local, Crivo do jornal, Resistencias locais | Limitacao: Algumas mulheres nao deixaram registros escritos. | Conclusao: Obrigada por chegar até aqui e caminhar conosco por essa história.\n\nEsperamos que esta experiência tenha ajudado você a conhecer um pouco mais sobre o voto feminino em Muzambinho e sobre as mulheres que fizeram parte dessa conquista.\n\nA história continua além do jogo. Leia nosso artigo completo em: **[inserir link]**\n\nE, antes de ir, conte para nós como foi viver essa experiência. **Sua avaliação também faz parte dessa história.**"
+          },
+          {
+            "event": "answer_correct",
+            "gameId": "C3F9",
+            "phaseNum": 27,
+            "userId": "admin",
+            "timestamp": "2026-08-11T00:11:57.005Z",
+            "attempt": 1,
+            "score": 100
+          },
+          {
+            "event": "evidence_collected",
+            "gameId": "C3F9",
+            "phaseNum": 27,
+            "userId": "admin",
+            "timestamp": "2026-08-11T00:11:57.010Z",
+            "evidenceId": "EV-C3F9"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C3F9",
+            "phaseNum": 27,
+            "userId": "admin",
+            "timestamp": "2026-08-11T14:15:43.362Z"
+          },
+          {
+            "event": "answer_submitted",
+            "gameId": "C3F9",
+            "phaseNum": 27,
+            "userId": "admin",
+            "timestamp": "2026-08-11T14:15:59.409Z",
+            "attempt": 1,
+            "answer": "Tese: A participacao feminina em 1933 resultou de mobilizacoes anteriores, mas continuou limitada por resistencias sociais. | Evidencias: Exclusao politica na Republica Velha, Codigo Eleitoral de 1932, Registro eleitoral local, Crivo do jornal, Resistencias locais | Limitacao: O jornal apresenta apenas parte das opinioes existentes. | Conclusao: Obrigada por chegar até aqui e caminhar conosco por essa história.\n\nEsperamos que esta experiência tenha ajudado você a conhecer um pouco mais sobre o voto feminino em Muzambinho e sobre as mulheres que fizeram parte dessa conquista.\n\nA história continua além do jogo. Leia nosso artigo completo em: **[inserir link]**\n\nE, antes de ir, conte para nós como foi viver essa experiência. **Sua avaliação também faz parte dessa história.**"
+          },
+          {
+            "event": "answer_correct",
+            "gameId": "C3F9",
+            "phaseNum": 27,
+            "userId": "admin",
+            "timestamp": "2026-08-11T14:15:59.463Z",
+            "attempt": 1,
+            "score": 100
+          },
+          {
+            "event": "evidence_collected",
+            "gameId": "C3F9",
+            "phaseNum": 27,
+            "userId": "admin",
+            "timestamp": "2026-08-11T14:15:59.470Z",
+            "evidenceId": "EV-C3F9"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C3F9",
+            "phaseNum": 27,
+            "userId": "admin",
+            "timestamp": "2026-08-11T14:36:35.744Z"
+          },
+          {
+            "event": "answer_submitted",
+            "gameId": "C3F9",
+            "phaseNum": 27,
+            "userId": "admin",
+            "timestamp": "2026-08-11T14:36:49.254Z",
+            "attempt": 1,
+            "answer": "Tese: A participacao feminina em 1933 resultou de mobilizacoes anteriores, mas continuou limitada por resistencias sociais. | Evidencias: Exclusao politica na Republica Velha, Codigo Eleitoral de 1932, Registro eleitoral local, Crivo do jornal, Resistencias locais | Limitacao: O jornal apresenta apenas parte das opinioes existentes. | Conclusao: Obrigada por chegar até aqui e caminhar conosco por essa história.\n\nEsperamos que esta experiência tenha ajudado você a conhecer um pouco mais sobre o voto feminino em Muzambinho e sobre as mulheres que fizeram parte dessa conquista.\n\nA história continua além do jogo. Leia nosso artigo completo em: **[inserir link]**\n\nE, antes de ir, conte para nós como foi viver essa experiência. **Sua avaliação também faz parte dessa história.**"
+          },
+          {
+            "event": "answer_correct",
+            "gameId": "C3F9",
+            "phaseNum": 27,
+            "userId": "admin",
+            "timestamp": "2026-08-11T14:36:49.306Z",
+            "attempt": 1,
+            "score": 100
+          },
+          {
+            "event": "evidence_collected",
+            "gameId": "C3F9",
+            "phaseNum": 27,
+            "userId": "admin",
+            "timestamp": "2026-08-11T14:36:49.309Z",
+            "evidenceId": "EV-C3F9"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C3F9",
+            "phaseNum": 27,
+            "userId": "admin",
+            "timestamp": "2026-08-11T15:35:14.868Z"
+          },
+          {
+            "event": "answer_submitted",
+            "gameId": "C3F9",
+            "phaseNum": 27,
+            "userId": "admin",
+            "timestamp": "2026-08-11T15:35:26.072Z",
+            "attempt": 1,
+            "answer": "Tese: A participacao feminina em 1933 resultou de mobilizacoes anteriores, mas continuou limitada por resistencias sociais. | Evidencias: Codigo Eleitoral de 1932, Registro eleitoral local, Crivo do jornal, Resistencias locais, Direito formal e barreira pratica | Limitacao: O jornal apresenta apenas parte das opinioes existentes. | Conclusao: quando terminar de avaliar o jogo, o modal será fechado e voltará para a página inicial (todo o jogo, as fases e etc, terão de estar salvas, para que funcione bem a dinâmica. quando voltar para a página inicial, aquela animação de voltar para 2026 deve acontecer"
+          },
+          {
+            "event": "answer_correct",
+            "gameId": "C3F9",
+            "phaseNum": 27,
+            "userId": "admin",
+            "timestamp": "2026-08-11T15:35:26.109Z",
+            "attempt": 1,
+            "score": 100
+          },
+          {
+            "event": "evidence_collected",
+            "gameId": "C3F9",
+            "phaseNum": 27,
+            "userId": "admin",
+            "timestamp": "2026-08-11T15:35:26.113Z",
+            "evidenceId": "EV-C3F9"
+          }
+        ],
+        "finalLetterSeenVersion": "final-letter-20260811b",
+        "finalThanksShownVersion": "final-letter-20260811b",
+        "finalThanksDismissedVersion": "final-letter-20260811b"
+      }
     }
   ]
 }

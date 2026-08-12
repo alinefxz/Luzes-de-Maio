@@ -6,16 +6,16 @@
   <title>Mesa de Investigação | Luzes de Maio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Marck+Script&family=Outfit:wght@400;700;900&family=Parisienne&display=swap" rel="stylesheet">
   
-  <link rel="stylesheet" href="styles.css?v=20260730e">
-  <link rel="stylesheet" href="game.css?v=20260730e">
+  <link rel="stylesheet" href="styles.css?v=20260805b">
+  <link rel="stylesheet" href="game.css?v=20260811c">
 </head>
 <body class="game-body">
 
   <header class="glass-header game-header-dark">
     <div class="logo-area">
-      <img src="assets/logo.png" alt="Logo" class="main-logo" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\\'0 0 50 50\\' xmlns=\\'http://www.w3.org/2000/svg\\'><rect width=\\'50\\' height=\\'50\\' fill=\\'%2393585E\\'/></svg>';">
+      <img src="assets/logo.jpeg" alt="Logo" class="main-logo" onerror="this.src='assets/logo.png';">
       <div class="header-titles">
         <span class="header-kicker">Arquivo Central</span>
         <span class="header-title">Mesa de Investigação</span>
@@ -51,7 +51,7 @@
   </nav>
 
   <div class="top-actions-area">
-    <a href="index.html" class="back-arrow-btn" title="Voltar ao arquivo inicial" aria-label="Voltar ao arquivo inicial">
+    <a href="index.html" class="back-arrow-btn" data-back-transition title="Voltar ao arquivo inicial" aria-label="Voltar ao arquivo inicial">
       <span class="back-arrow-symbol" aria-hidden="true">&larr;</span>
     </a>
   </div>
@@ -152,7 +152,15 @@
   </section>
 
   <footer class="game-bottom-footer">
-    <p>&copy; 2026 Luzes de Maio. Preservar a memória é o primeiro passo para garantir o futuro.</p>
+    <div class="game-footer-inner">
+      <div class="game-footer-brand" aria-label="Arquivo Central Luzes de Maio">
+        <span>
+          <strong>Arquivo Central</strong>
+          <small>Luzes de Maio &bull; Muzambinho, 1933</small>
+        </span>
+      </div>
+      <p>Preservar a memória é o primeiro passo para garantir o futuro.</p>
+    </div>
   </footer>
 
   <style>
@@ -237,16 +245,16 @@
         <aside class="notebook-polaroids" aria-label="Fontes de consulta">
           <figure class="notebook-polaroid polaroid-muzambinho">
             <div class="notebook-polaroid-img">
-              <span>MZB</span>
+              <img src="assets/muzambinho.webp" alt="Vista de Muzambinho, no sul de Minas">
             </div>
             <figcaption>Muzambinho, 1933</figcaption>
           </figure>
 
-          <figure class="notebook-polaroid polaroid-women">
+          <figure class="notebook-polaroid polaroid-women polaroid-carlota" title="Primeira deputada federal eleita, Carlota Pereira de Queirós participou da Assembleia Constituinte 1934–1935. Domínio Público. Fonte: Agência Senado.">
             <div class="notebook-polaroid-img">
-              <span>VOTO</span>
+              <img src="assets/carlota.jpg" alt="Carlota Pereira de Queirós">
             </div>
-            <figcaption>Mulheres nas urnas</figcaption>
+            <figcaption>Carlota Pereira de Queirós</figcaption>
           </figure>
         </aside>
       </div>
@@ -404,7 +412,7 @@
 
   <div id="toastContainer"></div>
 
-  <script src="app.js?v=20260730e"></script>
-  <script src="game.js?v=20260730e"></script>
+  <script src="app.js?v=20260811c"></script>
+  <script src="game.js?v=20260811c"></script>
 </body>
 </html>
