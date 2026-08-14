@@ -6,14 +6,16 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const PUBLIC_DIR = path.join(__dirname, "..", "public");
-const DATA_DIR = path.join(__dirname, "data");
+const DATA_DIR = process.env.LM_DATA_DIR
+  ? path.resolve(process.env.LM_DATA_DIR)
+  : path.join(__dirname, "data");
 const USERS_PATH = path.join(DATA_DIR, "users.json");
 const REVIEWS_PATH = path.join(DATA_DIR, "reviews.json");
 const ADMIN_USERNAME = "admin";
 const ADMIN_PASSWORD = "admin";
 const FULL_UNLOCKED_PHASES = Array.from({ length: 28 }, (_, index) => index + 1);
 
-app.use(express.json());
+app.use(express.json({ limit: "2mb" }));
 app.use(express.static(PUBLIC_DIR));
 
 function blankProgress() {
@@ -197,11 +199,33 @@ app.post("/api/reviews", async (req, res) => {
     ...req.body,
     date: req.body?.date || new Date().toISOString()
   };
+  const reviewerName = String(review.name || "").trim();
+  const rating = Number(review.rating);
+  if (!reviewerName || !Number.isFinite(rating) || rating <= 0) {
+    return res.status(400).json({ error: "Avaliacao incompleta." });
+  }
+
   const data = await readJSON(REVIEWS_PATH, { reviews: [] });
   data.reviews = Array.isArray(data.reviews) ? data.reviews : [];
   data.reviews.unshift(review);
   await writeJSON(REVIEWS_PATH, data);
-  res.json({ success: true });
+
+  const usersData = await readJSON(USERS_PATH, { current: null, users: [] });
+  usersData.users = Array.isArray(usersData.users) ? usersData.users : [];
+  const reviewerIndex = usersData.users.findIndex(user => String(user.name || "").trim().toLowerCase() === reviewerName.toLowerCase());
+  if (reviewerIndex >= 0) {
+    const reviewer = usersData.users[reviewerIndex];
+    reviewer.progress = normalizeProgress(reviewer.progress, reviewerName.toLowerCase() === ADMIN_USERNAME);
+    reviewer.progress.finalReview = review;
+    reviewer.updatedAt = new Date().toISOString();
+    usersData.users[reviewerIndex] = reviewer;
+    if (usersData.current && String(usersData.current.name || "").trim().toLowerCase() === reviewerName.toLowerCase()) {
+      usersData.current = reviewer;
+    }
+    await writeJSON(USERS_PATH, usersData);
+  }
+
+  res.status(201).json({ success: true, review });
 });
 
 app.listen(PORT, () => console.log(`Jogo rodando em: http://localhost:${PORT}`));

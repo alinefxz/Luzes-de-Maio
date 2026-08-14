@@ -441,6 +441,10 @@ const GameLogic = {
                         ? await this.store.saveReviewAndWait(review)
                         : { user: this.store.saveReview(review), synced: true };
 
+                    if(!result.synced && window.location.protocol !== 'file:') {
+                        throw new Error('review-sync-failed');
+                    }
+
                     this.user = result.user;
                     this.progress = this.store.ensureProgress(this.user.progress);
                     this.usersDB = this.store.readUsers();
@@ -2479,11 +2483,12 @@ GameLogic.unlockNextPhase = function(current, options = {}) {
 };
 
 GameLogic.showWrongAnswerHelp = function(data) {
-  const hint = data.hint || "Releia o documento com calma. A resposta costuma estar em uma data, palavra-chave ou detalhe do registro.";
-  const curiosity = data.curiosity || "Curiosidade: arquivos historicos tambem ensinam pelos erros, porque cada tentativa obriga a olhar a pista por outro angulo.";
+  const hint = data.wrongFeedback || data.hint || "Releia o documento com calma. A resposta costuma estar em uma data, palavra-chave ou detalhe do registro.";
+  const lines = [hint];
+  if(data.curiosity) lines.push(`Curiosidade: ${data.curiosity}`);
   const npcOverlay = document.getElementById('npcOverlay');
   if(npcOverlay) npcOverlay.style.zIndex = '99999';
-  this.startDialogue([hint, `Curiosidade: ${curiosity}`], "wrong_answer");
+  this.startDialogue(lines, "wrong_answer");
 };
 
 EvidenceSystem.tokenizeHighlightText = function(data) {
@@ -2726,7 +2731,7 @@ EvidenceSystem.bindActivity = function(overlay, title, text, data) {
     overlay.querySelectorAll('.drag-card, .word-chip').forEach(el => { el.disabled = false; el.classList.remove('used'); });
     overlay.querySelectorAll('.blank-slot').forEach(slot => { slot.textContent = '_____'; slot.dataset.value = ''; });
     const line = overlay.querySelector('[data-headline-line]');
-    if(line) line.innerHTML = '<span>Monte a manchete aqui</span>';
+    if(line) line.innerHTML = `<span>${data.mode === 'headlineInvestigation' ? 'Monte o título aqui' : 'Monte a manchete aqui'}</span>`;
     state.order = [];
     state.selected.clear();
     state.answers = {};
@@ -3673,11 +3678,10 @@ GameLogic.startDialogue = function(lines, context) {
 
   const overlay = document.getElementById('npcOverlay');
   const nameTag = overlay?.querySelector('.npc-name-tag');
-  const isLamp = context === 'wrong_answer';
 
-  overlay?.classList.toggle('npc-lamp', isLamp);
-  overlay?.classList.toggle('npc-suffragist', !isLamp);
-  if (nameTag) nameTag.innerText = isLamp ? 'Dica' : 'A Sufragista';
+  overlay?.classList.remove('npc-lamp');
+  overlay?.classList.add('npc-suffragist');
+  if (nameTag) nameTag.innerText = 'A Sufragista';
 };
 
 const LMOriginalAdvanceDialogue = GameLogic.advanceDialogue;
@@ -3708,7 +3712,7 @@ GameLogic.advanceDialogue = function() {
    ========================================================= */
 GameLogic.loadPhaseContent = async function() {
   try {
-    const response = await fetch('content/phases.json?v=20260805b', { cache: 'no-store' });
+    const response = await fetch('content/phases.json?v=20260813i', { cache: 'no-store' });
     if(!response.ok) throw new Error('phase-content-not-found');
     this.phaseContent = await response.json();
   } catch (error) {
@@ -3948,6 +3952,39 @@ EvidenceSystem.sourceInfoHTML = function(source = {}) {
   return rows.map(([label, value]) => `<p><strong>${label}:</strong> ${this.escapeHTML(value)}</p>`).join('');
 };
 
+EvidenceSystem.referenceInfoHTML = function(source = {}, kind = 'historical') {
+  if(!source || !Object.keys(source).length) {
+    return '<p>Referência em preparação para esta ficha.</p>';
+  }
+
+  const labels = kind === 'didactic'
+    ? [
+        ['Tipo', source.type],
+        ['Autoria', source.author],
+        ['Data', source.date],
+        ['Natureza', source.nature],
+        ['Base historiográfica principal', source.basis]
+      ]
+    : [
+        ['Tipo', source.type],
+        ['Autoria', source.author],
+        ['Obra', source.work],
+        ['Edição', source.edition],
+        ['Data', source.date],
+        ['Local/Editora', source.placePublisher],
+        ['Página', source.page],
+        ['Capítulo', source.chapter],
+        ['Seção', source.section],
+        ['Trecho apresentado', source.excerpt],
+        ['Referência', source.reference]
+      ];
+
+  return labels
+    .filter(([, value]) => value)
+    .map(([label, value]) => `<p><strong>${label}:</strong> ${this.escapeHTML(value)}</p>`)
+    .join('');
+};
+
 EvidenceSystem.spawnEvidence = function(title, text, phaseData) {
   document.getElementById('investigationModal')?.remove();
 
@@ -3955,7 +3992,14 @@ EvidenceSystem.spawnEvidence = function(title, text, phaseData) {
   overlay.id = 'investigationModal';
   overlay.className = 'investigation-overlay active';
   const activityHTML = this.renderActivity(phaseData);
-  const sourceHTML = this.sourceInfoHTML(phaseData.source);
+  const historicalSourceHTML = this.referenceInfoHTML(phaseData.historicalSource || phaseData.source, 'historical');
+  const didacticSourceHTML = this.referenceInfoHTML(phaseData.didacticSource || {
+    type: phaseData.source?.type,
+    author: phaseData.source?.author,
+    date: phaseData.source?.date,
+    nature: phaseData.source?.note,
+    basis: phaseData.source?.collection
+  }, 'didactic');
 
   overlay.innerHTML = `
     <div class="investigation-dossier" id="dossierContainer">
@@ -3964,21 +4008,16 @@ EvidenceSystem.spawnEvidence = function(title, text, phaseData) {
         <div class="dossier-paper-pad">
           <div class="form-tag">DOCUMENTO APREENDIDO</div>
           <h2 class="evidence-title">${this.escapeHTML(title)}</h2>
-          <div class="source-tabs" role="tablist" aria-label="Fonte historica">
+          <div class="source-tabs" role="tablist" aria-label="Documentação da fase">
             <button type="button" class="source-tab active" data-source-tab="document">Documento</button>
-            <button type="button" class="source-tab" data-source-tab="transcription">Transcricao</button>
-            <button type="button" class="source-tab" data-source-tab="info">Fonte</button>
+            <button type="button" class="source-tab" data-source-tab="historical">Fonte histórica</button>
+            <button type="button" class="source-tab" data-source-tab="didactic">Fonte didática</button>
           </div>
           <div class="source-panel active" data-source-panel="document">
-            <div class="document-placeholder">
-              <span>${this.escapeHTML(phaseData.source?.type || 'documento')}</span>
-              <strong>${this.escapeHTML(phaseData.source?.date || 'arquivo')}</strong>
-            </div>
+            <div class="evidence-text source-document-text">${text}</div>
           </div>
-          <div class="source-panel" data-source-panel="transcription">
-            <div class="evidence-text">${text}</div>
-          </div>
-          <div class="source-panel source-info" data-source-panel="info">${sourceHTML}</div>
+          <div class="source-panel source-info source-reference-sheet" data-source-panel="historical">${historicalSourceHTML}</div>
+          <div class="source-panel source-info source-reference-sheet" data-source-panel="didactic">${didacticSourceHTML}</div>
         </div>
       </div>
       <div class="dossier-page page-right phase-activity-page">
@@ -4034,13 +4073,28 @@ EvidenceSystem.renderActivity = function(data) {
 
   if(data.mode === 'chronology' || data.mode === 'rightsStack') {
     const items = data.events || data.rights || [];
+    const bankItems = [...items];
+    if(data.shuffleEvents && bankItems.length > 1) {
+      for(let index = bankItems.length - 1; index > 0; index -= 1) {
+        const swapIndex = Math.floor(Math.random() * (index + 1));
+        [bankItems[index], bankItems[swapIndex]] = [bankItems[swapIndex], bankItems[index]];
+      }
+      if(bankItems.every((item, index) => item.id === items[index].id)) bankItems.push(bankItems.shift());
+    }
     const orderClass = data.mode === 'rightsStack' ? 'rights-lane' : 'chronology-lane';
     return `
       <div class="drop-lane ${orderClass}">
         ${items.map((_, index) => `<div class="drop-slot" data-slot-index="${index}"><span>${index + 1}</span><em>Toque ou solte aqui</em></div>`).join('')}
       </div>
-      <div class="activity-bank">
-        ${items.map(item => `<button class="activity-card drag-card" type="button" draggable="true" data-order-id="${item.id}" data-order-label="${this.escapeHTML(item.label)}">${data.mode === 'rightsStack' ? '' : `<strong>${this.escapeHTML(item.year || '')}</strong>`}${this.escapeHTML(item.label)}</button>`).join('')}
+      <div class="activity-bank ${data.mode === 'chronology' ? 'chronology-bank' : ''}">
+        ${bankItems.map(item => {
+          const orderLabel = item.slotLabel || (item.title ? `${item.title}: ${item.label}` : item.label);
+          return `<button class="activity-card drag-card" type="button" draggable="true" data-order-id="${item.id}" data-order-label="${this.escapeHTML(orderLabel)}">
+            ${data.mode !== 'rightsStack' && !data.concealDates ? `<strong class="chronology-card-date">${this.escapeHTML(item.year || '')}</strong>` : ''}
+            ${item.title ? `<span class="chronology-card-title">${this.escapeHTML(item.title)}</span>` : ''}
+            <span class="chronology-card-copy">${this.escapeHTML(item.label)}</span>
+          </button>`;
+        }).join('')}
       </div>
       ${submit(data.mode === 'rightsStack' ? 'Carimbar escada' : 'Verificar ordem')}`;
   }
@@ -4058,10 +4112,22 @@ EvidenceSystem.renderActivity = function(data) {
   }
 
   if(data.mode === 'quoteMatch') {
+    const people = [...data.people];
+    const strategies = [...data.quotes];
+    if(data.shuffleAssociations && people.length > 1) {
+      for(let index = people.length - 1; index > 0; index -= 1) {
+        const swapIndex = Math.floor(Math.random() * (index + 1));
+        [people[index], people[swapIndex]] = [people[swapIndex], people[index]];
+      }
+      for(let index = strategies.length - 1; index > 0; index -= 1) {
+        const swapIndex = Math.floor(Math.random() * (index + 1));
+        [strategies[index], strategies[swapIndex]] = [strategies[swapIndex], strategies[index]];
+      }
+    }
     return `
       <div class="assoc-game quote-drop-game" data-assoc-game data-assoc-mode="quoteMatch">
         <div class="quote-person-shelf assoc-bank">
-          ${data.people.map(person => `
+          ${people.map(person => `
             <button class="assoc-token quote-person-token" type="button" draggable="true" data-assoc-token="${person.id}" data-token-label="${this.escapeHTML(person.name)}" data-initial="${this.escapeHTML(person.name.charAt(0))}">
               ${this.renderPersonPortrait(person)}
               <strong>${this.escapeHTML(person.name)}</strong>
@@ -4069,14 +4135,26 @@ EvidenceSystem.renderActivity = function(data) {
           `).join('')}
         </div>
         <div class="quote-phrase-grid">
-          ${data.quotes.map(quote => `
+          ${strategies.map(quote => `
             <article class="quote-drop-card" data-assoc-target="${quote.id}">
               <button class="quote-drop-corner assoc-drop-zone" type="button" data-assoc-drop="${quote.id}"><span>Solte aqui</span></button>
+              ${quote.title ? `<strong class="quote-strategy-label">${this.escapeHTML(quote.title)}</strong>` : ''}
               <p>${this.escapeHTML(quote.text)}</p>
             </article>
           `).join('')}
         </div>
       </div>
+      ${data.closingQuestion ? `
+        <section class="association-closing-question">
+          <h3>${this.escapeHTML(data.closingQuestion.question)}</h3>
+          <div class="quiz-options">
+            ${data.closingQuestion.options.map((option, index) => `
+              <button class="quiz-checkbox-btn" type="button" data-quiz-index="${index}">
+                <span class="check-box"></span>
+                <span class="option-text">${this.escapeHTML(option)}</span>
+              </button>`).join('')}
+          </div>
+        </section>` : ''}
       ${submit('Confirmar associacoes')}`;
   }
 
@@ -4098,12 +4176,79 @@ EvidenceSystem.renderActivity = function(data) {
       ${submit('Confirmar restauracao')}`;
   }
 
+  if(data.mode === 'restoreInvestigation') {
+    let blankIndex = 0;
+    const textHTML = data.template.map(part => {
+      const blank = data.blanks[blankIndex];
+      if(blank && part === blank.answer) {
+        blankIndex += 1;
+        return `<button class="blank-slot" type="button" data-blank-id="${blank.id}" data-answer="${this.escapeHTML(blank.answer)}">_____</button>`;
+      }
+      return `<span>${this.escapeHTML(part)}</span>`;
+    }).join('');
+    return `
+      <section class="restore-investigation">
+        <div class="restore-step-label">Etapa 1 &bull; Restauração da nota</div>
+        <div class="restore-text">${textHTML}</div>
+        <div class="word-bank restore-word-bank">
+          ${data.words.map(word => `<button class="word-chip" type="button" draggable="true" data-word="${this.escapeHTML(word)}">${this.escapeHTML(word)}</button>`).join('')}
+        </div>
+        <section class="sequential-activity documentary-rounds restore-rounds" data-sequential-activity data-sequential-mode="quiz">
+          <header class="sequential-progress">
+            <span data-round-counter>Questão 1 de ${data.rounds.length}</span>
+            <div class="sequential-progress-track" aria-hidden="true"><i data-round-progress></i></div>
+          </header>
+          <div class="sequential-stage" data-round-stage></div>
+          <nav class="sequential-nav" aria-label="Navegação pelas questões de interpretação">
+            <button class="sequential-arrow-button previous" type="button" data-round-previous aria-label="Questão anterior" title="Questão anterior" disabled><span class="sequential-arrow" aria-hidden="true">⟵</span></button>
+            <button class="sequential-arrow-button next" type="button" data-round-next aria-label="Próxima questão" title="Próxima questão"><span class="sequential-arrow" aria-hidden="true">⟶</span></button>
+            <span class="sequential-complete-stamp" data-round-complete hidden><small>Etapa</small><strong>Concluída</strong></span>
+          </nav>
+        </section>
+      </section>
+      ${submit('Concluir restauração e análise')}`;
+  }
+
   if(data.mode === 'votingBooth') {
     return `
       <div class="booth-card">
         ${data.choices.map(choice => `<button class="activity-card" type="button" data-booth-id="${choice.id}" data-correct="${choice.correct}">${this.escapeHTML(choice.text)}</button>`).join('')}
       </div>
       ${submit('Confirmar decisao')}`;
+  }
+
+  if(data.mode === 'multiRoundQuiz') {
+    return `
+      <section class="sequential-activity documentary-rounds" data-sequential-activity data-sequential-mode="quiz">
+        <header class="sequential-progress">
+          <span data-round-counter>Rodada 1 de ${data.rounds.length}</span>
+          <div class="sequential-progress-track" aria-hidden="true"><i data-round-progress></i></div>
+        </header>
+        <div class="sequential-stage" data-round-stage></div>
+        <nav class="sequential-nav" aria-label="Navegação pelas rodadas">
+          <button class="sequential-arrow-button previous" type="button" data-round-previous aria-label="Rodada anterior" title="Rodada anterior" disabled><span class="sequential-arrow" aria-hidden="true">⟵</span></button>
+          <button class="sequential-arrow-button next" type="button" data-round-next aria-label="Próxima rodada" title="Próxima rodada"><span class="sequential-arrow" aria-hidden="true">⟶</span></button>
+          <span class="sequential-complete-stamp" data-round-complete hidden><small>Etapa</small><strong>Concluída</strong></span>
+        </nav>
+      </section>
+      ${submit('Carimbar quatro rodadas')}`;
+  }
+
+  if(data.mode === 'interviewBooth') {
+    return `
+      <section class="sequential-activity interview-rounds" data-sequential-activity data-sequential-mode="interview">
+        <header class="sequential-progress">
+          <span data-round-counter>Entrevista 1 de ${data.interviews.length}</span>
+          <div class="sequential-progress-track" aria-hidden="true"><i data-round-progress></i></div>
+        </header>
+        <div class="sequential-stage" data-round-stage></div>
+        <nav class="sequential-nav" aria-label="Navegação pelas entrevistas">
+          <button class="sequential-arrow-button previous" type="button" data-round-previous aria-label="Entrevista anterior" title="Entrevista anterior" disabled><span class="sequential-arrow" aria-hidden="true">⟵</span></button>
+          <button class="sequential-arrow-button next" type="button" data-round-next aria-label="Próxima entrevista" title="Próxima entrevista"><span class="sequential-arrow" aria-hidden="true">⟶</span></button>
+          <span class="sequential-complete-stamp" data-round-complete hidden><small>Etapa</small><strong>Concluída</strong></span>
+        </nav>
+      </section>
+      ${submit('Confirmar decisões da cabine')}`;
   }
 
   if(data.mode === 'headlineOrder') {
@@ -4113,6 +4258,34 @@ EvidenceSystem.renderActivity = function(data) {
         ${data.words.map((word, index) => `<button class="word-chip" type="button" draggable="true" data-word="${this.escapeHTML(word)}" data-word-index="${index}">${this.escapeHTML(word)}</button>`).join('')}
       </div>
       ${submit('Confirmar manchete')}`;
+  }
+
+  if(data.mode === 'headlineInvestigation') {
+    return `
+      <section class="headline-investigation">
+        <div class="headline-step-label">Etapa 1 &bull; Reconstrução do título</div>
+        <div class="headline-line" data-headline-line><span>Monte o título aqui</span></div>
+        <div class="word-bank headline-bank">
+          ${data.words.map((word, index) => `<button class="word-chip" type="button" draggable="true" data-word="${this.escapeHTML(word)}" data-word-index="${index}">${this.escapeHTML(word)}</button>`).join('')}
+        </div>
+        <blockquote class="headline-source-fragment">
+          <span>Etapa 2 &bull; Fragmento do documento</span>
+          <p>${this.escapeHTML(data.fragment || '')}</p>
+        </blockquote>
+        <section class="sequential-activity documentary-rounds headline-rounds" data-sequential-activity data-sequential-mode="quiz">
+          <header class="sequential-progress">
+            <span data-round-counter>Rodada 1 de ${data.rounds.length}</span>
+            <div class="sequential-progress-track" aria-hidden="true"><i data-round-progress></i></div>
+          </header>
+          <div class="sequential-stage" data-round-stage></div>
+          <nav class="sequential-nav" aria-label="Navegação pela leitura da manchete">
+            <button class="sequential-arrow-button previous" type="button" data-round-previous aria-label="Análise anterior" title="Análise anterior" disabled><span class="sequential-arrow" aria-hidden="true">⟵</span></button>
+            <button class="sequential-arrow-button next" type="button" data-round-next aria-label="Próxima análise" title="Próxima análise"><span class="sequential-arrow" aria-hidden="true">⟶</span></button>
+            <span class="sequential-complete-stamp" data-round-complete hidden><small>Etapa</small><strong>Concluída</strong></span>
+          </nav>
+        </section>
+      </section>
+      ${submit('Concluir investigação da manchete')}`;
   }
 
   if(data.mode === 'wireBoard') {
@@ -4135,34 +4308,65 @@ EvidenceSystem.renderActivity = function(data) {
   }
 
   if(data.mode === 'connections') {
-    const options = Array.from(new Set(data.pairs.flatMap(item => item.options || [])));
+    const impactItems = data.impacts
+      ? [...data.impacts]
+      : Array.from(new Set(data.pairs.flatMap(item => item.options || []))).map(option => ({ id: option, title: option, text: '' }));
+    if(data.shuffleAssociations && impactItems.length > 1) {
+      for(let index = impactItems.length - 1; index > 0; index -= 1) {
+        const swapIndex = Math.floor(Math.random() * (index + 1));
+        [impactItems[index], impactItems[swapIndex]] = [impactItems[swapIndex], impactItems[index]];
+      }
+    }
     return `
       <div class="assoc-game pair-drop-game connection-drop-game" data-assoc-game data-assoc-mode="connections">
-        <div class="pair-option-shelf assoc-bank">
-          ${options.map(option => `<button class="assoc-token pair-option-token" type="button" draggable="true" data-assoc-token="${this.escapeHTML(option)}" data-token-label="${this.escapeHTML(option)}">${this.escapeHTML(option)}</button>`).join('')}
+        <div class="pair-option-shelf connection-impact-shelf assoc-bank">
+          ${impactItems.map(item => `<button class="assoc-token pair-option-token connection-impact-token" type="button" draggable="true" data-assoc-token="${this.escapeHTML(item.id)}" data-token-label="${this.escapeHTML(item.title)}"><strong>${this.escapeHTML(item.title)}</strong>${item.text ? `<span>${this.escapeHTML(item.text)}</span>` : ''}</button>`).join('')}
         </div>
-        <div class="pair-target-grid">
+        <div class="pair-target-grid connection-strategy-grid">
           ${data.pairs.map(item => `
             <article class="pair-drop-card" data-assoc-target="${item.id}">
               <strong>${this.escapeHTML(item.clue)}</strong>
+              ${item.description ? `<p>${this.escapeHTML(item.description)}</p>` : ''}
               <button class="pair-drop-slot assoc-drop-zone" type="button" data-assoc-drop="${item.id}"><span>Solte aqui</span></button>
             </article>
           `).join('')}
         </div>
       </div>
+      ${data.closingQuestion ? `
+        <section class="association-closing-question">
+          <h3>${this.escapeHTML(data.closingQuestion.question)}</h3>
+          <div class="quiz-options">
+            ${data.closingQuestion.options.map((option, index) => `
+              <button class="quiz-checkbox-btn" type="button" data-quiz-index="${index}">
+                <span class="check-box"></span>
+                <span class="option-text">${this.escapeHTML(option)}</span>
+              </button>`).join('')}
+          </div>
+        </section>` : ''}
       ${submit('Confirmar associacoes')}`;
   }
 
   if(data.mode === 'factOpinion') {
-    return data.statements.map(item => `
-      <div class="activity-card" data-statement-id="${item.id}">
-        ${this.escapeHTML(item.text)}
-        <div class="choice-row">
-          <button class="mini-action-btn" type="button" data-value="fato">Fato</button>
-          <button class="mini-action-btn" type="button" data-value="opiniao">Opiniao</button>
-        </div>
+    const categories = data.categories || [
+      { id: 'fato', label: 'Fato' },
+      { id: 'opiniao', label: 'Opinião' }
+    ];
+    return `
+      <div class="classification-legend" aria-label="Categorias da classificação">
+        ${categories.map(category => `<span>${this.escapeHTML(category.label)}</span>`).join('')}
       </div>
-    `).join('') + submit('Confirmar crivo');
+      <div class="classification-list">
+        ${data.statements.map((item, index) => `
+          <article class="activity-card classification-card" data-statement-id="${item.id}">
+            <span class="classification-number">${String(index + 1).padStart(2, '0')}</span>
+            <p>${this.escapeHTML(item.text)}</p>
+            <div class="choice-row classification-choice-row">
+              ${categories.map(category => `<button class="mini-action-btn" type="button" data-value="${this.escapeHTML(category.id)}">${this.escapeHTML(category.label)}</button>`).join('')}
+            </div>
+          </article>
+        `).join('')}
+      </div>
+      ${submit('Confirmar classificação')}`;
   }
 
   if(data.mode === 'highlight') {
@@ -4188,6 +4392,50 @@ EvidenceSystem.renderActivity = function(data) {
         ${data.options.map((opt, index) => `<button class="quiz-checkbox-btn" type="button" data-quiz-index="${index}"><span class="check-box"></span><span class="option-text">${this.escapeHTML(opt)}</span></button>`).join('')}
       </div>
       ${submit('Confirmar interpretacao')}`;
+  }
+
+  if(data.mode === 'layeredMagnifier') {
+    return `
+      <section class="layered-magnifier-investigation">
+        <header class="magnifier-zone-progress">
+          <strong>Leitura em camadas</strong>
+          <span>Revele as três zonas do artigo antes de interpretar.</span>
+        </header>
+        <div class="magnifier-zone-list" data-magnifier-zone-list>
+          ${data.magnifierZones.map((zone, index) => `
+            <article class="magnifier-zone-card${index === 0 ? ' active' : ''}" data-magnifier-zone-card="${index}" ${index === 0 ? '' : 'hidden'}>
+              <h3>${this.escapeHTML(zone.label)}</h3>
+              <div class="worn-paper worn-paper-magnifier layered-worn-paper" data-worn-paper data-worn-zone="${this.escapeHTML(zone.id)}" tabindex="0" role="button" aria-label="Passe a lupa para revelar ${this.escapeHTML(zone.label)}">
+                <div class="worn-cover">
+                  <span>Documento desgastado</span>
+                  <p>${this.escapeHTML(zone.cover)}</p>
+                </div>
+                <div class="worn-hidden-text" data-worn-text>${this.escapeHTML(zone.text)}</div>
+                <span class="magnifier-cursor" data-magnifier-cursor aria-hidden="true"><img src="assets/lupa.png" alt=""></span>
+              </div>
+            </article>
+          `).join('')}
+        </div>
+        <nav class="magnifier-zone-nav" aria-label="Navegação pelas zonas do documento">
+          <button class="sequential-arrow-button previous" type="button" data-zone-previous aria-label="Área anterior" title="Área anterior" disabled><span class="sequential-arrow" aria-hidden="true">⟵</span></button>
+          <span data-zone-counter>Área 1 de ${data.magnifierZones.length}</span>
+          <button class="sequential-arrow-button next" type="button" data-zone-next aria-label="Próxima área" title="Próxima área"><span class="sequential-arrow" aria-hidden="true">⟶</span></button>
+          <span class="sequential-complete-stamp" data-zone-complete hidden><small>Etapa</small><strong>Concluída</strong></span>
+        </nav>
+        <section class="sequential-activity documentary-rounds magnifier-rounds" data-sequential-activity data-sequential-mode="quiz">
+          <header class="sequential-progress">
+            <span data-round-counter>Rodada 1 de ${data.rounds.length}</span>
+            <div class="sequential-progress-track" aria-hidden="true"><i data-round-progress></i></div>
+          </header>
+          <div class="sequential-stage" data-round-stage></div>
+          <nav class="sequential-nav" aria-label="Navegação pelas interpretações">
+            <button class="sequential-arrow-button previous" type="button" data-round-previous aria-label="Interpretação anterior" title="Interpretação anterior" disabled><span class="sequential-arrow" aria-hidden="true">⟵</span></button>
+            <button class="sequential-arrow-button next" type="button" data-round-next aria-label="Próxima interpretação" title="Próxima interpretação"><span class="sequential-arrow" aria-hidden="true">⟶</span></button>
+            <span class="sequential-complete-stamp" data-round-complete hidden><small>Etapa</small><strong>Concluída</strong></span>
+          </nav>
+        </section>
+      </section>
+      ${submit('Concluir leitura em camadas')}`;
   }
 
   if(data.mode === 'fakeNews') {
@@ -4266,6 +4514,9 @@ EvidenceSystem.bindActivity = function(overlay, title, text, data) {
     blanks: {},
     headline: [],
     quizIndex: null,
+    roundIndex: 0,
+    roundAnswers: {},
+    magnifierZoneIndex: 0,
     attempts: 0,
     hintsUsed: 0,
     activeWire: null,
@@ -4320,6 +4571,9 @@ EvidenceSystem.bindActivity = function(overlay, title, text, data) {
     state.headline = [];
     state.blankWord = null;
     state.quizIndex = null;
+    state.roundIndex = 0;
+    state.roundAnswers = {};
+    state.magnifierZoneIndex = 0;
     state.activeWire = null;
     state.activeLink = null;
     state.dragLink = null;
@@ -4329,6 +4583,7 @@ EvidenceSystem.bindActivity = function(overlay, title, text, data) {
     state.finalEvidence.clear();
     state.thesis = '';
     state.limitation = '';
+    if(sequentialActivity) renderSequentialRound();
   };
 
   const completePhase = ({ isCorrect, selectedAnswer, completedByExplanation = false }) => {
@@ -4356,6 +4611,20 @@ EvidenceSystem.bindActivity = function(overlay, title, text, data) {
     showFeedback(`
       <div class="stamp-correct stamp-animated">${completedByExplanation ? 'ANALISE CONCLUIDA' : 'DEFERIDO'}</div>
     `);
+    let chronologyRevealDelay = 0;
+    if(isCorrect && data.mode === 'chronology' && Array.isArray(data.revealDates)) {
+      const slots = Array.from(overlay.querySelectorAll('.chronology-lane .drop-slot'));
+      data.revealDates.forEach((date, index) => {
+        const slot = slots[index];
+        if(!slot) return;
+        const dateTag = document.createElement('time');
+        dateTag.className = 'chronology-date-reveal';
+        dateTag.textContent = date;
+        slot.appendChild(dateTag);
+        setTimeout(() => dateTag.classList.add('visible'), 260 + (index * 260));
+      });
+      chronologyRevealDelay = 700 + (data.revealDates.length * 260);
+    }
     GameLogic.addEvidenceToInventory(title, text, answerMeta);
     const unlockInfo = GameLogic.unlockNextPhase(data.phaseNum, { silent: true });
     const isChapterEnd = data.phaseNum === unlockInfo.lastInChapter || data.phaseNum >= unlockInfo.total;
@@ -4369,10 +4638,10 @@ EvidenceSystem.bindActivity = function(overlay, title, text, data) {
     setTimeout(() => {
       document.getElementById('investigationModal')?.remove();
       GameLogic.startDialogue([
-        data.feedback || 'Resposta registrada com justificativa historica.',
+        data.correctFeedback || data.feedback || 'Resposta registrada com justificativa histórica.',
         isChapterEnd ? 'Guarde essa explicacao: ela fecha uma parte importante do dossie.' : 'A proxima ficha foi liberada na gaveta.'
       ], 'phase_feedback');
-    }, 950);
+    }, chronologyRevealDelay || 950);
   };
 
   const finish = (isCorrect, selectedAnswer) => {
@@ -4391,12 +4660,16 @@ EvidenceSystem.bindActivity = function(overlay, title, text, data) {
     overlay.classList.add('verdict-indeferido');
     showFeedback(`
       <div class="stamp-wrong">INDEFERIDO</div>
-      <p class="phase-feedback-text">O livro abriu uma pista para revisar a leitura.</p>
+      <p class="phase-feedback-text">A Sufragista deixou uma orientação para revisar a leitura.</p>
       ${canConclude ? '<button type="button" class="btn-secondary" data-complete-explanation>Concluir com explicacao</button>' : ''}
     `);
     overlay.querySelector('.investigation-dossier')?.classList.add('shake-error');
     setTimeout(() => overlay.querySelector('.investigation-dossier')?.classList.remove('shake-error'), 450);
-    GameLogic.showWrongAnswerHelp(data);
+    GameLogic.showWrongAnswerHelp({
+      ...data,
+      hint: data.wrongFeedback || data.hints?.[Math.min(state.attempts - 1, Math.max(0, (data.hints?.length || 1) - 1))] || data.hint,
+      curiosity: null
+    });
     if(canConclude) {
       feedback.querySelector('[data-complete-explanation]')?.addEventListener('click', () => {
         completePhase({ isCorrect: false, selectedAnswer, completedByExplanation: true });
@@ -4546,8 +4819,6 @@ EvidenceSystem.bindActivity = function(overlay, title, text, data) {
     paper.style.setProperty('--reveal-x', `${x}px`);
     paper.style.setProperty('--reveal-y', `${y}px`);
     paper.classList.add('revealing');
-    state.restoredRegions.add('full');
-
     const samples = force ? 18 : Math.min(18, Number(paper.dataset.revealSamples || 0) + 1);
     paper.dataset.revealSamples = String(samples);
     const centerPoints = [
@@ -4565,7 +4836,10 @@ EvidenceSystem.bindActivity = function(overlay, title, text, data) {
     const compactPoints = nextPoints.map(([px, py]) => `${Math.round(px)}:${Math.round(py)}`);
     paper.dataset.revealPoints = compactPoints.join('|');
     paper.style.setProperty('--reveal-mask', nextPoints.map(([px, py]) => `radial-gradient(circle 54px at ${Math.round(px)}px ${Math.round(py)}px, #000 0 68%, rgba(0,0,0,0.65) 74%, transparent 100%)`).join(', '));
-    if(samples >= 10) paper.classList.add('restored');
+    if(samples >= 10) {
+      paper.classList.add('restored');
+      state.restoredRegions.add(paper.dataset.wornZone || 'full');
+    }
   };
 
   overlay.querySelectorAll('[data-source-tab]').forEach(button => {
@@ -4573,7 +4847,7 @@ EvidenceSystem.bindActivity = function(overlay, title, text, data) {
       const tab = button.dataset.sourceTab;
       overlay.querySelectorAll('[data-source-tab]').forEach(item => item.classList.toggle('active', item === button));
       overlay.querySelectorAll('[data-source-panel]').forEach(panel => panel.classList.toggle('active', panel.dataset.sourcePanel === tab));
-      GameLogic.recordGameEvent(tab === 'transcription' ? 'transcription_opened' : 'source_opened', data, { panel: tab });
+      GameLogic.recordGameEvent(tab === 'document' ? 'document_opened' : 'source_opened', data, { panel: tab });
     });
   });
 
@@ -4614,6 +4888,124 @@ EvidenceSystem.bindActivity = function(overlay, title, text, data) {
     });
   });
 
+  const sequentialActivity = overlay.querySelector('[data-sequential-activity]');
+  const renderSequentialRound = () => {
+    if(!sequentialActivity) return;
+    const isInterview = sequentialActivity.dataset.sequentialMode === 'interview';
+    const items = isInterview ? data.interviews : data.rounds;
+    const item = items[state.roundIndex];
+    const selectedIndex = state.roundAnswers[state.roundIndex];
+    const stage = sequentialActivity.querySelector('[data-round-stage]');
+    const counter = sequentialActivity.querySelector('[data-round-counter]');
+    const progress = sequentialActivity.querySelector('[data-round-progress]');
+    const options = isInterview ? data.categories : item.options;
+
+    const roundNoun = isInterview ? 'Entrevista' : (data.mode === 'restoreInvestigation' ? 'Questão' : 'Rodada');
+    counter.textContent = `${roundNoun} ${state.roundIndex + 1} de ${items.length}`;
+    progress.style.width = `${((state.roundIndex + 1) / items.length) * 100}%`;
+    stage.innerHTML = isInterview
+      ? `<article class="interview-file">
+          <header><span>Depoimento ${state.roundIndex + 1}</span><h3>${EvidenceSystem.escapeHTML(item.name)}</h3></header>
+          <blockquote>“${EvidenceSystem.escapeHTML(item.profile)}”</blockquote>
+          <p class="interview-instruction">Qual é a situação de ${EvidenceSystem.escapeHTML(item.name)} diante do Código de 1932?</p>
+          <div class="quiz-options sequential-options">
+            ${options.map((option, index) => `<button class="quiz-checkbox-btn${selectedIndex === index ? ' selected' : ''}" type="button" data-round-option="${index}"><span class="check-box">${selectedIndex === index ? '<b>X</b>' : ''}</span><span class="option-text">${EvidenceSystem.escapeHTML(option)}</span></button>`).join('')}
+          </div>
+          ${selectedIndex !== undefined ? `<aside class="round-rationale"><strong>Critério histórico</strong><p>${EvidenceSystem.escapeHTML(item.reason)}</p></aside>` : ''}
+        </article>`
+      : `<article class="documentary-round">
+          <header><span>Questão documental ${state.roundIndex + 1}</span><h3>${EvidenceSystem.escapeHTML(item.title)}</h3></header>
+          <p class="documentary-round-question">${EvidenceSystem.escapeHTML(item.question)}</p>
+          <div class="quiz-options sequential-options">
+            ${options.map((option, index) => `<button class="quiz-checkbox-btn${selectedIndex === index ? ' selected' : ''}" type="button" data-round-option="${index}"><span class="check-box">${selectedIndex === index ? '<b>X</b>' : ''}</span><span class="option-text"><b>${String.fromCharCode(65 + index)})</b> ${EvidenceSystem.escapeHTML(option)}</span></button>`).join('')}
+          </div>
+        </article>`;
+
+    sequentialActivity.querySelector('[data-round-previous]').disabled = state.roundIndex === 0;
+    const nextButton = sequentialActivity.querySelector('[data-round-next]');
+    const completeStamp = sequentialActivity.querySelector('[data-round-complete]');
+    const atLastRound = state.roundIndex >= items.length - 1;
+    const finalRoundAnswered = atLastRound && state.roundAnswers[state.roundIndex] !== undefined;
+    nextButton.hidden = atLastRound;
+    nextButton.disabled = atLastRound;
+    if(completeStamp) completeStamp.hidden = !finalRoundAnswered;
+    const nextLabel = isInterview
+      ? 'Próxima entrevista'
+      : (data.mode === 'headlineInvestigation'
+        ? 'Próxima análise'
+        : (data.mode === 'layeredMagnifier'
+          ? 'Próxima interpretação'
+          : (data.mode === 'restoreInvestigation' ? 'Próxima questão' : 'Próxima rodada')));
+    nextButton.setAttribute('aria-label', nextLabel);
+    nextButton.title = nextLabel;
+    nextButton.innerHTML = '<span class="sequential-arrow" aria-hidden="true">⟶</span>';
+
+    stage.querySelectorAll('[data-round-option]').forEach(button => {
+      button.addEventListener('click', () => {
+        state.roundAnswers[state.roundIndex] = Number(button.dataset.roundOption);
+        showFeedback('');
+        renderSequentialRound();
+      });
+    });
+  };
+
+  if(sequentialActivity) {
+    sequentialActivity.querySelector('[data-round-previous]').addEventListener('click', () => {
+      state.roundIndex = Math.max(0, state.roundIndex - 1);
+      renderSequentialRound();
+    });
+    sequentialActivity.querySelector('[data-round-next]').addEventListener('click', () => {
+      const items = sequentialActivity.dataset.sequentialMode === 'interview' ? data.interviews : data.rounds;
+      if(state.roundAnswers[state.roundIndex] === undefined) return showIncomplete('Escolha uma resposta antes de avançar.');
+      state.roundIndex = Math.min(items.length - 1, state.roundIndex + 1);
+      showFeedback('');
+      renderSequentialRound();
+    });
+    renderSequentialRound();
+  }
+
+  const magnifierZoneCards = Array.from(overlay.querySelectorAll('[data-magnifier-zone-card]'));
+  const renderMagnifierZone = () => {
+    if(!magnifierZoneCards.length) return;
+    magnifierZoneCards.forEach((card, index) => {
+      const active = index === state.magnifierZoneIndex;
+      card.hidden = !active;
+      card.classList.toggle('active', active);
+    });
+    const counter = overlay.querySelector('[data-zone-counter]');
+    if(counter) counter.textContent = `Área ${state.magnifierZoneIndex + 1} de ${magnifierZoneCards.length}`;
+    const previous = overlay.querySelector('[data-zone-previous]');
+    const next = overlay.querySelector('[data-zone-next]');
+    const completeStamp = overlay.querySelector('[data-zone-complete]');
+    if(previous) previous.disabled = state.magnifierZoneIndex === 0;
+    if(next) {
+      const atEnd = state.magnifierZoneIndex >= magnifierZoneCards.length - 1;
+      const finalZone = data.magnifierZones?.[state.magnifierZoneIndex];
+      const documentRevealed = atEnd && finalZone && state.restoredRegions.has(finalZone.id);
+      next.hidden = atEnd;
+      next.disabled = atEnd;
+      next.setAttribute('aria-label', 'Próxima área');
+      next.title = 'Próxima área';
+      next.innerHTML = '<span class="sequential-arrow" aria-hidden="true">⟶</span>';
+      if(completeStamp) completeStamp.hidden = !documentRevealed;
+    }
+  };
+
+  overlay.querySelector('[data-zone-previous]')?.addEventListener('click', () => {
+    state.magnifierZoneIndex = Math.max(0, state.magnifierZoneIndex - 1);
+    renderMagnifierZone();
+  });
+
+  overlay.querySelector('[data-zone-next]')?.addEventListener('click', () => {
+    const zone = data.magnifierZones?.[state.magnifierZoneIndex];
+    if(zone && !state.restoredRegions.has(zone.id)) return showIncomplete('Revele esta área com a lupa antes de avançar.');
+    state.magnifierZoneIndex = Math.min(magnifierZoneCards.length - 1, state.magnifierZoneIndex + 1);
+    showFeedback('');
+    renderMagnifierZone();
+  });
+
+  renderMagnifierZone();
+
   let marking = false;
   const markToken = (button) => {
     if(state.selected.has(button.dataset.tokenId)) {
@@ -4649,6 +5041,10 @@ EvidenceSystem.bindActivity = function(overlay, title, text, data) {
     if(game.dataset.assocMode === 'quoteMatch') {
       const person = (data.people || []).find(item => item.id === value) || { id: value, name: value };
       return `${EvidenceSystem.renderPersonPortrait(person, 'tiny')}<strong>${EvidenceSystem.escapeHTML(person.name)}</strong>`;
+    }
+    if(game.dataset.assocMode === 'connections' && data.impacts) {
+      const impact = data.impacts.find(item => item.id === value);
+      if(impact) return `<strong>${EvidenceSystem.escapeHTML(impact.title)}</strong>`;
     }
     return `<strong>${EvidenceSystem.escapeHTML(value)}</strong>`;
   };
@@ -4891,6 +5287,7 @@ EvidenceSystem.bindActivity = function(overlay, title, text, data) {
     paper.addEventListener('pointermove', event => {
       if(event.pointerType === 'mouse' || event.buttons || paper.classList.contains('revealing')) {
         revealWornPaper(paper, event);
+        renderMagnifierZone();
       }
     });
     paper.addEventListener('pointerleave', () => {
@@ -4900,6 +5297,7 @@ EvidenceSystem.bindActivity = function(overlay, title, text, data) {
       if(event.key === 'Enter' || event.key === ' ') {
         event.preventDefault();
         revealWornPaper(paper, null, true);
+        renderMagnifierZone();
       }
     });
   });
@@ -4955,22 +5353,57 @@ EvidenceSystem.bindActivity = function(overlay, title, text, data) {
       finish(result.isCorrect, result.selectedAnswer);
     } else if(data.mode === 'quoteMatch') {
       const complete = data.quotes.every(item => state.answers[item.id]);
-      if(!complete) return showIncomplete('Associe todas as falas antes de confirmar.');
-      finish(data.quotes.every(item => state.answers[item.id] === item.answer), data.quotes.map(item => `${item.text}: ${state.answers[item.id]}`).join(' | '));
+      if(!complete) return showIncomplete('Associe todas as estratégias antes de confirmar.');
+      if(data.closingQuestion && state.quizIndex === null) return showIncomplete('Responda também à pergunta de fechamento.');
+      const associationsCorrect = data.quotes.every(item => state.answers[item.id] === item.answer);
+      const closingCorrect = !data.closingQuestion || state.quizIndex === data.closingQuestion.correctIndex;
+      const associationAnswer = data.quotes.map(item => `${item.title || item.text}: ${state.answers[item.id]}`).join(' | ');
+      const closingAnswer = data.closingQuestion ? ` | Conclusão: ${data.closingQuestion.options[state.quizIndex]}` : '';
+      finish(associationsCorrect && closingCorrect, associationAnswer + closingAnswer);
     } else if(data.mode === 'restoreText') {
       const complete = data.blanks.every(blank => state.blanks[blank.id]);
       if(!complete) return showIncomplete('Complete todas as lacunas antes de confirmar.');
       finish(data.blanks.every(blank => state.blanks[blank.id] === blank.answer), data.blanks.map(blank => `${blank.id}: ${state.blanks[blank.id]}`).join(' | '));
+    } else if(data.mode === 'restoreInvestigation') {
+      const completeBlanks = data.blanks.every(blank => state.blanks[blank.id]);
+      if(!completeBlanks) return showIncomplete('Complete todas as lacunas antes de concluir a análise.');
+      if(data.rounds.some((_, index) => state.roundAnswers[index] === undefined)) return showIncomplete('Responda às duas questões de interpretação.');
+      const blanksCorrect = data.blanks.every(blank => state.blanks[blank.id] === blank.answer);
+      const roundsCorrect = data.rounds.every((round, index) => state.roundAnswers[index] === round.correctIndex);
+      const selectedAnswer = `Restauração: ${data.blanks.map(blank => `${blank.id}: ${state.blanks[blank.id]}`).join(' | ')} | ${data.rounds.map((round, index) => `Questão ${index + 1}: ${round.options[state.roundAnswers[index]]}`).join(' | ')}`;
+      finish(blanksCorrect && roundsCorrect, selectedAnswer);
     } else if(data.mode === 'votingBooth') {
       if(!state.answers.booth) return showIncomplete('Escolha uma decisao da cabine.');
       finish(state.answers.booth === 'correct', state.answers.booth);
+    } else if(data.mode === 'multiRoundQuiz') {
+      if(data.rounds.some((_, index) => state.roundAnswers[index] === undefined)) return showIncomplete('Responda às quatro rodadas antes de carimbar a análise.');
+      const isCorrect = data.rounds.every((round, index) => state.roundAnswers[index] === round.correctIndex);
+      const selectedAnswer = data.rounds.map((round, index) => `Rodada ${index + 1}: ${round.options[state.roundAnswers[index]]}`).join(' | ');
+      finish(isCorrect, selectedAnswer);
+    } else if(data.mode === 'interviewBooth') {
+      if(data.interviews.some((_, index) => state.roundAnswers[index] === undefined)) return showIncomplete('Decida os quatro depoimentos antes de concluir a cabine.');
+      const isCorrect = data.interviews.every((interview, index) => state.roundAnswers[index] === interview.correctIndex);
+      const selectedAnswer = data.interviews.map((interview, index) => `${interview.name}: ${data.categories[state.roundAnswers[index]]}`).join(' | ');
+      finish(isCorrect, selectedAnswer);
     } else if(data.mode === 'headlineOrder') {
       if(state.headline.length !== data.correctOrder.length) return showIncomplete('Monte a manchete completa antes de confirmar.');
       finish(state.headline.join('|') === data.correctOrder.join('|'), state.headline.join(' '));
+    } else if(data.mode === 'headlineInvestigation') {
+      if(state.headline.length !== data.correctOrder.length) return showIncomplete('Monte o título completo antes de concluir a investigação.');
+      if(data.rounds.some((_, index) => state.roundAnswers[index] === undefined)) return showIncomplete('Responda às duas análises do fragmento antes de concluir.');
+      const headlineCorrect = state.headline.join('|') === data.correctOrder.join('|');
+      const roundsCorrect = data.rounds.every((round, index) => state.roundAnswers[index] === round.correctIndex);
+      const selectedAnswer = `Título: ${state.headline.join(' ')} | ${data.rounds.map((round, index) => `Rodada ${index + 1}: ${round.options[state.roundAnswers[index]]}`).join(' | ')}`;
+      finish(headlineCorrect && roundsCorrect, selectedAnswer);
     } else if(data.mode === 'wireBoard' || data.mode === 'connections') {
       const complete = data.pairs.every(item => state.answers[item.id]);
       if(!complete) return showIncomplete('Ligue todas as pistas antes de confirmar.');
-      finish(data.pairs.every(item => state.answers[item.id] === item.answer), data.pairs.map(item => `${item.clue}: ${state.answers[item.id]}`).join(' | '));
+      if(data.closingQuestion && state.quizIndex === null) return showIncomplete('Responda também à pergunta de leitura crítica.');
+      const associationsCorrect = data.pairs.every(item => state.answers[item.id] === item.answer);
+      const closingCorrect = !data.closingQuestion || state.quizIndex === data.closingQuestion.correctIndex;
+      const associationAnswer = data.pairs.map(item => `${item.clue}: ${state.answers[item.id]}`).join(' | ');
+      const closingAnswer = data.closingQuestion ? ` | Conclusão: ${data.closingQuestion.options[state.quizIndex]}` : '';
+      finish(associationsCorrect && closingCorrect, associationAnswer + closingAnswer);
     } else if(data.mode === 'factOpinion') {
       const complete = data.statements.every(item => state.answers[item.id]);
       if(!complete) return showIncomplete('Classifique todas as frases antes de confirmar.');
@@ -4984,6 +5417,12 @@ EvidenceSystem.bindActivity = function(overlay, title, text, data) {
       if(state.restoredRegions.size === 0) return showIncomplete('Restaure ao menos uma area do documento antes de interpretar.');
       if(state.quizIndex === null) return showIncomplete('Escolha uma interpretacao.');
       finish(state.quizIndex === data.correctIndex, data.options[state.quizIndex]);
+    } else if(data.mode === 'layeredMagnifier') {
+      if(data.magnifierZones.some(zone => !state.restoredRegions.has(zone.id))) return showIncomplete('Revele as três zonas do documento com a lupa antes de concluir.');
+      if(data.rounds.some((_, index) => state.roundAnswers[index] === undefined)) return showIncomplete('Responda às três interpretações do documento.');
+      const isCorrect = data.rounds.every((round, index) => state.roundAnswers[index] === round.correctIndex);
+      const selectedAnswer = data.rounds.map((round, index) => `Rodada ${index + 1}: ${round.options[state.roundAnswers[index]]}`).join(' | ');
+      finish(isCorrect, selectedAnswer);
     } else if(data.mode === 'fakeNews') {
       if(state.openedSources.size === 0) return showIncomplete('Abra pelo menos uma fonte antes de classificar.');
       if(!state.answers.fakeNews) return showIncomplete('Escolha uma classificacao.');
@@ -5039,7 +5478,6 @@ GameLogic.getEndingBackdropMarkup = function() {
       <span class="ending-document-date ending-document-date-two">03 • MAI • 1933</span>
       <span class="ending-document-name ending-document-name-one">Bertha Lutz</span>
       <span class="ending-document-name ending-document-name-two">Carlota Pereira de Queirós</span>
-      <span class="ending-document-signature">Aline</span>
       <span class="ending-document-stamp ending-document-stamp-one">Voto<br>feminino</span>
       <span class="ending-document-stamp ending-document-stamp-two">Memória<br>preservada</span>
     </div>

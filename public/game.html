@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Marck+Script&family=Outfit:wght@400;700;900&family=Parisienne&display=swap" rel="stylesheet">
   
   <link rel="stylesheet" href="styles.css?v=20260805b">
-  <link rel="stylesheet" href="game.css?v=20260811c">
+  <link rel="stylesheet" href="game.css?v=20260813j">
 </head>
 <body class="game-body">
 
@@ -129,13 +129,13 @@
       <div class="drawer-controls" aria-label="Navegação de gavetas">
         <button class="vintage-plate-btn drawer-nav-btn" id="prevDrawerBtn" type="button" onclick="GameLogic.changeDrawer(-1)">
           <span class="plate-screw screw-left"></span>
-          VOLTAR
+          <span class="drawer-nav-copy"><span class="drawer-nav-arrow previous" aria-hidden="true">←</span><span>VOLTAR</span></span>
           <span class="plate-screw screw-right"></span>
         </button>
         <div class="drawer-label" id="drawerLabel">Capítulo I • Gaveta 1/1</div>
         <button class="vintage-plate-btn drawer-nav-btn" id="nextDrawerBtn" type="button" onclick="GameLogic.changeDrawer(1)">
           <span class="plate-screw screw-left"></span>
-          AVANÇAR
+          <span class="drawer-nav-copy"><span>AVANÇAR</span><span class="drawer-nav-arrow next" aria-hidden="true">→</span></span>
           <span class="plate-screw screw-right"></span>
         </button>
       </div>
@@ -412,7 +412,7 @@
 
   <div id="toastContainer"></div>
 
-  <script src="app.js?v=20260811c"></script>
-  <script src="game.js?v=20260811c"></script>
+  <script src="app.js?v=20260813c"></script>
+  <script src="game.js?v=20260813j"></script>
 </body>
 </html>

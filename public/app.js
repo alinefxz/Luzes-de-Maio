@@ -7,6 +7,8 @@ const LMProfileStore = (() => {
   const ADMIN_STORAGE_VERSION = 'admin-reset-20260805a';
   const ADMIN_USERNAME = 'admin';
   const ADMIN_PASSWORD = 'admin';
+  let userSyncQueue = Promise.resolve(true);
+  let reviewSyncQueue = Promise.resolve(true);
 
   const safeParse = (value, fallback = null) => {
     try { return value ? JSON.parse(value) : fallback; }
@@ -103,22 +105,29 @@ const LMProfileStore = (() => {
     localStorage.removeItem(LEGACY_PROGRESS_KEY);
   };
 
+  const postJSON = async (url, payload) => {
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      return response.ok;
+    } catch (error) {
+      return false;
+    }
+  };
+
   const syncUserToServer = (user) => {
     if (typeof fetch !== 'function' || window.location.protocol === 'file:') return Promise.resolve(true);
-    return fetch('/api/user', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(user)
-    }).then(response => response.ok).catch(() => false);
+    userSyncQueue = userSyncQueue.catch(() => false).then(() => postJSON('/api/user', user));
+    return userSyncQueue;
   };
 
   const syncReviewToServer = (review) => {
     if (typeof fetch !== 'function' || window.location.protocol === 'file:') return Promise.resolve(true);
-    return fetch('/api/reviews', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(review)
-    }).then(response => response.ok).catch(() => false);
+    reviewSyncQueue = reviewSyncQueue.catch(() => false).then(() => postJSON('/api/reviews', review));
+    return reviewSyncQueue;
   };
 
   const importServerUsers = (serverUsers = []) => {
@@ -283,7 +292,7 @@ const LMProfileStore = (() => {
       syncReviewToServer(review)
     ]);
 
-    return { user: savedUser, synced: userSynced && reviewSynced };
+    return { user: savedUser, synced: reviewSynced, userSynced, reviewSynced };
   };
 
   const saveAnswer = (answer) => {
