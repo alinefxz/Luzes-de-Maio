@@ -370,7 +370,7 @@ const GameLogic = {
         try {
             const audio = new Audio(sounds[type]);
             audio.volume = 0.3;
-            audio.play();
+            audio.play().catch(() => {});
         } catch(e) {}
     },
 
@@ -1777,7 +1777,9 @@ GameLogic.showChapterTimeline = function(chapterIndex, nextChapterIndex = null) 
   const overlay = document.createElement('div');
   overlay.className = 'chapter-timeline-overlay';
   overlay.id = 'chapterTimelineOverlay';
+  const finalTimeline = nextChapterIndex === null && this.isGameFinished();
   if(nextChapterIndex !== null) overlay.dataset.nextChapterIndex = String(nextChapterIndex);
+  if(finalTimeline) overlay.dataset.finalEnding = 'true';
   overlay.innerHTML = `
     <div class="chapter-timeline-card">
       <div class="chapter-timeline-eyebrow">Capítulo ${chapter.number} completo</div>
@@ -1793,7 +1795,7 @@ GameLogic.showChapterTimeline = function(chapterIndex, nextChapterIndex = null) 
       </div>
       <button class="vintage-plate-btn" type="button" onclick="GameLogic.closeChapterTimeline()">
         <span class="plate-screw screw-left"></span>
-        GUARDAR NO DOSSIÊ
+        ${finalTimeline ? 'ABRIR A CARTA' : 'GUARDAR NO DOSSIÊ'}
         <span class="plate-screw screw-right"></span>
       </button>
     </div>`;
@@ -1804,6 +1806,7 @@ GameLogic.closeChapterTimeline = function() {
   const overlay = document.getElementById('chapterTimelineOverlay');
   if(!overlay) return false;
   const nextChapterIndex = overlay.dataset.nextChapterIndex ? Number(overlay.dataset.nextChapterIndex) : null;
+  const openFinalLetter = overlay.dataset.finalEnding === 'true';
   overlay.remove();
 
   if(Number.isInteger(nextChapterIndex) && this.isChapterAvailable(nextChapterIndex)) {
@@ -1851,6 +1854,12 @@ GameLogic.bindDrawerEvents = function() {
 };
 
 GameLogic.closeTopLayer = function() {
+  const sourceReader = document.querySelector('.source-reader-overlay');
+  if(sourceReader) {
+    sourceReader.remove();
+    return true;
+  }
+
   const finalLetter = document.getElementById('finalLetterOverlay');
   if(finalLetter && typeof this.closeFinalLetter === 'function') {
     this.closeFinalLetter();
@@ -1931,6 +1940,19 @@ GameLogic.bindKeyboardShortcuts = function() {
 
     const tag = event.target?.tagName?.toLowerCase();
     if(['input', 'textarea', 'select'].includes(tag)) return;
+
+    const investigation = document.getElementById('investigationModal');
+    if(investigation && (event.key === 'ArrowDown' || event.key === 'ArrowUp')) {
+      const page = investigation.querySelector('.source-reader-sheet')
+        || event.target?.closest?.('.dossier-page')
+        || investigation.querySelector('.phase-activity-page');
+      if(page) {
+        event.preventDefault();
+        const direction = event.key === 'ArrowDown' ? 1 : -1;
+        page.scrollBy({ top: direction * Math.max(180, page.clientHeight * 0.48), behavior: 'smooth' });
+      }
+      return;
+    }
 
     if(event.key === 'ArrowRight' || event.key === 'PageDown') {
       event.preventDefault();
@@ -3157,7 +3179,9 @@ GameLogic.showChapterTimeline = function(chapterIndex, nextChapterIndex = null) 
   const overlay = document.createElement('div');
   overlay.className = 'chapter-timeline-overlay';
   overlay.id = 'chapterTimelineOverlay';
+  const finalTimeline = nextChapterIndex === null && this.isGameFinished();
   if(nextChapterIndex !== null) overlay.dataset.nextChapterIndex = String(nextChapterIndex);
+  if(finalTimeline) overlay.dataset.finalEnding = 'true';
   overlay.innerHTML = `
     <div class="chapter-timeline-card">
       <div class="chapter-timeline-eyebrow">Capitulo ${chapter.number} completo</div>
@@ -3174,7 +3198,7 @@ GameLogic.showChapterTimeline = function(chapterIndex, nextChapterIndex = null) 
       </div>
       <button class="vintage-plate-btn" type="button" onclick="GameLogic.closeChapterTimeline()">
         <span class="plate-screw screw-left"></span>
-        GUARDAR NO DOSSIÊ
+        ${finalTimeline ? 'ABRIR A CARTA' : 'GUARDAR NO DOSSIÊ'}
         <span class="plate-screw screw-right"></span>
       </button>
     </div>`;
@@ -3185,12 +3209,15 @@ GameLogic.closeChapterTimeline = function() {
   const overlay = document.getElementById('chapterTimelineOverlay');
   if(!overlay) return false;
   const nextChapterIndex = overlay.dataset.nextChapterIndex ? Number(overlay.dataset.nextChapterIndex) : null;
+  const openFinalLetter = overlay.dataset.finalEnding === 'true';
   overlay.remove();
 
   if(Number.isInteger(nextChapterIndex) && this.isChapterAvailable(nextChapterIndex)) {
     this.currentChapterIndex = nextChapterIndex;
     this.restoreGameState();
   }
+
+  if(openFinalLetter) setTimeout(() => this.showFinalLetter(), 260);
 
   return true;
 };
@@ -3712,7 +3739,7 @@ GameLogic.advanceDialogue = function() {
    ========================================================= */
 GameLogic.loadPhaseContent = async function() {
   try {
-    const response = await fetch('content/phases.json?v=20260813i', { cache: 'no-store' });
+    const response = await fetch('content/phases.json?v=20260817h', { cache: 'no-store' });
     if(!response.ok) throw new Error('phase-content-not-found');
     this.phaseContent = await response.json();
   } catch (error) {
@@ -3924,11 +3951,12 @@ GameLogic.addEvidenceToInventory = function(title, text, answerMeta = null) {
 
 GameLogic.getBadgeCatalog = function() {
   return [
-    { id: 'primeira-pista', icon: 'I', title: 'Primeira pista', text: 'Abriu o arquivo e iniciou a investigacao.', threshold: 2 },
-    { id: 'linha-do-tempo', icon: 'II', title: 'Linha em ordem', text: 'Reconstruiu os primeiros marcos do voto feminino.', threshold: 6 },
-    { id: 'leitura-local', icon: 'III', title: 'Leitura local', text: 'Chegou aos registros de Muzambinho e suas fontes.', threshold: 10 },
-    { id: 'voz-publica', icon: 'IV', title: 'Voz publica', text: 'Comparou jornais, boatos e disputas de memoria.', threshold: 18 },
-    { id: 'guardia-do-dossie', icon: 'V', title: 'Guardia do dossie', text: 'Avancou ate a montagem do dossie final.', threshold: 28 }
+    { id: 'primeiro-vestigio', icon: 'I', title: 'Primeiro vestígio', text: 'Abriu o dossiê e encontrou as primeiras pistas da investigação.', threshold: 2 },
+    { id: 'rastros-do-tempo', icon: 'II', title: 'Rastros do tempo', text: 'Organizou os marcos iniciais da luta pelo voto feminino.', threshold: 6 },
+    { id: 'olhar-de-arquivo', icon: 'III', title: 'Olhar de arquivo', text: 'Avançou por documentos, registros e fontes históricas.', threshold: 10 },
+    { id: 'entre-vozes-e-jornais', icon: 'IV', title: 'Entre vozes e jornais', text: 'Comparou textos, discursos e diferentes formas de narrar o passado.', threshold: 19 },
+    { id: 'guardadora-de-pistas', icon: 'V', title: 'Guardadora de pistas', text: 'Reuniu evidências importantes para sustentar a investigação.', threshold: 27 },
+    { id: 'guardia-da-memoria', icon: 'VI', title: 'Guardiã da memória', text: 'Concluiu o dossiê e transformou pistas em interpretação histórica.', threshold: 28 }
   ];
 };
 
@@ -3985,6 +4013,55 @@ EvidenceSystem.referenceInfoHTML = function(source = {}, kind = 'historical') {
     .join('');
 };
 
+EvidenceSystem.renderResearchArchive = function(title, text, phaseData = {}) {
+  const template = document.createElement('template');
+  template.innerHTML = text || '';
+  const blocks = Array.from(template.content.children).filter(node => node.textContent?.trim());
+  const plainLength = template.content.textContent?.trim().length || 0;
+
+  if(blocks.length < 4 && plainLength < 980) {
+    return `<div class="evidence-text source-document-text">${text}</div>`;
+  }
+
+  const suppliedTitles = Array.isArray(phaseData.documentSections) ? phaseData.documentSections : [];
+  const sectionCount = Math.min(blocks.length, suppliedTitles.length || Math.min(4, Math.max(2, Math.ceil(blocks.length / 2))));
+  const sections = Array.from({ length: sectionCount }, (_, index) => {
+    const start = Math.floor((index * blocks.length) / sectionCount);
+    const end = Math.floor(((index + 1) * blocks.length) / sectionCount);
+    const nodes = blocks.slice(start, Math.max(start + 1, end));
+    const plain = nodes.map(node => node.textContent.trim()).join(' ');
+    const inferred = plain.split(/[.!?]/)[0].trim().split(/\s+/).slice(0, 8).join(' ');
+    return {
+      title: suppliedTitles[index] || inferred || `Registro ${String(index + 1).padStart(2, '0')}`,
+      html: nodes.map(node => node.outerHTML).join(''),
+      excerpt: plain.length > 116 ? `${plain.slice(0, 113).trim()}...` : plain
+    };
+  });
+
+  return `
+    <div class="research-archive" data-research-archive>
+      <p class="research-archive-note">Abra os recortes para consultar o documento completo.</p>
+      <div class="research-record-grid">
+        ${sections.map((section, index) => `
+          <button class="research-record-card record-${(index % 3) + 1}" type="button" data-research-open="${index}">
+            <span>${index % 2 === 0 ? 'Recorte de jornal' : 'Ficha de pesquisa'} &bull; ${String(index + 1).padStart(2, '0')}</span>
+            <strong>${this.escapeHTML(section.title)}</strong>
+            <p>${this.escapeHTML(section.excerpt)}</p>
+            <em>Abrir documento</em>
+          </button>`).join('')}
+      </div>
+      ${sections.map((section, index) => `
+        <article class="research-document-reader" data-research-reader="${index}" hidden>
+          <header>
+            <span>Documento ${String(index + 1).padStart(2, '0')} &bull; ${this.escapeHTML(title)}</span>
+            <button type="button" data-research-close aria-label="Voltar aos recortes">&times;</button>
+          </header>
+          <h3>${this.escapeHTML(section.title)}</h3>
+          <div class="evidence-text research-reader-copy">${section.html}</div>
+        </article>`).join('')}
+    </div>`;
+};
+
 EvidenceSystem.spawnEvidence = function(title, text, phaseData) {
   document.getElementById('investigationModal')?.remove();
 
@@ -4013,8 +4090,8 @@ EvidenceSystem.spawnEvidence = function(title, text, phaseData) {
             <button type="button" class="source-tab" data-source-tab="historical">Fonte histórica</button>
             <button type="button" class="source-tab" data-source-tab="didactic">Fonte didática</button>
           </div>
-          <div class="source-panel active" data-source-panel="document">
-            <div class="evidence-text source-document-text">${text}</div>
+          <div class="source-panel active research-source-panel" data-source-panel="document">
+            ${this.renderResearchArchive(title, text, phaseData)}
           </div>
           <div class="source-panel source-info source-reference-sheet" data-source-panel="historical">${historicalSourceHTML}</div>
           <div class="source-panel source-info source-reference-sheet" data-source-panel="didactic">${didacticSourceHTML}</div>
@@ -4096,7 +4173,7 @@ EvidenceSystem.renderActivity = function(data) {
           </button>`;
         }).join('')}
       </div>
-      ${submit(data.mode === 'rightsStack' ? 'Carimbar escada' : 'Verificar ordem')}`;
+      ${submit(data.submitLabel || (data.mode === 'rightsStack' ? 'Carimbar escada' : 'Verificar ordem'))}`;
   }
 
   if(data.mode === 'textHighlight') {
@@ -4109,6 +4186,41 @@ EvidenceSystem.renderActivity = function(data) {
           : `<span>${this.escapeHTML(token.text)}</span>`).join('')}
       </div>
       ${submit('Confirmar marcacoes')}`;
+  }
+
+  if(data.mode === 'highlightComparison') {
+    const tokens = this.tokenizeHighlightText(data);
+    return `
+      <section class="constitutional-comparison">
+        <div class="constitutional-step-label"><span>01</span><strong>Localize a inclusão</strong></div>
+        <div class="mission-card">${this.escapeHTML(data.q)}</div>
+        <blockquote class="constitutional-article article-108">
+          <small>Constituição de 1934 &bull; Art. 108</small>
+          <div class="mark-text" data-mark-text>
+            ${tokens.map(token => token.selectable
+              ? `<button class="mark-token" type="button" data-token-id="${token.id}" data-answer="${token.answer}">${this.escapeHTML(token.text)}</button>`
+              : `<span>${this.escapeHTML(token.text)}</span>`).join('')}
+          </div>
+        </blockquote>
+        <blockquote class="constitutional-article article-109">
+          <small>Constituição de 1934 &bull; Art. 109</small>
+          <p>${this.escapeHTML(data.comparisonText || '')}</p>
+        </blockquote>
+        <div class="constitutional-step-label"><span>02</span><strong>Compare os artigos</strong></div>
+        <section class="sequential-activity documentary-rounds constitutional-rounds" data-sequential-activity data-sequential-mode="quiz">
+          <header class="sequential-progress">
+            <span data-round-counter>Rodada 1 de ${data.rounds.length}</span>
+            <div class="sequential-progress-track" aria-hidden="true"><i data-round-progress></i></div>
+          </header>
+          <div class="sequential-stage" data-round-stage></div>
+          <nav class="sequential-nav" aria-label="Navegação pela comparação constitucional">
+            <button class="sequential-arrow-button previous" type="button" data-round-previous aria-label="Comparação anterior" title="Comparação anterior" disabled><span class="sequential-arrow" aria-hidden="true">⟵</span></button>
+            <button class="sequential-arrow-button next" type="button" data-round-next aria-label="Próxima comparação" title="Próxima comparação"><span class="sequential-arrow" aria-hidden="true">⟶</span></button>
+            <span class="sequential-complete-stamp" data-round-complete hidden><small>Etapa</small><strong>Concluída</strong></span>
+          </nav>
+        </section>
+      </section>
+      ${submit('Concluir comparação constitucional')}`;
   }
 
   if(data.mode === 'quoteMatch') {
@@ -4231,7 +4343,7 @@ EvidenceSystem.renderActivity = function(data) {
           <span class="sequential-complete-stamp" data-round-complete hidden><small>Etapa</small><strong>Concluída</strong></span>
         </nav>
       </section>
-      ${submit('Carimbar quatro rodadas')}`;
+      ${submit(data.submitLabel || 'Carimbar quatro rodadas')}`;
   }
 
   if(data.mode === 'interviewBooth') {
@@ -4305,6 +4417,63 @@ EvidenceSystem.renderActivity = function(data) {
         </div>
       </div>
       ${submit('Confirmar associacoes')}`;
+  }
+
+  if(data.mode === 'tripleEvidence') {
+    const conclusions = [...data.conclusions];
+    const limits = [...data.limits];
+    if(data.shuffleAssociations) {
+      [conclusions, limits].forEach(items => {
+        for(let index = items.length - 1; index > 0; index -= 1) {
+          const swapIndex = Math.floor(Math.random() * (index + 1));
+          [items[index], items[swapIndex]] = [items[swapIndex], items[index]];
+        }
+      });
+    }
+    return `
+      <div class="assoc-game triple-evidence-game" data-assoc-game data-assoc-mode="tripleEvidence">
+        <div class="triple-source-banks">
+          <section class="triple-source-bank conclusion-bank">
+            <header><span>01</span><strong>Conclusões disponíveis</strong></header>
+            <div class="assoc-bank triple-token-bank">
+              ${conclusions.map(item => `<button class="assoc-token triple-token conclusion-token" type="button" draggable="true" data-assoc-token="${this.escapeHTML(item.id)}" data-assoc-kind="conclusion" data-token-label="${this.escapeHTML(item.text)}">${this.escapeHTML(item.text)}</button>`).join('')}
+            </div>
+          </section>
+          <section class="triple-source-bank limit-bank">
+            <header><span>02</span><strong>Limites das fontes</strong></header>
+            <div class="assoc-bank triple-token-bank">
+              ${limits.map(item => `<button class="assoc-token triple-token limit-token" type="button" draggable="true" data-assoc-token="${this.escapeHTML(item.id)}" data-assoc-kind="limit" data-token-label="${this.escapeHTML(item.text)}">${this.escapeHTML(item.text)}</button>`).join('')}
+            </div>
+          </section>
+        </div>
+        <div class="triple-evidence-grid">
+          ${data.matches.map((item, index) => `
+            <article class="triple-evidence-card" data-assoc-target="evidence:${item.id}">
+              <header><span>Documento ${String(index + 1).padStart(2, '0')}</span><h3>${this.escapeHTML(item.evidence)}</h3></header>
+              <div class="triple-drop-row conclusion-row">
+                <small>Conclusão sustentada</small>
+                <button class="assoc-drop-zone triple-drop-slot" type="button" data-assoc-drop="conclusion:${item.id}" data-assoc-kind="conclusion" data-assoc-label="Encaixe a conclusão"><span>Encaixe a conclusão</span></button>
+              </div>
+              <div class="triple-drop-row limit-row">
+                <small>Limite da evidência</small>
+                <button class="assoc-drop-zone triple-drop-slot" type="button" data-assoc-drop="limit:${item.id}" data-assoc-kind="limit" data-assoc-label="Encaixe o limite"><span>Encaixe o limite</span></button>
+              </div>
+            </article>
+          `).join('')}
+        </div>
+      </div>
+      <section class="association-closing-question triple-closing-question">
+        <span class="trap-question-label">Pergunta-armadilha</span>
+        <h3>${this.escapeHTML(data.closingQuestion.question)}</h3>
+        <div class="quiz-options">
+          ${data.closingQuestion.options.map((option, index) => `
+            <button class="quiz-checkbox-btn" type="button" data-quiz-index="${index}">
+              <span class="check-box"></span>
+              <span class="option-text"><b>${String.fromCharCode(65 + index)})</b> ${this.escapeHTML(option)}</span>
+            </button>`).join('')}
+        </div>
+      </section>
+      ${submit('Concluir análise documental')}`;
   }
 
   if(data.mode === 'connections') {
@@ -4459,6 +4628,58 @@ EvidenceSystem.renderActivity = function(data) {
       ${submit('Confirmar checagem')}`;
   }
 
+  if(data.mode === 'classificationCabinet') {
+    return `
+      <section class="classification-cabinet">
+        <div class="cabinet-category-index" aria-label="Categorias de acesso">
+          ${data.categories.map((category, index) => `
+            <article>
+              <span>${String(index + 1).padStart(2, '0')}</span>
+              <strong>${this.escapeHTML(category.label)}</strong>
+            </article>`).join('')}
+        </div>
+        <div class="classification-list cabinet-card-list">
+          ${data.statements.map((item, index) => `
+            <article class="activity-card classification-card cabinet-classification-card" data-statement-id="${item.id}">
+              <span class="classification-number">${String(index + 1).padStart(2, '0')}</span>
+              <p>${this.escapeHTML(item.text)}</p>
+              <div class="choice-row classification-choice-row cabinet-choice-row">
+                ${data.categories.map(category => `<button class="mini-action-btn" type="button" data-value="${this.escapeHTML(category.id)}">${this.escapeHTML(category.shortLabel || category.label)}</button>`).join('')}
+              </div>
+            </article>`).join('')}
+        </div>
+      </section>
+      ${submit('Arquivar classificações')}`;
+  }
+
+  if(data.mode === 'dossierDetector') {
+    return `
+      <section class="dossier-detector">
+        <div class="detector-source-index">
+          ${(data.sources || []).map(source => `
+            <button type="button" class="activity-card detector-source-card" data-open-source="${source.id}">
+              <strong>${this.escapeHTML(source.title)}</strong>
+              <span>${this.escapeHTML(source.text)}</span>
+              <em>Consultar dossiê</em>
+            </button>`).join('')}
+        </div>
+        <div class="detector-category-key" aria-label="Categorias de checagem">
+          ${data.categories.map(category => `<span data-detector-key="${category.id}">${this.escapeHTML(category.label)}</span>`).join('')}
+        </div>
+        <div class="classification-list detector-statement-list">
+          ${data.statements.map((item, index) => `
+            <article class="activity-card classification-card detector-statement-card" data-statement-id="${item.id}">
+              <span class="classification-number">${String(index + 1).padStart(2, '0')}</span>
+              <p>${this.escapeHTML(item.text)}</p>
+              <div class="choice-row classification-choice-row detector-choice-row">
+                ${data.categories.map(category => `<button class="mini-action-btn" type="button" data-value="${this.escapeHTML(category.id)}">${this.escapeHTML(category.label)}</button>`).join('')}
+              </div>
+            </article>`).join('')}
+        </div>
+      </section>
+      ${submit('Concluir checagem do dossiê')}`;
+  }
+
   if(data.mode === 'fakeNewsLegacy') {
     return `
       <div class="claim-card"><strong>Afirmação investigada</strong><p>${this.escapeHTML(data.statement || data.c)}</p></div>
@@ -4471,7 +4692,82 @@ EvidenceSystem.renderActivity = function(data) {
       ${submit('Confirmar checagem')}`;
   }
 
+  if(data.mode === 'evidenceReview') {
+    return `
+      <section class="evidence-review-board">
+        <div class="review-thesis-card">
+          <small>Tese em investigação</small>
+          <p>A participação política feminina em 1933 foi uma conquista real, construída antes da mudança legal e exercida também em Muzambinho; porém, o acesso, a visibilidade e a representação permaneceram desiguais.</p>
+        </div>
+        <div class="review-round-list">
+          ${data.reviewRounds.map((round, roundIndex) => `
+            <section class="review-round-card" data-review-round="${round.id}" data-review-mode="${round.selection}" data-review-required="${round.required}">
+              <header>
+                <span>${this.escapeHTML(round.label)}</span>
+                <div><strong>${this.escapeHTML(round.title)}</strong><small>${this.escapeHTML(round.instruction)}</small></div>
+              </header>
+              <div class="review-option-grid">
+                ${round.options.map((option, optionIndex) => `
+                  <button class="review-option" type="button" data-review-option="${option.id}">
+                    <span>${String(optionIndex + 1).padStart(2, '0')}</span>
+                    <p>${this.escapeHTML(option.text)}</p>
+                  </button>`).join('')}
+              </div>
+              <footer><span data-review-count>0 de ${round.required} selecionadas</span></footer>
+            </section>`).join('')}
+        </div>
+        <section class="review-map-section">
+          <header><span>Desafio extra</span><strong>Qual evidência responde a cada parte da tese?</strong></header>
+          <div class="assoc-game review-map-game" data-assoc-game data-assoc-mode="reviewMap">
+            <div class="assoc-bank review-map-bank">
+              ${data.mapOptions.map(option => `<button class="assoc-token review-map-token" type="button" draggable="true" data-assoc-token="${option.id}" data-token-label="${this.escapeHTML(option.text)}">${this.escapeHTML(option.text)}</button>`).join('')}
+            </div>
+            <div class="review-map-targets">
+              ${data.evidenceMap.map((item, index) => `
+                <article data-assoc-target="${item.id}">
+                  <span>${String(index + 1).padStart(2, '0')}</span>
+                  <strong>${this.escapeHTML(item.prompt)}</strong>
+                  <button class="assoc-drop-zone" type="button" data-assoc-drop="${item.id}" data-assoc-label="Encaixe a evidência"><span>Encaixe a evidência</span></button>
+                </article>`).join('')}
+            </div>
+          </div>
+        </section>
+      </section>
+      ${submit('Concluir revisão das evidências')}`;
+  }
+
   if(data.mode === 'finalDossier') {
+    return `
+      <div class="final-dossier-builder final-dossier-authorial">
+        <header class="final-dossier-heading">
+          <span>Dossiê 004/33</span>
+          <strong>Quatro elementos para uma interpretação responsável</strong>
+        </header>
+        <section class="final-dossier-step">
+          <div class="final-step-heading"><span>01</span><div><strong>Escolha a tese</strong><small>Selecione a interpretação que respeita todo o percurso.</small></div></div>
+          ${data.thesisOptions.map((item, index) => `<button class="activity-card final-thesis-card" type="button" data-thesis="${this.escapeHTML(item.id)}"><b>${String.fromCharCode(65 + index)})</b><span>${this.escapeHTML(item.text)}</span></button>`).join('')}
+        </section>
+        <section class="final-dossier-step">
+          <div class="final-step-heading"><span>02</span><div><strong>Escolha duas evidências</strong><small>Use documentos pertinentes à tese.</small></div></div>
+          <div class="final-evidence-grid">
+            ${data.evidenceBank.map(item => `<button class="activity-card" type="button" data-final-evidence="${this.escapeHTML(item.id)}">${this.escapeHTML(item.text)}</button>`).join('')}
+          </div>
+          <small class="final-selection-count" data-final-evidence-count>0 de 2 evidências selecionadas</small>
+        </section>
+        <section class="final-dossier-step">
+          <div class="final-step-heading"><span>03</span><div><strong>Reconheça um limite documental</strong><small>Todos os limites abaixo são historicamente válidos.</small></div></div>
+          ${data.limitations.map(item => `<button class="activity-card final-limitation-card" type="button" data-limitation="${this.escapeHTML(item.id)}">${this.escapeHTML(item.text)}</button>`).join('')}
+        </section>
+        <section class="final-dossier-step final-writing-step">
+          <div class="final-step-heading"><span>04</span><div><strong>Conclusão autoral</strong><small>${this.escapeHTML(data.conclusionPrompt || '')}</small></div></div>
+          <textarea class="typewriter-input final-conclusion" data-final-conclusion maxlength="${data.maxCharacters || 400}" placeholder="Escreva sua interpretação com tese, evidência, escala local e limite..."></textarea>
+          <div class="final-writing-footer"><span>Conclusão do arquivo</span><strong data-final-character-count>0 / ${data.maxCharacters || 400}</strong></div>
+        </section>
+      </div>
+      ${submit('Carimbar dossiê final')}`;
+  }
+
+  if(data.mode === 'finalDossierLegacy') {
     return `
       <div class="final-dossier-builder">
         <section>
@@ -4525,9 +4821,11 @@ EvidenceSystem.bindActivity = function(overlay, title, text, data) {
     activeAssoc: null,
     restoredRegions: new Set(),
     openedSources: new Set(),
+    reviewSelections: {},
     thesis: '',
     finalEvidence: new Set(),
-    limitation: ''
+    limitation: '',
+    contextualWrongFeedback: ''
   };
   const feedback = overlay.querySelector('.quiz-feedback');
   const hintBox = overlay.querySelector('.phase-hint-box');
@@ -4580,9 +4878,24 @@ EvidenceSystem.bindActivity = function(overlay, title, text, data) {
     state.activeAssoc = null;
     state.restoredRegions.clear();
     state.openedSources.clear();
+    state.reviewSelections = {};
     state.finalEvidence.clear();
     state.thesis = '';
     state.limitation = '';
+    state.contextualWrongFeedback = '';
+    overlay.querySelectorAll('[data-review-round]').forEach(round => {
+      const required = Number(round.dataset.reviewRequired || 1);
+      state.reviewSelections[round.dataset.reviewRound] = new Set();
+      round.classList.remove('complete');
+      const count = round.querySelector('[data-review-count]');
+      if(count) count.textContent = `0 de ${required} selecionada${required === 1 ? '' : 's'}`;
+    });
+    const finalEvidenceCount = overlay.querySelector('[data-final-evidence-count]');
+    if(finalEvidenceCount) finalEvidenceCount.textContent = '0 de 2 evidências selecionadas';
+    const conclusion = overlay.querySelector('[data-final-conclusion]');
+    if(conclusion) conclusion.value = '';
+    const characterCount = overlay.querySelector('[data-final-character-count]');
+    if(characterCount) characterCount.textContent = `0 / ${data.maxCharacters || 400}`;
     if(sequentialActivity) renderSequentialRound();
   };
 
@@ -4667,7 +4980,7 @@ EvidenceSystem.bindActivity = function(overlay, title, text, data) {
     setTimeout(() => overlay.querySelector('.investigation-dossier')?.classList.remove('shake-error'), 450);
     GameLogic.showWrongAnswerHelp({
       ...data,
-      hint: data.wrongFeedback || data.hints?.[Math.min(state.attempts - 1, Math.max(0, (data.hints?.length || 1) - 1))] || data.hint,
+      hint: state.contextualWrongFeedback || data.wrongFeedback || data.hints?.[Math.min(state.attempts - 1, Math.max(0, (data.hints?.length || 1) - 1))] || data.hint,
       curiosity: null
     });
     if(canConclude) {
@@ -4676,8 +4989,11 @@ EvidenceSystem.bindActivity = function(overlay, title, text, data) {
       });
     } else {
       setTimeout(() => {
-        showFeedback('');
-        resetAfterWrong();
+        const preserveWork = ['classificationCabinet', 'dossierDetector', 'evidenceReview', 'finalDossier'].includes(data.mode);
+        if(!preserveWork) {
+          showFeedback('');
+          resetAfterWrong();
+        }
       }, 1500);
     }
   };
@@ -4851,6 +5167,28 @@ EvidenceSystem.bindActivity = function(overlay, title, text, data) {
     });
   });
 
+  overlay.querySelectorAll('[data-research-open]').forEach(button => {
+    button.addEventListener('click', () => {
+      const archive = button.closest('[data-research-archive]');
+      const reader = archive?.querySelector(`[data-research-reader="${CSS.escape(button.dataset.researchOpen)}"]`);
+      if(!archive || !reader) return;
+      archive.querySelectorAll('[data-research-reader]').forEach(item => { item.hidden = true; });
+      reader.hidden = false;
+      archive.classList.add('reader-open');
+      reader.scrollTop = 0;
+      GameLogic.recordGameEvent('document_opened', data, { section: button.dataset.researchOpen });
+    });
+  });
+
+  overlay.querySelectorAll('[data-research-close]').forEach(button => {
+    button.addEventListener('click', () => {
+      const archive = button.closest('[data-research-archive]');
+      archive?.classList.remove('reader-open');
+      const reader = button.closest('[data-research-reader]');
+      if(reader) reader.hidden = true;
+    });
+  });
+
   overlay.querySelector('[data-reset-activity]')?.addEventListener('click', () => {
     resetAfterWrong();
     showFeedback('');
@@ -4911,7 +5249,6 @@ EvidenceSystem.bindActivity = function(overlay, title, text, data) {
           <div class="quiz-options sequential-options">
             ${options.map((option, index) => `<button class="quiz-checkbox-btn${selectedIndex === index ? ' selected' : ''}" type="button" data-round-option="${index}"><span class="check-box">${selectedIndex === index ? '<b>X</b>' : ''}</span><span class="option-text">${EvidenceSystem.escapeHTML(option)}</span></button>`).join('')}
           </div>
-          ${selectedIndex !== undefined ? `<aside class="round-rationale"><strong>Critério histórico</strong><p>${EvidenceSystem.escapeHTML(item.reason)}</p></aside>` : ''}
         </article>`
       : `<article class="documentary-round">
           <header><span>Questão documental ${state.roundIndex + 1}</span><h3>${EvidenceSystem.escapeHTML(item.title)}</h3></header>
@@ -5046,14 +5383,60 @@ EvidenceSystem.bindActivity = function(overlay, title, text, data) {
       const impact = data.impacts.find(item => item.id === value);
       if(impact) return `<strong>${EvidenceSystem.escapeHTML(impact.title)}</strong>`;
     }
+    if(game.dataset.assocMode === 'tripleEvidence') {
+      const item = [...(data.conclusions || []), ...(data.limits || [])].find(entry => entry.id === value);
+      if(item) return `<strong>${EvidenceSystem.escapeHTML(item.text)}</strong>`;
+    }
+    if(game.dataset.assocMode === 'reviewMap') {
+      const item = (data.mapOptions || []).find(entry => entry.id === value);
+      if(item) return `<strong>${EvidenceSystem.escapeHTML(item.text)}</strong>`;
+    }
     return `<strong>${EvidenceSystem.escapeHTML(value)}</strong>`;
   };
+
+  const refreshReviewRound = (round) => {
+    if(!round) return;
+    const roundId = round.dataset.reviewRound;
+    const selected = state.reviewSelections[roundId] || new Set();
+    round.querySelectorAll('[data-review-option]').forEach(button => {
+      button.classList.toggle('selected', selected.has(button.dataset.reviewOption));
+    });
+    const count = round.querySelector('[data-review-count]');
+    const required = Number(round.dataset.reviewRequired || 1);
+    if(count) count.textContent = `${selected.size} de ${required} selecionada${required === 1 ? '' : 's'}`;
+    round.classList.toggle('complete', selected.size === required);
+  };
+
+  overlay.querySelectorAll('[data-review-round]').forEach(round => {
+    const roundId = round.dataset.reviewRound;
+    state.reviewSelections[roundId] = new Set();
+    round.querySelectorAll('[data-review-option]').forEach(button => {
+      button.addEventListener('click', () => {
+        const selected = state.reviewSelections[roundId];
+        const optionId = button.dataset.reviewOption;
+        const required = Number(round.dataset.reviewRequired || 1);
+        if(round.dataset.reviewMode === 'single') {
+          selected.clear();
+          selected.add(optionId);
+        } else if(selected.has(optionId)) {
+          selected.delete(optionId);
+        } else if(selected.size < required) {
+          selected.add(optionId);
+        } else {
+          showIncomplete(`Esta rodada pede exatamente ${required} escolhas.`);
+        }
+        refreshReviewRound(round);
+      });
+    });
+    refreshReviewRound(round);
+  });
 
   const refreshAssociationGame = (game) => {
     if(!game) return;
     game.querySelectorAll('[data-assoc-drop]').forEach(drop => {
       const value = state.answers[drop.dataset.assocDrop];
-      drop.innerHTML = value ? renderAssociationChip(game, value) : '<span>Solte aqui</span>';
+      const emptyLabel = drop.dataset.assocLabel || 'Solte aqui';
+      drop.innerHTML = value ? renderAssociationChip(game, value) : `<span>${EvidenceSystem.escapeHTML(emptyLabel)}</span>`;
       drop.classList.toggle('assoc-filled', Boolean(value));
       drop.closest('[data-assoc-target]')?.classList.toggle('assoc-filled', Boolean(value));
     });
@@ -5069,6 +5452,14 @@ EvidenceSystem.bindActivity = function(overlay, title, text, data) {
 
   const assignAssociation = (game, targetId, value) => {
     if(!game || !targetId || !value) return;
+    if(game.dataset.assocMode === 'tripleEvidence') {
+      const token = game.querySelector(`[data-assoc-token="${CSS.escape(value)}"]`);
+      const drop = game.querySelector(`[data-assoc-drop="${CSS.escape(targetId)}"]`);
+      if(!drop || token?.dataset.assocKind !== drop.dataset.assocKind) {
+        showIncomplete('Encaixe conclusões nos campos de conclusão e limites nos campos de limite.');
+        return;
+      }
+    }
     Object.keys(state.answers).forEach(key => {
       if(key !== targetId && state.answers[key] === value) delete state.answers[key];
     });
@@ -5112,9 +5503,12 @@ EvidenceSystem.bindActivity = function(overlay, title, text, data) {
       event.preventDefault();
       const card = target.closest('[data-assoc-target]');
       const game = target.closest('[data-assoc-game]');
+      const dropZone = event.target.closest('[data-assoc-drop]');
+      if(target.dataset.assocTarget && dropZone) return;
+      if(game?.dataset.assocMode === 'tripleEvidence' && !dropZone) return;
       const value = event.dataTransfer.getData('text/plain') || state.activeAssoc?.value;
       card?.classList.remove('assoc-hover');
-      assignAssociation(game, card?.dataset.assocTarget, value);
+      assignAssociation(game, dropZone?.dataset.assocDrop || card?.dataset.assocTarget, value);
     });
   });
 
@@ -5304,9 +5698,34 @@ EvidenceSystem.bindActivity = function(overlay, title, text, data) {
 
   overlay.querySelectorAll('[data-open-source]').forEach(button => {
     button.addEventListener('click', () => {
-      state.openedSources.add(button.dataset.openSource);
+      const sourceId = button.dataset.openSource;
+      const source = (data.sources || []).find(item => item.id === sourceId);
+      state.openedSources.add(sourceId);
       button.classList.add('selected');
-      GameLogic.recordGameEvent('source_opened', data, { sourceId: button.dataset.openSource });
+      GameLogic.recordGameEvent('source_opened', data, { sourceId });
+      if(!source) return;
+
+      overlay.querySelector('.source-reader-overlay')?.remove();
+      const reader = document.createElement('div');
+      reader.className = 'source-reader-overlay';
+      const paragraphs = String(source.content || source.text || '')
+        .split(/\n{2,}/)
+        .filter(Boolean)
+        .map(paragraph => `<p>${EvidenceSystem.escapeHTML(paragraph)}</p>`)
+        .join('');
+      reader.innerHTML = `
+        <article class="source-reader-sheet" role="dialog" aria-modal="true" aria-label="${EvidenceSystem.escapeHTML(source.title)}">
+          <button class="source-reader-close" type="button" aria-label="Fechar dossiê">&times;</button>
+          <span>Arquivo consultado &bull; Detector histórico</span>
+          <h3>${EvidenceSystem.escapeHTML(source.title)}</h3>
+          <p class="source-reader-summary">${EvidenceSystem.escapeHTML(source.text || '')}</p>
+          <div class="source-reader-content">${paragraphs}</div>
+          <small>Use apenas o que este documento permite afirmar.</small>
+        </article>`;
+      overlay.appendChild(reader);
+      const closeReader = () => reader.remove();
+      reader.querySelector('.source-reader-close')?.addEventListener('click', closeReader);
+      reader.addEventListener('click', event => { if(event.target === reader) closeReader(); });
     });
   });
 
@@ -5329,9 +5748,16 @@ EvidenceSystem.bindActivity = function(overlay, title, text, data) {
   overlay.querySelectorAll('[data-final-evidence]').forEach(button => {
     button.addEventListener('click', () => {
       const value = button.dataset.finalEvidence;
-      if(state.finalEvidence.has(value)) state.finalEvidence.delete(value);
-      else state.finalEvidence.add(value);
-      button.classList.toggle('selected');
+      if(state.finalEvidence.has(value)) {
+        state.finalEvidence.delete(value);
+      } else if(state.finalEvidence.size < 2) {
+        state.finalEvidence.add(value);
+      } else {
+        showIncomplete('Escolha somente duas evidências centrais para o dossiê.');
+      }
+      overlay.querySelectorAll('[data-final-evidence]').forEach(item => item.classList.toggle('selected', state.finalEvidence.has(item.dataset.finalEvidence)));
+      const counter = overlay.querySelector('[data-final-evidence-count]');
+      if(counter) counter.textContent = `${state.finalEvidence.size} de 2 evidências selecionadas`;
     });
   });
 
@@ -5343,6 +5769,14 @@ EvidenceSystem.bindActivity = function(overlay, title, text, data) {
     });
   });
 
+  const finalConclusion = overlay.querySelector('[data-final-conclusion]');
+  const finalCharacterCount = overlay.querySelector('[data-final-character-count]');
+  const refreshFinalCharacterCount = () => {
+    if(finalConclusion && finalCharacterCount) finalCharacterCount.textContent = `${finalConclusion.value.length} / ${data.maxCharacters || 400}`;
+  };
+  finalConclusion?.addEventListener('input', refreshFinalCharacterCount);
+  refreshFinalCharacterCount();
+
   overlay.querySelector('[data-submit-activity]')?.addEventListener('click', () => {
     if(data.mode === 'chronology' || data.mode === 'rightsStack') {
       const selectedOrder = state.order.filter(Boolean);
@@ -5351,6 +5785,18 @@ EvidenceSystem.bindActivity = function(overlay, title, text, data) {
     } else if(data.mode === 'textHighlight') {
       const result = this.gradeTextHighlight(overlay, data);
       finish(result.isCorrect, result.selectedAnswer);
+    } else if(data.mode === 'highlightComparison') {
+      const markButtons = Array.from(overlay.querySelectorAll('.mark-token'));
+      const selectedButtons = markButtons.filter(button => button.classList.contains('selected'));
+      const requiredButtons = markButtons.filter(button => button.dataset.answer === 'true');
+      const exactHighlight = requiredButtons.length > 0
+        && requiredButtons.every(button => button.classList.contains('selected'))
+        && selectedButtons.every(button => button.dataset.answer === 'true');
+      if(!selectedButtons.length) return showIncomplete('Grife a expressão do art. 108 antes de comparar os artigos.');
+      if(data.rounds.some((_, index) => state.roundAnswers[index] === undefined)) return showIncomplete(`Responda às ${data.rounds.length} comparações antes de concluir.`);
+      const roundsCorrect = data.rounds.every((round, index) => state.roundAnswers[index] === round.correctIndex);
+      const selectedAnswer = `Grifo: ${selectedButtons.map(button => button.innerText).join(' ')} | ${data.rounds.map((round, index) => `Rodada ${index + 1}: ${round.options[state.roundAnswers[index]]}`).join(' | ')}`;
+      finish(exactHighlight && roundsCorrect, selectedAnswer);
     } else if(data.mode === 'quoteMatch') {
       const complete = data.quotes.every(item => state.answers[item.id]);
       if(!complete) return showIncomplete('Associe todas as estratégias antes de confirmar.');
@@ -5376,7 +5822,7 @@ EvidenceSystem.bindActivity = function(overlay, title, text, data) {
       if(!state.answers.booth) return showIncomplete('Escolha uma decisao da cabine.');
       finish(state.answers.booth === 'correct', state.answers.booth);
     } else if(data.mode === 'multiRoundQuiz') {
-      if(data.rounds.some((_, index) => state.roundAnswers[index] === undefined)) return showIncomplete('Responda às quatro rodadas antes de carimbar a análise.');
+      if(data.rounds.some((_, index) => state.roundAnswers[index] === undefined)) return showIncomplete(`Responda às ${data.rounds.length} rodadas antes de concluir a análise.`);
       const isCorrect = data.rounds.every((round, index) => state.roundAnswers[index] === round.correctIndex);
       const selectedAnswer = data.rounds.map((round, index) => `Rodada ${index + 1}: ${round.options[state.roundAnswers[index]]}`).join(' | ');
       finish(isCorrect, selectedAnswer);
@@ -5404,6 +5850,14 @@ EvidenceSystem.bindActivity = function(overlay, title, text, data) {
       const associationAnswer = data.pairs.map(item => `${item.clue}: ${state.answers[item.id]}`).join(' | ');
       const closingAnswer = data.closingQuestion ? ` | Conclusão: ${data.closingQuestion.options[state.quizIndex]}` : '';
       finish(associationsCorrect && closingCorrect, associationAnswer + closingAnswer);
+    } else if(data.mode === 'tripleEvidence') {
+      const complete = data.matches.every(item => state.answers[`conclusion:${item.id}`] && state.answers[`limit:${item.id}`]);
+      if(!complete) return showIncomplete('Associe uma conclusão e um limite a cada documento.');
+      if(state.quizIndex === null) return showIncomplete('Responda também à pergunta-armadilha.');
+      const associationsCorrect = data.matches.every(item => state.answers[`conclusion:${item.id}`] === item.conclusion && state.answers[`limit:${item.id}`] === item.limit);
+      const closingCorrect = state.quizIndex === data.closingQuestion.correctIndex;
+      const selectedAnswer = data.matches.map(item => `${item.evidence}: ${state.answers[`conclusion:${item.id}`]} / ${state.answers[`limit:${item.id}`]}`).join(' | ') + ` | Pergunta-armadilha: ${data.closingQuestion.options[state.quizIndex]}`;
+      finish(associationsCorrect && closingCorrect, selectedAnswer);
     } else if(data.mode === 'factOpinion') {
       const complete = data.statements.every(item => state.answers[item.id]);
       if(!complete) return showIncomplete('Classifique todas as frases antes de confirmar.');
@@ -5427,13 +5881,65 @@ EvidenceSystem.bindActivity = function(overlay, title, text, data) {
       if(state.openedSources.size === 0) return showIncomplete('Abra pelo menos uma fonte antes de classificar.');
       if(!state.answers.fakeNews) return showIncomplete('Escolha uma classificacao.');
       finish(state.answers.fakeNews === data.correctClassification, state.answers.fakeNews);
+    } else if(data.mode === 'classificationCabinet') {
+      const complete = data.statements.every(item => state.answers[item.id]);
+      if(!complete) return showIncomplete('Classifique todos os cartões nas quatro camadas de acesso.');
+      const isCorrect = data.statements.every(item => state.answers[item.id] === item.answer);
+      const selectedAnswer = data.statements.map(item => `${item.text}: ${data.categories.find(category => category.id === state.answers[item.id])?.label || state.answers[item.id]}`).join(' | ');
+      finish(isCorrect, selectedAnswer);
+    } else if(data.mode === 'dossierDetector') {
+      if(state.openedSources.size === 0) return showIncomplete('Consulte pelo menos um dos quatro dossiês antes de classificar.');
+      const complete = data.statements.every(item => state.answers[item.id]);
+      if(!complete) return showIncomplete('Classifique as nove afirmações antes de concluir a checagem.');
+      const isCorrect = data.statements.every(item => state.answers[item.id] === item.answer);
+      const selectedAnswer = data.statements.map(item => `${item.text}: ${data.categories.find(category => category.id === state.answers[item.id])?.label || state.answers[item.id]}`).join(' | ');
+      finish(isCorrect, selectedAnswer);
+    } else if(data.mode === 'evidenceReview') {
+      const incompleteRound = data.reviewRounds.find(round => (state.reviewSelections[round.id]?.size || 0) !== round.required);
+      if(incompleteRound) return showIncomplete(`${incompleteRound.label}: faça exatamente ${incompleteRound.required} escolha${incompleteRound.required === 1 ? '' : 's'}.`);
+      const incompleteMap = data.evidenceMap.find(item => !state.answers[item.id]);
+      if(incompleteMap) return showIncomplete('Encaixe uma evidência em cada parte da tese no desafio extra.');
+      const roundsCorrect = data.reviewRounds.every(round => {
+        const selected = Array.from(state.reviewSelections[round.id] || []).sort();
+        return selected.join('|') === [...round.correct].sort().join('|');
+      });
+      const mapCorrect = data.evidenceMap.every(item => state.answers[item.id] === item.answer);
+      const selectedAnswer = data.reviewRounds.map(round => `${round.label}: ${Array.from(state.reviewSelections[round.id] || []).join(', ')}`).join(' | ') + ` | Desafio extra: ${data.evidenceMap.map(item => `${item.prompt}: ${state.answers[item.id]}`).join('; ')}`;
+      finish(roundsCorrect && mapCorrect, selectedAnswer);
     } else if(data.mode === 'finalDossier') {
       const conclusion = overlay.querySelector('[data-final-conclusion]')?.value.trim() || '';
-      if(!state.thesis) return showIncomplete('Escolha uma tese para o dossie.');
-      if(state.finalEvidence.size < 5) return showIncomplete('Selecione pelo menos cinco evidencias.');
-      if(!state.limitation) return showIncomplete('Reconheca uma limitacao da fonte.');
-      if(conclusion.length < 40) return showIncomplete('Escreva uma conclusao um pouco mais completa.');
-      finish(true, `Tese: ${state.thesis} | Evidencias: ${Array.from(state.finalEvidence).join(', ')} | Limitacao: ${state.limitation} | Conclusao: ${conclusion}`);
+      if(!state.thesis) return showIncomplete('Escolha uma tese para o dossiê.');
+      if(state.finalEvidence.size !== 2) return showIncomplete('Selecione exatamente duas evidências coerentes com a tese.');
+      if(!state.limitation) return showIncomplete('Reconheça uma limitação documental.');
+      if(conclusion.length < 35) return showIncomplete('Desenvolva um pouco mais a conclusão autoral.');
+      if(conclusion.length > (data.maxCharacters || 400)) return showIncomplete(`A conclusão deve ter no máximo ${data.maxCharacters || 400} caracteres.`);
+
+      const normalizedConclusion = conclusion.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+      const rubric = {
+        process: /(mobiliz|reivindic|process|antes de 1932|decadas)/.test(normalizedConclusion),
+        evidence: /(1932|1933|codigo|decreto|jornal|muzambinhense|urnas|adelia|eleicao)/.test(normalizedConclusion),
+        scales: normalizedConclusion.includes('muzambinho') && /(nacional|brasil|codigo|decreto|lei)/.test(normalizedConclusion),
+        limit: /(desigual|limite|lacuna|barreira|nao informa|nao quantifica|sem separar|visibilidade|resistencia)/.test(normalizedConclusion)
+      };
+      const rubricScore = Object.values(rubric).filter(Boolean).length;
+      const selectedEvidence = Array.from(state.finalEvidence);
+      const evidenceRelevant = selectedEvidence.every(id => data.evidenceBank.find(item => item.id === id)?.relevant);
+      const missing = [];
+      if(state.thesis !== data.correctThesis) missing.push('a tese escolhida simplifica demais a conquista');
+      if(!evidenceRelevant) missing.push('uma das evidências não sustenta a tese central');
+      if(!rubric.evidence) missing.push('falta citar uma evidência histórica concreta');
+      if(!rubric.scales) missing.push('falta relacionar Muzambinho ao contexto nacional');
+      if(!rubric.limit) missing.push('falta reconhecer um limite, barreira ou lacuna');
+      if(!rubric.process) missing.push('falta indicar que a conquista foi construída ao longo do tempo');
+      const isCorrect = state.thesis === data.correctThesis && evidenceRelevant && rubricScore >= 2;
+      state.contextualWrongFeedback = missing.length
+        ? `Sua interpretação é válida, mas o dossiê ainda pede um ajuste: ${missing.slice(0, 2).join('; ')}. Reescreva com suas palavras.`
+        : data.wrongFeedback;
+      const thesisText = data.thesisOptions.find(item => item.id === state.thesis)?.text || state.thesis;
+      const evidenceText = selectedEvidence.map(id => data.evidenceBank.find(item => item.id === id)?.text || id);
+      const limitationText = data.limitations.find(item => item.id === state.limitation)?.text || state.limitation;
+      const selectedAnswer = `Tese: ${thesisText} | Evidências: ${evidenceText.join(', ')} | Limitação: ${limitationText} | Rubrica: ${rubricScore}/4 | Conclusão: ${conclusion}`;
+      finish(isCorrect, selectedAnswer);
     } else {
       if(state.quizIndex === null) return showIncomplete('Selecione uma alternativa antes de confirmar.');
       finish(state.quizIndex === data.correctIndex, data.options[state.quizIndex]);
@@ -5712,10 +6218,8 @@ GameLogic.advanceDialogue = function() {
   if (!this.isDialogueActive && contextBefore === 'phase_feedback' && this.pendingPhaseAfterDialogue) {
     const pending = this.pendingPhaseAfterDialogue;
     this.pendingPhaseAfterDialogue = null;
-    const isFinalEnding = pending.nextChapterIndex === null && this.isGameFinished();
     setTimeout(() => {
-      if(isFinalEnding) this.showFinalLetter();
-      else this.showChapterTimeline(pending.chapterIndex, pending.nextChapterIndex);
+      this.showChapterTimeline(pending.chapterIndex, pending.nextChapterIndex);
     }, 250);
   }
 };

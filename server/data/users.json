@@ -10,7 +10,7 @@
     "occupation": "Pesquisador",
     "avatar": "bertha",
     "isAdmin": true,
-    "updatedAt": "2026-08-10T14:19:17.682Z",
+    "updatedAt": "2026-08-17T20:51:00.447Z",
     "username": "admin",
     "level": "5",
     "age": "25 a 34",
@@ -146,11 +146,77 @@
           "gameId": "C2F6",
           "title": "Registro com Lacunas"
         },
+        "16": {
+          "state": "INTRO",
+          "startedAt": "2026-08-15T14:27:16.117Z",
+          "gameId": "C2F7",
+          "title": "3 de Maio de 1933"
+        },
+        "17": {
+          "state": "INTRO",
+          "startedAt": "2026-08-15T14:27:57.344Z",
+          "gameId": "C2F8",
+          "title": "Local e Nacional"
+        },
+        "18": {
+          "state": "INTRO",
+          "startedAt": "2026-08-15T14:30:08.007Z",
+          "gameId": "C2F9",
+          "title": "O Que os Documentos Revelam"
+        },
+        "19": {
+          "state": "INTRO",
+          "startedAt": "2026-08-15T16:46:10.292Z",
+          "gameId": "C3F1",
+          "title": "Resultados de 1933"
+        },
         "20": {
           "state": "INTRO",
           "startedAt": "2026-08-12T17:06:16.388Z",
           "gameId": "C3F2",
-          "title": "Constituicao de 1934"
+          "title": "Constituição de 1934"
+        },
+        "21": {
+          "state": "INTRO",
+          "startedAt": "2026-08-17T11:42:09.520Z",
+          "gameId": "C3F3",
+          "title": "Mulheres na Política"
+        },
+        "22": {
+          "state": "INTRO",
+          "startedAt": "2026-08-17T12:20:30.163Z",
+          "gameId": "C3F4",
+          "title": "Resistências Permanentes"
+        },
+        "23": {
+          "state": "INTRO",
+          "startedAt": "2026-08-17T12:21:05.065Z",
+          "gameId": "C3F5",
+          "title": "Direito, Critério e Barreira"
+        },
+        "24": {
+          "state": "INTRO",
+          "startedAt": "2026-08-17T12:21:43.334Z",
+          "gameId": "C3F6",
+          "title": "Escada Incompleta"
+        },
+        "25": {
+          "state": "INTRO",
+          "startedAt": "2026-08-17T12:22:04.141Z",
+          "gameId": "C3F7",
+          "title": "Detector Histórico"
+        },
+        "26": {
+          "state": "INTRO",
+          "startedAt": "2026-08-17T12:22:25.772Z",
+          "gameId": "C3F8",
+          "title": "Evidências Fortes"
+        },
+        "27": {
+          "state": "INTRO",
+          "startedAt": "2026-08-17T12:22:52.419Z",
+          "gameId": "C3F9",
+          "title": "Monte o Dossiê Final"
         }
       },
       "gameEvents": [
@@ -307,6 +373,119 @@
           "phaseNum": 15,
           "userId": "admin",
           "timestamp": "2026-08-14T01:39:09.815Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C2F7",
+          "phaseNum": 16,
+          "userId": "admin",
+          "timestamp": "2026-08-15T14:27:16.119Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C2F8",
+          "phaseNum": 17,
+          "userId": "admin",
+          "timestamp": "2026-08-15T14:27:57.344Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C2F9",
+          "phaseNum": 18,
+          "userId": "admin",
+          "timestamp": "2026-08-15T14:30:08.007Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C2F9",
+          "phaseNum": 18,
+          "userId": "admin",
+          "timestamp": "2026-08-15T14:41:18.323Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C3F1",
+          "phaseNum": 19,
+          "userId": "admin",
+          "timestamp": "2026-08-15T16:46:10.294Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C3F2",
+          "phaseNum": 20,
+          "userId": "admin",
+          "timestamp": "2026-08-17T11:41:03.519Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C3F3",
+          "phaseNum": 21,
+          "userId": "admin",
+          "timestamp": "2026-08-17T11:42:09.520Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C3F4",
+          "phaseNum": 22,
+          "userId": "admin",
+          "timestamp": "2026-08-17T12:20:30.176Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C3F5",
+          "phaseNum": 23,
+          "userId": "admin",
+          "timestamp": "2026-08-17T12:21:05.066Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C3F6",
+          "phaseNum": 24,
+          "userId": "admin",
+          "timestamp": "2026-08-17T12:21:43.334Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C3F7",
+          "phaseNum": 25,
+          "userId": "admin",
+          "timestamp": "2026-08-17T12:22:04.141Z"
+        },
+        {
+          "event": "source_opened",
+          "gameId": "C3F7",
+          "phaseNum": 25,
+          "userId": "admin",
+          "timestamp": "2026-08-17T12:22:05.201Z",
+          "sourceId": "dossie-a"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C3F8",
+          "phaseNum": 26,
+          "userId": "admin",
+          "timestamp": "2026-08-17T12:22:25.772Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C3F9",
+          "phaseNum": 27,
+          "userId": "admin",
+          "timestamp": "2026-08-17T12:22:52.419Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C3F5",
+          "phaseNum": 23,
+          "userId": "admin",
+          "timestamp": "2026-08-17T12:24:00.231Z"
+        },
+        {
+          "event": "game_started",
+          "gameId": "C3F5",
+          "phaseNum": 23,
+          "userId": "admin",
+          "timestamp": "2026-08-17T12:36:51.988Z"
         }
       ]
     }
@@ -323,7 +502,7 @@
       "occupation": "Pesquisador",
       "avatar": "bertha",
       "isAdmin": true,
-      "updatedAt": "2026-08-10T14:19:17.682Z",
+      "updatedAt": "2026-08-17T20:51:00.447Z",
       "username": "admin",
       "level": "5",
       "age": "25 a 34",
@@ -459,11 +638,77 @@
             "gameId": "C2F6",
             "title": "Registro com Lacunas"
           },
+          "16": {
+            "state": "INTRO",
+            "startedAt": "2026-08-15T14:27:16.117Z",
+            "gameId": "C2F7",
+            "title": "3 de Maio de 1933"
+          },
+          "17": {
+            "state": "INTRO",
+            "startedAt": "2026-08-15T14:27:57.344Z",
+            "gameId": "C2F8",
+            "title": "Local e Nacional"
+          },
+          "18": {
+            "state": "INTRO",
+            "startedAt": "2026-08-15T14:30:08.007Z",
+            "gameId": "C2F9",
+            "title": "O Que os Documentos Revelam"
+          },
+          "19": {
+            "state": "INTRO",
+            "startedAt": "2026-08-15T16:46:10.292Z",
+            "gameId": "C3F1",
+            "title": "Resultados de 1933"
+          },
           "20": {
             "state": "INTRO",
             "startedAt": "2026-08-12T17:06:16.388Z",
             "gameId": "C3F2",
-            "title": "Constituicao de 1934"
+            "title": "Constituição de 1934"
+          },
+          "21": {
+            "state": "INTRO",
+            "startedAt": "2026-08-17T11:42:09.520Z",
+            "gameId": "C3F3",
+            "title": "Mulheres na Política"
+          },
+          "22": {
+            "state": "INTRO",
+            "startedAt": "2026-08-17T12:20:30.163Z",
+            "gameId": "C3F4",
+            "title": "Resistências Permanentes"
+          },
+          "23": {
+            "state": "INTRO",
+            "startedAt": "2026-08-17T12:21:05.065Z",
+            "gameId": "C3F5",
+            "title": "Direito, Critério e Barreira"
+          },
+          "24": {
+            "state": "INTRO",
+            "startedAt": "2026-08-17T12:21:43.334Z",
+            "gameId": "C3F6",
+            "title": "Escada Incompleta"
+          },
+          "25": {
+            "state": "INTRO",
+            "startedAt": "2026-08-17T12:22:04.141Z",
+            "gameId": "C3F7",
+            "title": "Detector Histórico"
+          },
+          "26": {
+            "state": "INTRO",
+            "startedAt": "2026-08-17T12:22:25.772Z",
+            "gameId": "C3F8",
+            "title": "Evidências Fortes"
+          },
+          "27": {
+            "state": "INTRO",
+            "startedAt": "2026-08-17T12:22:52.419Z",
+            "gameId": "C3F9",
+            "title": "Monte o Dossiê Final"
           }
         },
         "gameEvents": [
@@ -620,6 +865,119 @@
             "phaseNum": 15,
             "userId": "admin",
             "timestamp": "2026-08-14T01:39:09.815Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C2F7",
+            "phaseNum": 16,
+            "userId": "admin",
+            "timestamp": "2026-08-15T14:27:16.119Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C2F8",
+            "phaseNum": 17,
+            "userId": "admin",
+            "timestamp": "2026-08-15T14:27:57.344Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C2F9",
+            "phaseNum": 18,
+            "userId": "admin",
+            "timestamp": "2026-08-15T14:30:08.007Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C2F9",
+            "phaseNum": 18,
+            "userId": "admin",
+            "timestamp": "2026-08-15T14:41:18.323Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C3F1",
+            "phaseNum": 19,
+            "userId": "admin",
+            "timestamp": "2026-08-15T16:46:10.294Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C3F2",
+            "phaseNum": 20,
+            "userId": "admin",
+            "timestamp": "2026-08-17T11:41:03.519Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C3F3",
+            "phaseNum": 21,
+            "userId": "admin",
+            "timestamp": "2026-08-17T11:42:09.520Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C3F4",
+            "phaseNum": 22,
+            "userId": "admin",
+            "timestamp": "2026-08-17T12:20:30.176Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C3F5",
+            "phaseNum": 23,
+            "userId": "admin",
+            "timestamp": "2026-08-17T12:21:05.066Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C3F6",
+            "phaseNum": 24,
+            "userId": "admin",
+            "timestamp": "2026-08-17T12:21:43.334Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C3F7",
+            "phaseNum": 25,
+            "userId": "admin",
+            "timestamp": "2026-08-17T12:22:04.141Z"
+          },
+          {
+            "event": "source_opened",
+            "gameId": "C3F7",
+            "phaseNum": 25,
+            "userId": "admin",
+            "timestamp": "2026-08-17T12:22:05.201Z",
+            "sourceId": "dossie-a"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C3F8",
+            "phaseNum": 26,
+            "userId": "admin",
+            "timestamp": "2026-08-17T12:22:25.772Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C3F9",
+            "phaseNum": 27,
+            "userId": "admin",
+            "timestamp": "2026-08-17T12:22:52.419Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C3F5",
+            "phaseNum": 23,
+            "userId": "admin",
+            "timestamp": "2026-08-17T12:24:00.231Z"
+          },
+          {
+            "event": "game_started",
+            "gameId": "C3F5",
+            "phaseNum": 23,
+            "userId": "admin",
+            "timestamp": "2026-08-17T12:36:51.988Z"
           }
         ]
       }
