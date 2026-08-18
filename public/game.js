@@ -543,59 +543,87 @@ const GameLogic = {
     renderInventory() {
         const body = document.getElementById('inventoryBody');
         if (!body) return;
-        
-        if (this.progress.collectedEvidence.length === 0 && (!this.progress.answers || this.progress.answers.length === 0)) {
+
+        const evidence = Array.isArray(this.progress?.collectedEvidence) ? this.progress.collectedEvidence : [];
+        if (evidence.length === 0) {
             body.innerHTML = `
                 <div class="empty-inv-state" style="text-align:center; padding:50px 20px; opacity:0.5;">
                     <p style="font-family:var(--font-serif); font-size:1.2rem;">A pasta de campo está vazia.</p>
                     <p style="font-family:var(--font-mono); font-size:0.8rem;">Colete evidências nas gavetas para anexá-las aqui.</p>
                 </div>`;
-        } else {
-            const evidenceTitles = new Set(this.progress.collectedEvidence.map(ev => ev.title));
-            const evidenceHTML = this.progress.collectedEvidence.map((ev, i) => {
-                const rotation = i % 2 === 0 ? '-1.5deg' : '1.2deg';
-                return `
-                    <div class="inventory-item" style="
-                        transform: rotate(${rotation});
-                        background: #fffef5;
-                        border: 1px solid #dcdcdc;
-                        padding: 25px;
-                        margin-bottom: 35px;
-                        position: relative;
-                        box-shadow: 5px 5px 15px rgba(0,0,0,0.1);
-                        border-left: 8px solid var(--wine);
-                        transition: transform 0.3s ease;
-                    ">
-                        <div style="position: absolute; top: -15px; right: 25px; width: 12px; height: 40px; border: 3px solid #888; border-radius: 10px; background: transparent; z-index: 2; box-shadow: 1px 1px 2px rgba(0,0,0,0.2);"></div>
-                        <h4 style="font-family: var(--font-serif); color: var(--wine); font-size: 1.4rem; margin: 0 0 10px 0; border-bottom: 1px dashed #ccc; padding-bottom: 5px; text-transform: uppercase; letter-spacing: 1px;">${ev.title}</h4>
-                        <div style="font-family: var(--font-mono); font-size: 0.9rem; line-height: 1.6; color: #2c2c2c;">${ev.text}</div>
-                        ${ev.answer ? `<div style="font-family: var(--font-mono); font-size: 0.78rem; margin-top: 14px; padding-top: 10px; border-top: 1px dashed rgba(147,88,94,0.35); color: var(--wine);">RESPOSTA REGISTRADA: ${ev.answer.selectedAnswer}</div>` : ''}
-                        <div style="position: absolute; bottom: 10px; right: 15px; font-size: 0.6rem; font-weight: bold; color: rgba(147, 88, 94, 0.2); border: 1px solid rgba(147, 88, 94, 0.2); padding: 2px 5px; transform: rotate(-10deg);">ARQUIVO_REF_${i+1}</div>
-                    </div>`;
-            }).join('');
-            const answerHTML = (this.progress.answers || [])
-                .filter(answer => !evidenceTitles.has(answer.title))
-                .map((answer, i) => `
-                    <div class="inventory-item" style="
-                        transform: rotate(${i % 2 === 0 ? '1deg' : '-1deg'});
-                        background: #fffef5;
-                        border: 1px dashed rgba(147,88,94,0.45);
-                        padding: 22px;
-                        margin-bottom: 28px;
-                        position: relative;
-                        box-shadow: 5px 5px 15px rgba(0,0,0,0.08);
-                        border-left: 8px solid var(--olive);
-                    ">
-                        <h4 style="font-family: var(--font-serif); color: var(--wine); font-size: 1.25rem; margin: 0 0 10px 0; border-bottom: 1px dashed #ccc; padding-bottom: 5px; text-transform: uppercase; letter-spacing: 1px;">Resposta - ${answer.title}</h4>
-                        <div style="font-family: var(--font-mono); font-size: 0.86rem; line-height: 1.6; color: #2c2c2c;">
-                            <strong>Pergunta:</strong> ${answer.question}<br>
-                            <strong>Resposta:</strong> ${answer.selectedAnswer}<br>
-                            <strong>Status:</strong> ${answer.isCorrect ? 'DEFERIDO' : 'INDEFERIDO'}
-                        </div>
-                    </div>
-                `).join('');
-            body.innerHTML = evidenceHTML + answerHTML;
+            return;
         }
+
+        const escape = (value) => EvidenceSystem.escapeHTML(String(value || ''));
+        const plainText = (value) => {
+            const template = document.createElement('template');
+            template.innerHTML = String(value || '');
+            return (template.content.textContent || '').replace(/\s+/g, ' ').trim();
+        };
+
+        const records = evidence.map((ev, index) => {
+            const copy = plainText(ev.text || ev.summary || ev.explanation);
+            const excerpt = copy.length > 126 ? `${copy.slice(0, 123).trim()}...` : copy;
+            const style = index % 2 === 0 ? 'folder' : 'newspaper';
+            return {
+                ...ev,
+                index,
+                style,
+                title: ev.title || `Documento ${String(index + 1).padStart(2, '0')}`,
+                excerpt: excerpt || 'Registro documental anexado ao dossiê.',
+                reference: `REF: ${String(index + 1).padStart(3, '0')}/${String(evidence.length).padStart(2, '0')}`
+            };
+        });
+
+        body.innerHTML = `
+            <section class="inventory-archive" data-inventory-archive>
+                <header class="inventory-index-header">
+                    <span>ÍNDICE DOCUMENTAL</span>
+                    <strong>${records.length} registro${records.length === 1 ? '' : 's'} preservado${records.length === 1 ? '' : 's'}</strong>
+                </header>
+                <div class="inventory-record-grid">
+                    ${records.map(record => `
+                        <button class="inventory-record-card is-${record.style}" type="button" data-inventory-open="${record.index}" aria-label="Abrir ${escape(record.title)}">
+                            <span class="inventory-record-reference">${record.reference}</span>
+                            <strong>${escape(record.title)}</strong>
+                            <p>${escape(record.excerpt)}</p>
+                            <em>Consultar registro</em>
+                        </button>
+                    `).join('')}
+                </div>
+                ${records.map(record => `
+                    <article class="inventory-record-reader" data-inventory-reader="${record.index}" hidden>
+                        <header>
+                            <div>
+                                <span>${record.reference} &bull; ${escape(record.category || 'evidência')}</span>
+                                <h3>${escape(record.title)}</h3>
+                            </div>
+                            <button type="button" data-inventory-back aria-label="Voltar ao índice">&larr;</button>
+                        </header>
+                        ${record.chapter || record.origin ? `<p class="inventory-record-origin">${escape([record.chapter, record.origin].filter(Boolean).join(' • '))}</p>` : ''}
+                        <div class="inventory-record-copy">${record.text || `<p>${escape(record.summary || record.explanation)}</p>`}</div>
+                    </article>
+                `).join('')}
+            </section>`;
+
+        const archive = body.querySelector('[data-inventory-archive]');
+        const openRecord = (index) => {
+            archive?.classList.add('reader-open');
+            archive?.querySelectorAll('[data-inventory-reader]').forEach(reader => {
+                reader.hidden = reader.dataset.inventoryReader !== String(index);
+            });
+            body.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+        archive?.querySelectorAll('[data-inventory-open]').forEach(button => {
+            button.addEventListener('click', () => openRecord(button.dataset.inventoryOpen));
+        });
+        archive?.querySelectorAll('[data-inventory-back]').forEach(button => {
+            button.addEventListener('click', () => {
+                archive.classList.remove('reader-open');
+                button.closest('[data-inventory-reader]').hidden = true;
+                body.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
     },
 
     restoreGameState() {
@@ -1923,6 +1951,32 @@ GameLogic.bindKeyboardShortcuts = function() {
   if(this.keyboardShortcutsBound) return;
   this.keyboardShortcutsBound = true;
 
+  const rememberInvestigationPage = (event) => {
+    const investigation = event.target?.closest?.('#investigationModal');
+    if(!investigation) return;
+    const page = event.target.closest('.dossier-page, .source-reader-sheet, .phase-activity-page, .research-reader');
+    if(page) this.activeInvestigationPage = page;
+  };
+
+  document.addEventListener('pointerover', rememberInvestigationPage, true);
+  document.addEventListener('focusin', rememberInvestigationPage, true);
+
+  const finishKeyboardDragScroll = () => {
+    this.dragScrollActive = false;
+    this.dragScrollPage = null;
+    document.body.classList.remove('keyboard-drag-active');
+  };
+
+  document.addEventListener('dragstart', (event) => {
+    const investigation = event.target?.closest?.('#investigationModal');
+    if(!investigation) return;
+    this.dragScrollActive = true;
+    this.dragScrollPage = event.target.closest('.dossier-page') || investigation.querySelector('.phase-activity-page');
+    document.body.classList.add('keyboard-drag-active');
+  }, true);
+  document.addEventListener('dragend', finishKeyboardDragScroll, true);
+  document.addEventListener('drop', finishKeyboardDragScroll, true);
+
   document.addEventListener('keydown', (event) => {
     if(event.key === 'Escape') {
       event.preventDefault();
@@ -1943,13 +1997,29 @@ GameLogic.bindKeyboardShortcuts = function() {
 
     const investigation = document.getElementById('investigationModal');
     if(investigation && (event.key === 'ArrowDown' || event.key === 'ArrowUp')) {
-      const page = investigation.querySelector('.source-reader-sheet')
-        || event.target?.closest?.('.dossier-page')
-        || investigation.querySelector('.phase-activity-page');
+      const targetPage = event.target?.closest?.('.dossier-page, .source-reader-sheet, .phase-activity-page, .research-reader');
+      const page = (this.dragScrollActive && this.dragScrollPage?.isConnected ? this.dragScrollPage : null)
+        || targetPage
+        || (this.activeInvestigationPage?.isConnected ? this.activeInvestigationPage : null)
+        || investigation.querySelector('.phase-activity-page')
+        || investigation.querySelector('.source-reader-sheet');
       if(page) {
         event.preventDefault();
         const direction = event.key === 'ArrowDown' ? 1 : -1;
-        page.scrollBy({ top: direction * Math.max(180, page.clientHeight * 0.48), behavior: 'smooth' });
+        const distance = this.dragScrollActive ? 108 : Math.max(180, page.clientHeight * 0.48);
+        page.scrollBy({ top: direction * distance, behavior: this.dragScrollActive ? 'auto' : 'smooth' });
+      }
+      return;
+    }
+
+    if(investigation && (event.key === 'ArrowRight' || event.key === 'ArrowLeft')) {
+      const selector = event.key === 'ArrowRight'
+        ? '[data-round-next]:not([hidden]), [data-zone-next]:not([hidden])'
+        : '[data-round-previous]:not([hidden]), [data-zone-previous]:not([hidden])';
+      const arrow = investigation.querySelector(selector);
+      if(arrow && !arrow.disabled) {
+        event.preventDefault();
+        arrow.click();
       }
       return;
     }
@@ -3739,7 +3809,7 @@ GameLogic.advanceDialogue = function() {
    ========================================================= */
 GameLogic.loadPhaseContent = async function() {
   try {
-    const response = await fetch('content/phases.json?v=20260817h', { cache: 'no-store' });
+    const response = await fetch('content/phases.json?v=20260817m', { cache: 'no-store' });
     if(!response.ok) throw new Error('phase-content-not-found');
     this.phaseContent = await response.json();
   } catch (error) {
@@ -4014,6 +4084,10 @@ EvidenceSystem.referenceInfoHTML = function(source = {}, kind = 'historical') {
 };
 
 EvidenceSystem.renderResearchArchive = function(title, text, phaseData = {}) {
+  if(!phaseData.documentArchive) {
+    return `<div class="evidence-text source-document-text">${text}</div>`;
+  }
+
   const template = document.createElement('template');
   template.innerHTML = text || '';
   const blocks = Array.from(template.content.children).filter(node => node.textContent?.trim());
@@ -4119,19 +4193,24 @@ EvidenceSystem.spawnEvidence = function(title, text, phaseData) {
 
 EvidenceSystem.getPersonImage = function(person = {}) {
   const key = String(person.id || person.name || '').toLowerCase();
+  const normalizedKey = key.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '');
   const portraits = {
+    adelia: 'assets/adelia.png',
     bertha: 'assets/bertha.png',
+    carlota: 'assets/carlota.jpg',
     celina: 'assets/celina.png',
+    francisca: 'assets/francisca.png',
+    josefina: 'assets/josefina.png',
     leolinda: 'assets/leolinda.png',
+    mariana: 'assets/mariana.png',
+    mariarita: 'assets/mariarita.png',
     mietta: 'assets/mietta.png',
-    myrthes: 'assets/myrthes.png',
-    carlota: 'assets/carlota.png'
+    myrthes: 'assets/myrthes.png'
   };
   if(portraits[key]) return portraits[key];
-  if(key.includes('bertha')) return portraits.bertha;
-  if(key.includes('celina')) return portraits.celina;
-  if(key.includes('leolinda')) return portraits.leolinda;
-  if(key.includes('mietta')) return portraits.mietta;
+  if(portraits[normalizedKey]) return portraits[normalizedKey];
+  const portraitKey = Object.keys(portraits).find(name => normalizedKey.includes(name));
+  if(portraitKey) return portraits[portraitKey];
   return '';
 };
 
@@ -4818,6 +4897,7 @@ EvidenceSystem.bindActivity = function(overlay, title, text, data) {
     activeWire: null,
     activeLink: null,
     dragLink: null,
+    activeOrder: null,
     activeAssoc: null,
     restoredRegions: new Set(),
     openedSources: new Set(),
@@ -4875,6 +4955,7 @@ EvidenceSystem.bindActivity = function(overlay, title, text, data) {
     state.activeWire = null;
     state.activeLink = null;
     state.dragLink = null;
+    state.activeOrder = null;
     state.activeAssoc = null;
     state.restoredRegions.clear();
     state.openedSources.clear();
@@ -4952,7 +5033,7 @@ EvidenceSystem.bindActivity = function(overlay, title, text, data) {
       document.getElementById('investigationModal')?.remove();
       GameLogic.startDialogue([
         data.correctFeedback || data.feedback || 'Resposta registrada com justificativa histórica.',
-        isChapterEnd ? 'Guarde essa explicacao: ela fecha uma parte importante do dossie.' : 'A proxima ficha foi liberada na gaveta.'
+        isChapterEnd ? 'Esta parte do dossiê está concluída.' : 'A próxima ficha foi liberada.'
       ], 'phase_feedback');
     }, chronologyRevealDelay || 950);
   };
@@ -4973,7 +5054,7 @@ EvidenceSystem.bindActivity = function(overlay, title, text, data) {
     overlay.classList.add('verdict-indeferido');
     showFeedback(`
       <div class="stamp-wrong">INDEFERIDO</div>
-      <p class="phase-feedback-text">A Sufragista deixou uma orientação para revisar a leitura.</p>
+      <p class="phase-feedback-text">A Sufragista marcou o ponto que merece nova leitura.</p>
       ${canConclude ? '<button type="button" class="btn-secondary" data-complete-explanation>Concluir com explicacao</button>' : ''}
     `);
     overlay.querySelector('.investigation-dossier')?.classList.add('shake-error');
@@ -5003,7 +5084,10 @@ EvidenceSystem.bindActivity = function(overlay, title, text, data) {
     const oldId = slot.dataset.value;
     if(oldId) {
       const oldCard = overlay.querySelector(`[data-order-id="${CSS.escape(oldId)}"]`);
-      if(oldCard) oldCard.disabled = false;
+      if(oldCard) {
+        oldCard.disabled = false;
+        oldCard.classList.remove('used');
+      }
     }
     state.order[Number(slot.dataset.slotIndex)] = undefined;
     slot.dataset.value = '';
@@ -5028,7 +5112,13 @@ EvidenceSystem.bindActivity = function(overlay, title, text, data) {
     targetSlot.classList.add('filled');
     targetSlot.innerHTML = `<strong>${Number(targetSlot.dataset.slotIndex) + 1}</strong><span>${this.escapeHTML(label)}</span>`;
     const card = overlay.querySelector(`[data-order-id="${CSS.escape(id)}"]`);
-    if(card) card.disabled = true;
+    if(card) {
+      card.disabled = true;
+      card.classList.remove('selected');
+      card.classList.add('used');
+    }
+    state.activeOrder = null;
+    overlay.querySelectorAll('[data-order-id]').forEach(item => item.classList.toggle('selected', item.dataset.orderId === state.activeOrder));
   };
 
   const getLinkPoint = (node, boardRect, side) => {
@@ -5195,14 +5285,30 @@ EvidenceSystem.bindActivity = function(overlay, title, text, data) {
   });
 
   overlay.querySelectorAll('[data-order-id]').forEach(button => {
-    button.addEventListener('click', () => placeOrder(button.dataset.orderId, button.dataset.orderLabel || button.innerText.trim()));
-    button.addEventListener('dragstart', event => event.dataTransfer.setData('text/plain', button.dataset.orderId));
+    button.addEventListener('click', () => {
+      state.activeOrder = state.activeOrder === button.dataset.orderId ? null : button.dataset.orderId;
+      overlay.querySelectorAll('[data-order-id]').forEach(item => item.classList.toggle('selected', item.dataset.orderId === state.activeOrder));
+      showFeedback('');
+    });
+    button.addEventListener('dragstart', event => {
+      state.activeOrder = button.dataset.orderId;
+      event.dataTransfer.setData('text/plain', button.dataset.orderId);
+      event.dataTransfer.effectAllowed = 'move';
+    });
   });
 
   overlay.querySelectorAll('.drop-slot').forEach(slot => {
     slot.addEventListener('click', () => {
-      const selected = Array.from(overlay.querySelectorAll('[data-order-id]')).find(card => !card.disabled);
-      if(selected) placeOrder(selected.dataset.orderId, selected.dataset.orderLabel || selected.innerText.trim(), slot);
+      const selected = state.activeOrder
+        ? overlay.querySelector(`[data-order-id="${CSS.escape(state.activeOrder)}"]`)
+        : null;
+      if(selected && !selected.disabled) {
+        placeOrder(selected.dataset.orderId, selected.dataset.orderLabel || selected.innerText.trim(), slot);
+      } else if(slot.dataset.value) {
+        clearSlot(slot);
+      } else {
+        showIncomplete('Selecione um cartão e depois escolha esta posição, ou arraste-o até aqui.');
+      }
     });
     slot.addEventListener('dragover', event => event.preventDefault());
     slot.addEventListener('drop', event => {
@@ -5293,7 +5399,6 @@ EvidenceSystem.bindActivity = function(overlay, title, text, data) {
     });
     sequentialActivity.querySelector('[data-round-next]').addEventListener('click', () => {
       const items = sequentialActivity.dataset.sequentialMode === 'interview' ? data.interviews : data.rounds;
-      if(state.roundAnswers[state.roundIndex] === undefined) return showIncomplete('Escolha uma resposta antes de avançar.');
       state.roundIndex = Math.min(items.length - 1, state.roundIndex + 1);
       showFeedback('');
       renderSequentialRound();
@@ -5445,6 +5550,10 @@ EvidenceSystem.bindActivity = function(overlay, title, text, data) {
       const active = state.activeAssoc?.game === game && state.activeAssoc.value === token.dataset.assocToken;
       token.classList.toggle('assoc-used', used);
       token.classList.toggle('assoc-selected', active);
+      token.setAttribute('aria-pressed', active ? 'true' : 'false');
+    });
+    game.querySelectorAll('[data-assoc-target]').forEach(target => {
+      target.classList.toggle('assoc-ready', state.activeAssoc?.game === game);
     });
   };
 
@@ -5471,10 +5580,10 @@ EvidenceSystem.bindActivity = function(overlay, title, text, data) {
 
   overlay.querySelectorAll('[data-assoc-token]').forEach(token => {
     token.addEventListener('click', () => {
-      state.activeAssoc = {
-        game: token.closest('[data-assoc-game]'),
-        value: token.dataset.assocToken
-      };
+      const game = token.closest('[data-assoc-game]');
+      const alreadySelected = state.activeAssoc?.game === game && state.activeAssoc.value === token.dataset.assocToken;
+      state.activeAssoc = alreadySelected ? null : { game, value: token.dataset.assocToken };
+      showFeedback('');
       refreshAllAssociationGames();
     });
     token.addEventListener('dragstart', event => {
@@ -5512,13 +5621,71 @@ EvidenceSystem.bindActivity = function(overlay, title, text, data) {
     });
   });
 
+  overlay.querySelectorAll('[data-assoc-target]').forEach(target => {
+    target.addEventListener('click', (event) => {
+      if(event.target.closest('[data-assoc-drop], [data-quiz-index], a, input, textarea, select')) return;
+      const game = target.closest('[data-assoc-game]');
+      if(state.activeAssoc?.game === game) {
+        const drop = target.querySelector('[data-assoc-drop]');
+        if(drop) assignAssociation(game, drop.dataset.assocDrop, state.activeAssoc.value);
+      } else {
+        showIncomplete('Selecione um cartão e depois escolha o destino, ou arraste-o até aqui.');
+      }
+    });
+  });
+
   overlay.querySelectorAll('[data-assoc-drop]').forEach(drop => {
     drop.addEventListener('click', () => {
       const game = drop.closest('[data-assoc-game]');
       if(state.activeAssoc?.game === game) assignAssociation(game, drop.dataset.assocDrop, state.activeAssoc.value);
-      else showIncomplete('Escolha uma ficha de cima e encaixe aqui.');
+      else showIncomplete('Selecione um cartão e depois escolha este espaço, ou arraste-o até aqui.');
     });
   });
+
+  overlay.querySelectorAll('[data-assoc-token]').forEach(token => {
+    token.addEventListener('pointerdown', (event) => {
+      if(event.pointerType === 'mouse') return;
+      const game = token.closest('[data-assoc-game]');
+      const startX = event.clientX;
+      const startY = event.clientY;
+      let ghost = null;
+
+      const move = (moveEvent) => {
+        const distance = Math.hypot(moveEvent.clientX - startX, moveEvent.clientY - startY);
+        if(!ghost && distance < 8) return;
+        if(!ghost) {
+          state.activeAssoc = { game, value: token.dataset.assocToken };
+          ghost = token.cloneNode(true);
+          ghost.className = `${token.className} assoc-touch-ghost`;
+          ghost.removeAttribute('id');
+          document.body.appendChild(ghost);
+          refreshAllAssociationGames();
+        }
+        ghost.style.left = `${moveEvent.clientX}px`;
+        ghost.style.top = `${moveEvent.clientY}px`;
+      };
+
+      const end = (endEvent) => {
+        document.removeEventListener('pointermove', move);
+        document.removeEventListener('pointerup', end);
+        document.removeEventListener('pointercancel', end);
+        if(!ghost) return;
+        ghost.remove();
+        const drop = document.elementFromPoint(endEvent.clientX, endEvent.clientY)?.closest('[data-assoc-drop]');
+        if(drop && drop.closest('[data-assoc-game]') === game) {
+          assignAssociation(game, drop.dataset.assocDrop, token.dataset.assocToken);
+        } else {
+          refreshAllAssociationGames();
+        }
+      };
+
+      document.addEventListener('pointermove', move);
+      document.addEventListener('pointerup', end, { once: true });
+      document.addEventListener('pointercancel', end, { once: true });
+    });
+  });
+
+  refreshAllAssociationGames();
 
   const moveLinkDrag = (event) => {
     if(!state.dragLink) return;
