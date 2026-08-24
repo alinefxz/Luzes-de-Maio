@@ -1,6 +1,9 @@
 {
+  "name": "luzes-de-maio",
+  "private": true,
   "scripts": {
-    "start": "node server/server.js"
+    "start": "node server/server.js",
+    "build": "node scripts/build-static.js"
   },
   "dependencies": {
     "express": "^5.2.1"

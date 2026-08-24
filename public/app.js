@@ -4,9 +4,10 @@ const LMProfileStore = (() => {
   const LEGACY_USER_KEY = 'lm_user';
   const LEGACY_PROGRESS_KEY = 'lm_progress';
   const STORAGE_VERSION_KEY = 'lm_storage_version';
-  const ADMIN_STORAGE_VERSION = 'admin-reset-20260805a';
+  const ADMIN_STORAGE_VERSION = 'supabase-session-20260818a';
   const ADMIN_USERNAME = 'admin';
   const ADMIN_PASSWORD = 'admin';
+  const remoteApi = () => window.LMSupabaseApi;
   let userSyncQueue = Promise.resolve(true);
   let reviewSyncQueue = Promise.resolve(true);
 
@@ -97,12 +98,12 @@ const LMProfileStore = (() => {
 
   const runStorageMigration = () => {
     if (localStorage.getItem(STORAGE_VERSION_KEY) === ADMIN_STORAGE_VERSION) return;
-    const admin = normalizeUser(createAdminUser());
-    localStorage.setItem(USERS_KEY, JSON.stringify({ [userKey(admin.name)]: admin }));
+    localStorage.removeItem(USERS_KEY);
     localStorage.setItem(STORAGE_VERSION_KEY, ADMIN_STORAGE_VERSION);
     localStorage.removeItem(CURRENT_KEY);
     localStorage.removeItem(LEGACY_USER_KEY);
     localStorage.removeItem(LEGACY_PROGRESS_KEY);
+    remoteApi()?.clearToken();
   };
 
   const postJSON = async (url, payload) => {
@@ -119,14 +120,22 @@ const LMProfileStore = (() => {
   };
 
   const syncUserToServer = (user) => {
-    if (typeof fetch !== 'function' || window.location.protocol === 'file:') return Promise.resolve(true);
-    userSyncQueue = userSyncQueue.catch(() => false).then(() => postJSON('/api/user', user));
+    if (!remoteApi()?.getToken()) return Promise.resolve(false);
+    userSyncQueue = userSyncQueue
+      .catch(() => false)
+      .then(() => remoteApi().saveUser({ ...user, password: '' }))
+      .then(() => true)
+      .catch(() => false);
     return userSyncQueue;
   };
 
   const syncReviewToServer = (review) => {
-    if (typeof fetch !== 'function' || window.location.protocol === 'file:') return Promise.resolve(true);
-    reviewSyncQueue = reviewSyncQueue.catch(() => false).then(() => postJSON('/api/reviews', review));
+    if (!remoteApi()?.getToken()) return Promise.resolve(false);
+    reviewSyncQueue = reviewSyncQueue
+      .catch(() => false)
+      .then(() => remoteApi().saveReview(review))
+      .then(() => true)
+      .catch(() => false);
     return reviewSyncQueue;
   };
 
@@ -136,17 +145,15 @@ const LMProfileStore = (() => {
       const normalized = normalizeUser(user);
       if (normalized) users[userKey(normalized.name)] = normalized;
     });
-    if (!users[ADMIN_USERNAME]) users[ADMIN_USERNAME] = normalizeUser(createAdminUser());
     writeUsers(users);
     return users;
   };
 
   const loadServerUsers = async () => {
-    if (typeof fetch !== 'function' || window.location.protocol === 'file:') return readUsers();
-    const response = await fetch('/api/user', { cache: 'no-store' });
-    if (!response.ok) throw new Error('server-users-unavailable');
-    const data = await response.json();
-    return importServerUsers(Array.isArray(data.users) ? data.users : []);
+    if (!remoteApi()?.getToken()) return readUsers();
+    const remoteUser = await remoteApi().me();
+    if (remoteUser) setCurrentUser(remoteUser, { sync: false });
+    return readUsers();
   };
 
   const readUsers = () => {
@@ -210,6 +217,40 @@ const LMProfileStore = (() => {
     localStorage.removeItem(CURRENT_KEY);
     localStorage.removeItem(LEGACY_USER_KEY);
     localStorage.removeItem(LEGACY_PROGRESS_KEY);
+    remoteApi()?.clearToken();
+  };
+
+  const registerRemote = async (payload) => {
+    const user = await remoteApi().register(payload);
+    return setCurrentUser(user, { sync: false });
+  };
+
+  const loginRemote = async (name, password) => {
+    const user = await remoteApi().login(name, password);
+    return setCurrentUser(user, { sync: false });
+  };
+
+  const syncCurrentUser = async () => {
+    const current = getCurrentUser();
+    if (!current) throw new Error('missing-session');
+    const user = await remoteApi().saveUser({ ...current, password: '' });
+    return setCurrentUser(user, { sync: false });
+  };
+
+  const logoutRemote = async () => {
+    try { await remoteApi()?.logout(); }
+    finally { clearCurrentUser(); }
+  };
+
+  const deleteCurrentUserRemote = async () => {
+    const current = getCurrentUser();
+    if (!current) throw new Error('missing-session');
+    await remoteApi().deleteUser();
+    const users = readUsers();
+    delete users[userKey(current.name)];
+    writeUsers(users);
+    clearCurrentUser();
+    return true;
   };
 
   const register = (payload) => {
@@ -323,6 +364,11 @@ const LMProfileStore = (() => {
     createAdminUser,
     importServerUsers,
     loadServerUsers,
+    registerRemote,
+    loginRemote,
+    syncCurrentUser,
+    logoutRemote,
+    deleteCurrentUserRemote,
     normalizeUser,
     readUsers,
     getCurrentUser,
@@ -1070,14 +1116,7 @@ const Game = {
     const loginPassword = document.getElementById('l_password').value.trim();
 
     try {
-      let foundUser;
-      try {
-        foundUser = LMProfileStore.login(loginUsername, loginPassword);
-      } catch (err) {
-        if (err.message !== 'missing-user') throw err;
-        await LMProfileStore.loadServerUsers();
-        foundUser = LMProfileStore.login(loginUsername, loginPassword);
-      }
+      const foundUser = await LMProfileStore.loginRemote(loginUsername, loginPassword);
       this.state.user = foundUser;
       this.updateHeaderUI();
       this.closeAllModals();
@@ -1087,7 +1126,7 @@ const Game = {
     }
   },
 
-  saveProfile(e) {
+  async saveProfile(e) {
     e.preventDefault();
 
     const selectedAvatar = document.querySelector('input[name="p_avatar"]:checked');
@@ -1104,7 +1143,12 @@ const Game = {
     };
 
     try {
-      this.state.user = this.state.user ? LMProfileStore.updateCurrentUser(payload) : LMProfileStore.register(payload);
+      if (this.state.user) {
+        this.state.user = LMProfileStore.updateCurrentUser(payload);
+        this.state.user = await LMProfileStore.syncCurrentUser();
+      } else {
+        this.state.user = await LMProfileStore.registerRemote(payload);
+      }
       this.updateHeaderUI();
       this.renderProfileDashboard();
       this.closeAllModals();
@@ -1114,9 +1158,8 @@ const Game = {
     }
   },
 
-  logout() {
-    fetch('/api/user/logout', { method: 'POST' }).catch(() => {});
-    LMProfileStore.clearCurrentUser();
+  async logout() {
+    await LMProfileStore.logoutRemote().catch(() => LMProfileStore.clearCurrentUser());
     this.state.user = null;
     if(document.getElementById('profileForm')) document.getElementById('profileForm').reset();
     if(document.getElementById('loginForm')) document.getElementById('loginForm').reset();
@@ -1176,10 +1219,13 @@ const Game = {
       message: 'Essa ação apaga a credencial e todo o progresso salvo. Não dá para desfazer depois.',
       confirmText: 'Excluir conta',
       variant: 'danger-strong',
-      onConfirm: () => {
-        const deletedName = this.state.user.name;
-        LMProfileStore.deleteCurrentUser();
-        fetch(`/api/user/${encodeURIComponent(deletedName)}`, { method: 'DELETE' }).catch(() => {});
+      onConfirm: async () => {
+        try {
+          await LMProfileStore.deleteCurrentUserRemote();
+        } catch (error) {
+          this.showToast("Nao foi possivel excluir a conta. Tente novamente.");
+          return;
+        }
         this.state.user = null;
         document.getElementById('profileForm')?.reset();
         document.getElementById('loginForm')?.reset();
@@ -1190,7 +1236,7 @@ const Game = {
     });
   },
 
-  saveReview(e) {
+  async saveReview(e) {
     e.preventDefault();
     if(!this.state.user) return this.showToast("Voce precisa criar um Perfil primeiro.");
     if(this.state.rating === 0) return this.showToast("Atribua uma nota nas estrelas.");
@@ -1205,7 +1251,9 @@ const Game = {
     };
 
     try {
-      this.state.user = LMProfileStore.saveReview(review);
+      const result = await LMProfileStore.saveReviewAndWait(review);
+      if (!result.reviewSynced) throw new Error('review-sync-failed');
+      this.state.user = result.user;
       this.closeAllModals();
       this.showToast("Relatorio arquivado. Obrigado!");
     } catch (err) {

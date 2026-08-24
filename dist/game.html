@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mesa de Investigação | Luzes de Maio</title>
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Marck+Script&family=Outfit:wght@400;700;900&family=Parisienne&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css?v=20260805b">
+  <link rel="stylesheet" href="game.css?v=20260817m">
+</head>
+<body class="game-body">
+
+  <header class="glass-header game-header-dark">
+    <div class="logo-area">
+      <img src="assets/logo.jpeg" alt="Logo" class="main-logo" onerror="this.src='assets/logo.png';">
+      <div class="header-titles">
+        <span class="header-kicker">Arquivo Central</span>
+        <span class="header-title">Mesa de Investigação</span>
+      </div>
+    </div>
+    
+    <div class="nav-controls">
+      <div class="user-badge game-badge" id="userBadge">
+        <div class="avatar-display" id="headerAvatar" style="display: none;"></div>
+        <div class="badge-texts">
+          <span class="badge-label">Credencial</span>
+          <span class="badge-name typewriter" id="playerName">Credencial não registrada</span>
+        </div>
+        <button id="headerAuthBtn" class="header-auth-btn" type="button" title="Entrar ou criar credencial">Entrar / Cadastro</button>
+        <button id="logoutBtn" class="logout-btn" type="button" style="display:none;" title="Sair da conta">Sair ✕</button>
+      </div>
+      <button class="menu-btn" id="menuBtn" aria-label="Abrir Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <nav class="fullscreen-menu" id="fullMenu" style="z-index: 9999;">
+    <div class="menu-content">
+      <button class="close-menu" id="closeMenuBtn" aria-label="Fechar Menu">✕</button>
+      <h2 class="menu-title">Índice do Dossiê</h2>
+      <ul class="menu-links">
+        <li><button onclick="Game.openModal('profile')">01. Identificação (Perfil)</button></li>
+        <li><button onclick="Game.openModal('review')">02. Relatório Final (Avaliar)</button></li>
+        <li><button onclick="Game.openModal('about')">03. Contexto Histórico (Sobre)</button></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="top-actions-area">
+    <a href="index.html" class="back-arrow-btn" data-back-transition title="Voltar ao arquivo inicial" aria-label="Voltar ao arquivo inicial">
+      <span class="back-arrow-symbol" aria-hidden="true">&larr;</span>
+    </a>
+  </div>
+
+  <div class="top-actions-area-right">
+    <button id="notesBtn" class="vintage-plate-btn" type="button" title="Abrir Caderno de Campo (C)">
+      <span class="plate-screw screw-left"></span>
+      CADERNO
+      <span class="plate-screw screw-right"></span>
+    </button>
+
+    <button id="inventoryBtn" class="vintage-plate-btn" type="button" title="Abrir Pasta de Campo">
+      <span class="plate-screw screw-left"></span>
+      INVENTÁRIO
+      <span class="plate-screw screw-right"></span>
+    </button>
+  </div>
+
+  <main class="game-board" id="gameBoard">
+    <div class="steel-cabinet">
+      <div class="cabinet-shadow-top"></div>
+      <div class="cabinet-label">REF: MUZ-1933 <br><small>CONFIDENCIAL</small></div>
+      
+      <div class="drawer-inside">
+        <button class="file-folder folder-active" id="phase1" onclick="GameLogic.clickPhase(1, 'O Movimento Nacional')">
+          <div class="folder-tab">01. NACIONAL</div>
+          <div class="folder-paper">
+            <div class="paper-clip"></div>
+            <h4>Pistas Abertas</h4>
+            <p>O início da luta sufragista no Brasil e o impacto nacional.</p>
+            <span class="confidential-stamp">LIVRE</span>
+          </div>
+        </button>
+
+        <button class="file-folder folder-locked" id="phase2" onclick="GameLogic.checkLocked('O Código de 1932')">
+          <div class="folder-tab tab-center">02. 1932</div>
+          <div class="folder-paper">
+            <div class="paper-clip"></div>
+            <h4>Arquivo Selado</h4>
+            <p>Conclua a etapa 01 para romper o lacre.</p>
+            <span class="confidential-stamp locked">SIGILO</span>
+          </div>
+        </button>
+
+        <button class="file-folder folder-locked" id="phase3" onclick="GameLogic.checkLocked('Caso Muzambinho')">
+          <div class="folder-tab tab-right">03. LOCAL</div>
+          <div class="folder-paper">
+            <div class="paper-clip"></div>
+            <h4>Arquivo Selado</h4>
+            <p>Conclua a etapa 02 para investigar Muzambinho.</p>
+            <span class="confidential-stamp locked">SIGILO</span>
+          </div>
+        </button>
+
+        <button class="file-folder folder-locked" id="phase4" onclick="GameLogic.checkLocked('Fato ou Opinião')">
+          <div class="folder-tab">04. CRIVO</div>
+          <div class="folder-paper">
+            <div class="paper-clip"></div>
+            <h4>Arquivo Selado</h4>
+            <p>Conclua a etapa 03 para abrir o crivo histórico.</p>
+            <span class="confidential-stamp locked">SIGILO</span>
+          </div>
+        </button>
+
+        <button class="file-folder folder-locked" id="phase5" onclick="GameLogic.checkLocked('Mapa de Impactos')">
+          <div class="folder-tab tab-right">05. IMPACTO</div>
+          <div class="folder-paper">
+            <div class="paper-clip"></div>
+            <h4>Arquivo Selado</h4>
+            <p>Conclua a etapa 04 para montar o mapa final.</p>
+            <span class="confidential-stamp locked">SIGILO</span>
+          </div>
+        </button>
+      </div>
+      <div class="drawer-controls" aria-label="Navegação de gavetas">
+        <button class="vintage-plate-btn drawer-nav-btn" id="prevDrawerBtn" type="button" onclick="GameLogic.changeDrawer(-1)">
+          <span class="plate-screw screw-left"></span>
+          <span class="drawer-nav-copy"><span class="drawer-nav-arrow previous" aria-hidden="true">←</span><span>VOLTAR</span></span>
+          <span class="plate-screw screw-right"></span>
+        </button>
+        <div class="drawer-label" id="drawerLabel">Capítulo I • Gaveta 1/1</div>
+        <button class="vintage-plate-btn drawer-nav-btn" id="nextDrawerBtn" type="button" onclick="GameLogic.changeDrawer(1)">
+          <span class="plate-screw screw-left"></span>
+          <span class="drawer-nav-copy"><span>AVANÇAR</span><span class="drawer-nav-arrow next" aria-hidden="true">→</span></span>
+          <span class="plate-screw screw-right"></span>
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <section class="timeline-strip" id="timelineStrip" aria-label="Linha do tempo da investigação">
+    <div class="timeline-track"></div>
+    <div class="timeline-item" data-phase="1"><span>1927</span><small>Brecha legal</small></div>
+    <div class="timeline-item" data-phase="2"><span>1932</span><small>Código eleitoral</small></div>
+    <div class="timeline-item" data-phase="3"><span>1933</span><small>Voto em Muzambinho</small></div>
+    <div class="timeline-item" data-phase="4"><span>Arquivo</span><small>Leitura crítica</small></div>
+    <div class="timeline-item" data-phase="5"><span>Memória</span><small>Impacto local</small></div>
+  </section>
+
+  <footer class="game-bottom-footer">
+    <div class="game-footer-inner">
+      <div class="game-footer-brand" aria-label="Arquivo Central Luzes de Maio">
+        <span>
+          <strong>Arquivo Central</strong>
+          <small>Luzes de Maio &bull; Muzambinho, 1933</small>
+        </span>
+      </div>
+      <p>Preservar a memória é o primeiro passo para garantir o futuro.</p>
+    </div>
+  </footer>
+
+  <style>
+    .inventory-side-tab { position: fixed; top: 50%; right: 0; transform: translateY(-50%); background: var(--charcoal); color: var(--cream); padding: 15px 10px; writing-mode: vertical-rl; text-orientation: mixed; font-family: var(--font-mono); font-weight: bold; letter-spacing: 2px; border: 2px solid var(--olive); border-right: none; border-radius: 8px 0 0 8px; cursor: pointer; box-shadow: -4px 4px 10px rgba(0,0,0,0.5); z-index: 9000; transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); display: flex; align-items: center; gap: 10px; }
+    .inventory-side-tab:hover { background: var(--wine); padding-right: 20px; }
+    .inventory-side-tab.highlight-pulse { animation: tabPulse 1.5s infinite; background: var(--wine); }
+    @keyframes tabPulse { 0% { box-shadow: -4px 4px 10px rgba(0,0,0,0.5), 0 0 0 0 rgba(147, 88, 94, 0.8); } 70% { box-shadow: -4px 4px 10px rgba(0,0,0,0.5), 0 0 0 15px rgba(147, 88, 94, 0); } 100% { box-shadow: -4px 4px 10px rgba(0,0,0,0.5), 0 0 0 0 transparent; } }
+
+    .inventory-overlay { position: fixed; inset: 0; background: rgba(15, 10, 7, 0.85); z-index: 9500; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; backdrop-filter: blur(5px); }
+    .inventory-overlay.active { opacity: 1; pointer-events: all; }
+    .inventory-dossier-wrapper { display: flex; width: 90%; max-width: 900px; height: 75vh; background: #e6dfcd; border-radius: 6px; box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 0 60px rgba(100, 80, 60, 0.2); position: relative; transform: translateX(100px); transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1); }
+    .inventory-overlay.active .inventory-dossier-wrapper { transform: translateX(0); }
+    .inventory-overlay.fullscreen-mode .inventory-dossier-wrapper { width: calc(100vw - 28px); max-width: none; height: calc(100vh - 28px); }
+    
+    .dossier-page { flex: 1; padding: 40px; position: relative; }
+    .left-page { border-right: 2px solid rgba(0,0,0,0.1); box-shadow: inset -10px 0 20px rgba(0,0,0,0.05); background: linear-gradient(90deg, #e6dfcd 90%, #d8cfba 100%); display: flex; flex-direction: column; }
+    .right-page { box-shadow: inset 10px 0 20px rgba(0,0,0,0.05); background: linear-gradient(90deg, #d8cfba 0%, #e6dfcd 10%); background-image: linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px); background-size: 20px 20px; display: flex; flex-direction: column; }
+    
+    .dossier-header-new { z-index: 2; position: relative; }
+    .secret-tag { color: var(--wine); font-weight: bold; font-size: 0.85rem; letter-spacing: 1px; }
+    .dossier-header-new h2 { font-family: var(--font-serif); font-size: 2.8rem; color: var(--charcoal); margin: 10px 0; line-height: 1.1; }
+    .header-divider { width: 50px; height: 3px; background: var(--rose); margin-bottom: 20px; }
+    .dossier-desc { font-family: var(--font-mono); font-size: 1rem; color: #444; line-height: 1.6; }
+    .vintage-stamp-large { position: absolute; bottom: 40px; left: 30px; font-family: var(--font-ui); font-size: 2.5rem; font-weight: 900; color: rgba(147, 88, 94, 0.15); border: 5px solid rgba(147, 88, 94, 0.15); padding: 10px 20px; transform: rotate(-15deg); letter-spacing: 3px; pointer-events: none; }
+    
+    .close-dossier-new { position: absolute; top: 12px; right: 18px; width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; background: transparent; border: none; font-size: 2rem; line-height: 1; color: var(--rose); cursor: pointer; transition: var(--transition); z-index: 100; }
+    .close-dossier-new:hover { color: var(--blush); transform: rotate(90deg); }
+    .inventory-fullscreen-toggle { position: absolute; top: 17px; right: 68px; z-index: 100; }
+
+    /* Estado Vazio do Inventário (lado direito) */
+    .empty-inv-state { text-align: center; background-color: rgba(60, 50, 40, 0.05); border: 1px solid rgba(60, 50, 40, 0.3); outline: 1px solid rgba(60, 50, 40, 0.1); outline-offset: -5px; padding: 60px 40px 40px; max-width: 380px; box-shadow: inset 0 0 30px rgba(0,0,0,0.03), 5px 5px 15px rgba(0,0,0,0.05); }
+    .empty-icon-box svg { width: 50px; height: 50px; color: var(--charcoal); opacity: 0.3; margin-bottom: 15px; }
+    .empty-title { font-family: var(--font-serif); font-size: 1.3rem; color: var(--charcoal); font-weight: bold; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 2px; }
+    .empty-subtitle { font-family: var(--font-mono); font-size: 0.95rem; color: #333; line-height: 1.8; text-shadow: 0px 0px 1px rgba(0,0,0,0.1); }
+  </style>
+
+
+
+  <div class="inventory-overlay" id="inventoryOverlay">
+    <div class="inventory-dossier-wrapper">
+      
+      <div class="dossier-page left-page">
+        <div class="dossier-header-new">
+          <span class="typewriter secret-tag">ARQUIVO MORTO • REF: 004/33</span>
+          <h2>Documentos<br>Recolhidos</h2>
+          <div class="header-divider"></div>
+          <p class="dossier-desc">Esta pasta armazena apenas evidências verificadas. Os registros aqui contidos provam o avanço cívico do sufrágio na região de Muzambinho.</p>
+        </div>
+        <div class="vintage-stamp-large">CONFIDENCIAL</div>
+      </div>
+
+      <div class="dossier-page right-page" style="position: relative; padding: 0;">
+        
+        <button class="fullscreen-toggle inventory-fullscreen-toggle" id="inventoryExpandBtn" type="button" title="Expandir Inventário" aria-label="Expandir Inventário" aria-pressed="false">&#x26F6;</button>
+        <button class="close-dossier-new" id="closeInvBtn" title="Fechar Arquivo">✕</button>
+        
+        <div id="inventoryBody" style="width: 100%; height: 100%; padding: 40px; overflow-y: auto;">
+          </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <div class="notebook-overlay" id="notebookOverlay">
+    <div class="notebook-card">
+      <button class="fullscreen-toggle notebook-fullscreen-toggle" id="notebookExpandBtn" type="button" title="Expandir Caderno" aria-label="Expandir Caderno" aria-pressed="false">&#x26F6;</button>
+      <button class="close-dossier-new" id="closeNotesBtn" type="button" title="Fechar Caderno" aria-label="Fechar Caderno">&times;</button>
+
+      <div class="notebook-heading">
+        <span class="notebook-kicker">CADERNO DE CAMPO &bull; REF: NOTAS</span>
+        <h2>Anota&ccedil;&otilde;es da Investiga&ccedil;&atilde;o</h2>
+        <div class="header-divider"></div>
+      </div>
+
+      <div class="notebook-layout">
+        <section class="notebook-writing-area" aria-label="Anota&ccedil;&otilde;es da investiga&ccedil;&atilde;o">
+          <textarea id="fieldNotesText" class="notebook-textarea" placeholder="Anote hip&oacute;teses, d&uacute;vidas, pistas e conclus&otilde;es..."></textarea>
+          <button id="saveNotesBtn" class="notebook-save-btn" type="button">Salvar anota&ccedil;&otilde;es</button>
+        </section>
+
+        <aside class="notebook-polaroids" aria-label="Fontes de consulta">
+          <figure class="notebook-polaroid polaroid-muzambinho">
+            <div class="notebook-polaroid-img">
+              <img src="assets/muzambinho.webp" alt="Vista de Muzambinho, no sul de Minas">
+            </div>
+            <figcaption>Muzambinho, 1933</figcaption>
+          </figure>
+
+          <figure class="notebook-polaroid polaroid-women polaroid-carlota" title="Primeira deputada federal eleita, Carlota Pereira de Queirós participou da Assembleia Constituinte 1934–1935. Domínio Público. Fonte: Agência Senado.">
+            <div class="notebook-polaroid-img">
+              <img src="assets/carlota.jpg" alt="Carlota Pereira de Queirós">
+            </div>
+            <figcaption>Carlota Pereira de Queirós</figcaption>
+          </figure>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <div id="npcOverlay" class="npc-overlay">
+    <div class="npc-wrapper">
+      <div class="npc-portrait"><div class="npc-image-placeholder"></div></div>
+      <div class="npc-dialogue-box">
+        <div class="npc-name-tag">A Sufragista</div>
+        <p class="npc-text" id="npcDialogueText"></p>
+        <div class="npc-hint" id="npcHint">Espaço ou Enter para avançar ▼</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modalOverlay">
+    
+    <div class="modal scrollable-modal" id="modal-profile" role="dialog" aria-modal="true">
+      <button class="close-modal" id="closeProfileBtn" aria-label="Fechar Modal">✕</button>
+      <h2 class="modal-title" id="profileModalTitle">Acesso ao Arquivo</h2>
+      
+      <div class="auth-tabs" id="authTabsContainer">
+        <button id="tabLogin" class="auth-tab active" type="button" onclick="GameLogic.switchAuthTab('login')">Entrar</button>
+        <button id="tabRegister" class="auth-tab" type="button" onclick="GameLogic.switchAuthTab('register')">Nova Credencial</button>
+        <button id="tabProfile" class="auth-tab" type="button" onclick="GameLogic.switchAuthTab('profile')" style="display:none;">Perfil</button>
+      </div>
+
+      <form id="loginForm">
+        <div class="auth-paper-note">
+          <strong>Entrada do arquivo</strong>
+          <p>Use sua credencial para continuar a investigação de onde parou.</p>
+        </div>
+        <div class="input-group"><label for="l_name">Nome de Usuário</label><input type="text" id="l_name" required placeholder="Ex: mariasilva"></div>
+        <div class="input-group"><label for="l_password">Senha de Acesso</label><input type="password" id="l_password" required placeholder="Sua senha confidencial"></div>
+        <button type="submit" class="btn-primary" style="width:100%; justify-content:center; margin-top: 15px;">Acessar Dossiê</button>
+      </form>
+      
+      <form id="profileForm" style="display: none;">
+        <div class="auth-paper-note">
+          <strong id="profileFormHeading">Credencial de campo</strong>
+          <p id="profileFormDesc">Crie ou edite seu perfil de investigação.</p>
+        </div>
+        
+        <div class="input-group">
+          <label>Selecione sua Pioneira de Inspiração (Use Tab e Espaço)</label>
+          <div class="avatar-selection-grid" role="radiogroup" aria-label="Seleção de Avatar">
+            <label class="avatar-option" tabindex="0"><input type="radio" name="p_avatar" value="bertha" checked tabindex="-1"><div class="avatar-box" title="A Cientista"><img src="assets/bertha.png" alt="A Cientista" class="avatar-img" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\\'0 0 100 100\\' xmlns=\\'http://www.w3.org/2000/svg\\'><circle cx=\\'50\\' cy=\\'50\\' r=\\'50\\' fill=\\'%23F2CFCD\\'/></svg>'"><span class="avatar-nickname">A Cientista</span></div></label>
+            <label class="avatar-option" tabindex="0"><input type="radio" name="p_avatar" value="celina" tabindex="-1"><div class="avatar-box" title="A Primeira"><img src="assets/celina.png" alt="A Primeira" class="avatar-img" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\\'0 0 100 100\\' xmlns=\\'http://www.w3.org/2000/svg\\'><circle cx=\\'50\\' cy=\\'50\\' r=\\'50\\' fill=\\'%23F2CFCD\\'/></svg>'"><span class="avatar-nickname">A Primeira</span></div></label>
+            <label class="avatar-option" tabindex="0"><input type="radio" name="p_avatar" value="leolinda" tabindex="-1"><div class="avatar-box" title="A Professora"><img src="assets/leolinda.png" alt="A Professora" class="avatar-img" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\\'0 0 100 100\\' xmlns=\\'http://www.w3.org/2000/svg\\'><circle cx=\\'50\\' cy=\\'50\\' r=\\'50\\' fill=\\'%23F2CFCD\\'/></svg>'"><span class="avatar-nickname">A Professora</span></div></label>
+            <label class="avatar-option" tabindex="0"><input type="radio" name="p_avatar" value="mietta" tabindex="-1"><div class="avatar-box" title="A Escritora"><img src="assets/mietta.png" alt="A Escritora" class="avatar-img" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\\'0 0 100 100\\' xmlns=\\'http://www.w3.org/2000/svg\\'><circle cx=\\'50\\' cy=\\'50\\' r=\\'50\\' fill=\\'%23F2CFCD\\'/></svg>'"><span class="avatar-nickname">A Escritora</span></div></label>
+          </div>
+          <div class="avatar-bio" id="avatarBio" aria-live="polite"></div>
+        </div>
+
+        <div class="input-group"><label for="p_fullname">Nome Completo</label><input type="text" id="p_fullname" required placeholder="Ex: Maria da Silva"></div>
+        <div class="form-row">
+          <div class="input-group"><label for="p_name">Nome de Usuário (Único)</label><input type="text" id="p_name" required placeholder="Ex: mariasilva"></div>
+          <div class="input-group" id="pwdContainer"><label for="p_password">Crie uma Senha</label><input type="password" id="p_password" required placeholder="Mínimo 4 caracteres" minlength="4"></div>
+        </div>
+
+        <div class="form-row">
+          <div class="input-group"><label for="p_age">Faixa Etária</label><select id="p_age"><option value="Menos de 18">Menos de 18</option><option value="18 a 24">18 a 24</option><option value="25 a 34" selected>25 a 34</option><option value="35 a 44">35 a 44</option><option value="45 a 54">45 a 54</option><option value="55+">55+</option></select></div>
+          <div class="input-group"><label for="p_gender">Gênero</label><select id="p_gender"><option value="Feminino" selected>Feminino</option><option value="Masculino">Masculino</option><option value="Não-binário">Não-binário</option><option value="Prefiro não informar">Prefiro não informar</option></select></div>
+        </div>
+        <div class="form-row">
+          <div class="input-group"><label for="p_location">Localização</label><select id="p_location"><option value="Muzambinho">Moro em Muzambinho</option><option value="Sul de Minas">Moro no Sul de Minas</option><option value="MG">Moro em outra cidade de MG</option><option value="Outro" selected>Moro em outro estado</option></select></div>
+          <div class="input-group"><label for="p_occupation">Ocupação</label><select id="p_occupation"><option value="Estudante">Estudante do Ensino Médio</option><option value="Universitário">Universitário(a)</option><option value="Professor">Professor(a)</option><option value="Pesquisador">Pesquisador(a)</option><option value="Outros" selected>Outros</option></select></div>
+        </div>
+        <div class="input-group"><label for="p_level">Conhecimento sobre Voto Feminino</label><select id="p_level"><option value="1">1 - Curiosa(o), conheço muito pouco</option><option value="2">2 - Conheço o básico da escola</option><option value="3" selected>3 - Intermediário (sei as datas)</option><option value="4">4 - Avançado</option><option value="5">5 - Pesquisadora(or) da área</option></select></div>
+        <button type="submit" class="btn-primary" style="width:100%; justify-content:center;" id="submitProfileBtn">Salvar Credencial</button>
+      </form>
+
+      <section class="profile-dashboard" id="profileDashboard" style="display:none;">
+        <div class="profile-summary-card">
+          <div class="profile-summary-avatar" id="profileSummaryAvatar"></div>
+          <div>
+            <span class="profile-summary-label">Perfil ativo</span>
+            <strong id="profileSummaryName">Investigadora</strong>
+            <small id="profileSummaryMeta">Arquivo em andamento</small>
+          </div>
+        </div>
+        <div class="badge-panel" id="badgePanel"></div>
+        <div class="account-actions">
+          <button type="button" class="btn-secondary" id="editProfileBtn">Editar perfil</button>
+          <button type="button" class="btn-secondary danger-soft" id="resetProgressBtn">Restaurar progresso</button>
+          <button type="button" class="btn-secondary danger-strong" id="deleteAccountBtn">Excluir conta</button>
+        </div>
+      </section>
+      
+      <div id="logoutContainer" style="display:none; margin-top: 20px; border-top: 1px dashed var(--charcoal); padding-top: 20px;">
+          <button onclick="GameLogic.logout()" class="vintage-plate-btn" style="width:100%; justify-content:center; background: linear-gradient(180deg, #5c2c31 0%, #3d1c20 100%); color: #f2cfcd; box-shadow: inset 0 0 0 2px #93585E, 2px 2px 5px rgba(0,0,0,0.5);">
+            <span class="plate-screw screw-left"></span>
+            ENCERRAR SESSÃO (SAIR)
+            <span class="plate-screw screw-right"></span>
+          </button>
+      </div>
+    </div>
+
+    <div class="modal scrollable-modal" id="modal-review" role="dialog" aria-modal="true">
+      <button class="close-modal" aria-label="Fechar Modal">✕</button>
+      <div id="reviewLocked" class="locked-state"><div class="locked-stamp-icon">CONFIDENCIAL</div><h3>Arquivo Fechado</h3><p>Acesso negado. Conclua a investigação antes de emitir um parecer oficial.</p></div>
+      <div id="reviewUnlocked" style="display:none;">
+        <h2 class="modal-title">Parecer de Investigação</h2>
+        <p class="modal-desc typewriter" style="border-bottom: 1px dashed var(--olive); padding-bottom: 15px;">FORMULÁRIO OFICIAL • REF: 002/33</p>
+        <form id="reviewForm" class="vintage-evaluation">
+          <div class="rating-box"><label id="ratingLabel">Classificação do Arquivo</label><div class="stars-container" id="starRating" tabindex="0" aria-labelledby="ratingLabel" role="slider" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0"></div><div class="rating-badge" id="starValue">Nota: 0,0 / 5</div></div>
+          <div class="evaluation-question"><label for="r_mechanics">01. Clareza e Mecânicas</label><textarea id="r_mechanics" placeholder="Escreva suas anotações aqui..." class="typewriter-input" required></textarea></div>
+          <div class="evaluation-question"><label for="r_immersion">02. Narrativa e Tema</label><textarea id="r_immersion" placeholder="Escreva suas anotações aqui..." class="typewriter-input" required></textarea></div>
+          <div class="evaluation-question"><label for="r_improvements">03. Melhorias e Expansão</label><textarea id="r_improvements" placeholder="Escreva suas anotações aqui..." class="typewriter-input"></textarea></div>
+          <button type="submit" class="btn-primary" style="width:100%; justify-content:center; margin-top: 10px;">Carimbar e Anexar aos Arquivos</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal scrollable-modal" id="modal-about" role="dialog" aria-modal="true">
+      <button class="close-modal" aria-label="Fechar Modal">✕</button>
+      <div class="about-dossier">
+        <div class="about-stamp">REF: 1933</div>
+        <p class="about-kicker typewriter">Arquivo Central de Muzambinho</p>
+        <h2 class="modal-title about-title">Sobre o Arquivo</h2>
+        <p class="about-lead">Luzes de Maio nasceu como uma mesa de investigação sobre o voto feminino, mas também como um cuidado com as histórias que quase sempre ficam guardadas em silêncio.</p>
+
+        <div class="about-project">
+          <h3>O que este projeto guarda</h3>
+          <p>Este arquivo mistura pesquisa, jogo e memória local. A ideia não é só dizer que o direito ao voto foi conquistado, mas deixar o jogador sentir o caminho: abrir fichas, desconfiar de versões, ler jornais, comparar pistas e montar uma linha do tempo com as próprias mãos.</p>
+          <p>Muzambinho aparece como território vivo dessa história. Quando uma lei nacional chega ao município, ela passa por cartórios, conversas, atas, jornais e pessoas reais. O jogo tenta cuidar desses rastros como quem organiza uma caixa antiga de documentos com atenção e carinho.</p>
+        </div>
+
+        <div class="about-grid">
+          <article>
+            <span>nota de pesquisa</span>
+            <h3>Por que investigar?</h3>
+            <p>Porque a memória não aparece pronta. Ela precisa ser lida, conferida, discutida e, às vezes, recuperada de pequenos detalhes.</p>
+          </article>
+          <article>
+            <span>pista local</span>
+            <h3>Por que Muzambinho?</h3>
+            <p>Porque uma conquista brasileira também ganha rosto quando olhamos para a cidade, para seus registros e para quem viveu essa mudança de perto.</p>
+          </article>
+          <article>
+            <span>gesto de arquivo</span>
+            <h3>Por que jogar?</h3>
+            <p>Porque mexer nas fichas, errar, receber uma pista e tentar de novo faz a história deixar de ser só data e virar descoberta.</p>
+          </article>
+        </div>
+
+        <div class="about-note">
+          Preservar a memória é o primeiro passo para garantir o futuro.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toastContainer"></div>
+
+  <script src="supabase-api.js?v=20260818a"></script>
+  <script src="app.js?v=20260818a"></script>
+  <script src="game.js?v=20260818a"></script>
+</body>
+</html>

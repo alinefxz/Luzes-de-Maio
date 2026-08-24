@@ -26,3 +26,5 @@ Thumbs.db
 # ----------------------------------------------------------------------
 # server/data/users.json
 # server/data/reviews.json
+.vercel
+.env*

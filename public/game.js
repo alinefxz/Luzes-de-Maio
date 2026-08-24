@@ -260,10 +260,9 @@ const GameLogic = {
         };
     },
 
-    logout() {
+    async logout() {
         if(confirm("Deseja realmente selar o arquivo e encerrar a sessão?")) {
-            fetch('/api/user/logout', { method: 'POST' }).catch(() => {});
-            this.store.clearCurrentUser();
+            await this.store.logoutRemote().catch(() => this.store.clearCurrentUser());
             this.user = null;
             this.progress = this.store.blankProgress();
             location.reload();
@@ -867,20 +866,14 @@ const GameLogic = {
             try {
                 const loginName = document.getElementById('l_name').value.trim();
                 const loginPassword = document.getElementById('l_password').value;
-                try {
-                    this.user = this.store.login(loginName, loginPassword);
-                } catch (err) {
-                    if(err.message !== 'missing-user') throw err;
-                    await this.store.loadServerUsers();
-                    this.user = this.store.login(loginName, loginPassword);
-                }
+                this.user = await this.store.loginRemote(loginName, loginPassword);
                 location.reload();
             } catch (err) {
                 alert(err.message === 'bad-password' ? "Senha incorreta." : "Nome de usuario nao encontrado.");
             }
         };
 
-        if(profileForm) profileForm.onsubmit = (e) => {
+        if(profileForm) profileForm.onsubmit = async (e) => {
             e.preventDefault();
             const avatarRadio = document.querySelector('input[name="p_avatar"]:checked');
             const payload = {
@@ -896,7 +889,12 @@ const GameLogic = {
             };
 
             try {
-                this.user = this.user ? this.store.updateCurrentUser(payload) : this.store.register(payload);
+                if(this.user) {
+                    this.user = this.store.updateCurrentUser(payload);
+                    this.user = await this.store.syncCurrentUser();
+                } else {
+                    this.user = await this.store.registerRemote(payload);
+                }
                 if(!this.progress) location.reload();
                 this.progress = this.store.ensureProgress(this.user.progress);
                 this.updateHeaderAccountControls();
