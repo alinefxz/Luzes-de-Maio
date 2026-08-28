@@ -2003,9 +2003,18 @@ GameLogic.bindKeyboardShortcuts = function() {
         || investigation.querySelector('.source-reader-sheet');
       if(page) {
         event.preventDefault();
+        const dossier = investigation.querySelector('.investigation-dossier');
+        const mobileDossierLayout = window.matchMedia(
+          '(max-width: 720px), (orientation: landscape) and (max-width: 950px) and (max-height: 520px)'
+        ).matches;
+        const pageOverflow = window.getComputedStyle(page).overflowY;
+        const pageCanScroll = /(auto|scroll)/.test(pageOverflow) && page.scrollHeight > page.clientHeight + 2;
+        const scrollTarget = mobileDossierLayout && dossier
+          ? dossier
+          : (pageCanScroll || !dossier ? page : dossier);
         const direction = event.key === 'ArrowDown' ? 1 : -1;
-        const distance = this.dragScrollActive ? 108 : Math.max(180, page.clientHeight * 0.48);
-        page.scrollBy({ top: direction * distance, behavior: this.dragScrollActive ? 'auto' : 'smooth' });
+        const distance = this.dragScrollActive ? 108 : Math.max(180, scrollTarget.clientHeight * 0.48);
+        scrollTarget.scrollBy({ top: direction * distance, behavior: this.dragScrollActive ? 'auto' : 'smooth' });
       }
       return;
     }
@@ -3662,6 +3671,9 @@ GameLogic.dismissDialogueLayer = function() {
 };
 
 GameLogic.openInventoryPanel = function() {
+  if(this.notebookOverlay?.classList.contains('active')) {
+    this.notebookOverlay.classList.remove('active', 'fullscreen-mode');
+  }
   this.setFullscreenMode(this.invOverlay, false, this.inventoryExpandBtn, 'Inventário');
   this.invOverlay?.classList.add('active');
 
@@ -3694,6 +3706,9 @@ GameLogic.closeInventoryPanel = function() {
 };
 
 GameLogic.openNotebook = function() {
+  if(this.invOverlay?.classList.contains('active')) {
+    this.invOverlay.classList.remove('active', 'fullscreen-mode');
+  }
   this.renderNotebook();
   this.setFullscreenMode(this.notebookOverlay, false, this.notebookExpandBtn, 'Caderno');
   this.notebookOverlay?.classList.add('active');
@@ -4153,6 +4168,10 @@ EvidenceSystem.spawnEvidence = function(title, text, phaseData) {
   overlay.innerHTML = `
     <div class="investigation-dossier" id="dossierContainer">
       <div class="dossier-clip"></div>
+      <nav class="mobile-dossier-nav" aria-label="Navegação da fase">
+        <button type="button" class="active" data-mobile-dossier-target="source" aria-current="page">Documento</button>
+        <button type="button" data-mobile-dossier-target="activity">Atividade</button>
+      </nav>
       <div class="dossier-page page-left phase-source-page">
         <div class="dossier-paper-pad">
           <div class="form-tag">DOCUMENTO APREENDIDO</div>
@@ -4186,6 +4205,37 @@ EvidenceSystem.spawnEvidence = function(title, text, phaseData) {
     </div>`;
 
   document.body.appendChild(overlay);
+  const dossier = overlay.querySelector('.investigation-dossier');
+  const sourcePage = overlay.querySelector('.phase-source-page');
+  const activityPage = overlay.querySelector('.phase-activity-page');
+  const mobileNavButtons = Array.from(overlay.querySelectorAll('[data-mobile-dossier-target]'));
+  const setMobileNavState = (targetName) => {
+    mobileNavButtons.forEach((button) => {
+      const isCurrent = button.dataset.mobileDossierTarget === targetName;
+      button.classList.toggle('active', isCurrent);
+      if(isCurrent) button.setAttribute('aria-current', 'page');
+      else button.removeAttribute('aria-current');
+    });
+  };
+
+  mobileNavButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const targetName = button.dataset.mobileDossierTarget;
+      const target = targetName === 'activity' ? activityPage : sourcePage;
+      if(!target || !dossier) return;
+      dossier.scrollTo({ top: target.offsetTop, behavior: 'smooth' });
+      setMobileNavState(targetName);
+    });
+  });
+
+  dossier?.addEventListener('scroll', () => {
+    const mobileDossierLayout = window.matchMedia(
+      '(max-width: 720px), (orientation: landscape) and (max-width: 950px) and (max-height: 520px)'
+    ).matches;
+    if(!mobileDossierLayout || !activityPage) return;
+    const activityStartsAt = Math.max(0, activityPage.offsetTop - 110);
+    setMobileNavState(dossier.scrollTop >= activityStartsAt ? 'activity' : 'source');
+  }, { passive: true });
   this.bindActivity(overlay, title, text, phaseData);
 };
 
@@ -6258,11 +6308,11 @@ GameLogic.closeFinalLetter = function() {
 
   setTimeout(() => {
     overlay?.classList.add('leaving');
-    this.showFinalThanksPage({ fromLetter: true });
   }, 520);
 
   setTimeout(() => {
     overlay?.remove();
+    this.showFinalThanksPage({ fromLetter: true });
   }, 780);
 };
 
