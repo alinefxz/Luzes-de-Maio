@@ -6,7 +6,6 @@ const LMProfileStore = (() => {
   const STORAGE_VERSION_KEY = 'lm_storage_version';
   const ADMIN_STORAGE_VERSION = 'supabase-session-20260818a';
   const ADMIN_USERNAME = 'admin';
-  const ADMIN_PASSWORD = 'admin';
   const remoteApi = () => window.LMSupabaseApi;
   let userSyncQueue = Promise.resolve(true);
   let reviewSyncQueue = Promise.resolve(true);
@@ -55,7 +54,6 @@ const LMProfileStore = (() => {
     name: ADMIN_USERNAME,
     username: ADMIN_USERNAME,
     fullName: 'Admin do Arquivo',
-    password: ADMIN_PASSWORD,
     knowledgeLevel: '5',
     level: '5',
     ageGroup: '25 a 34',
@@ -1285,6 +1283,27 @@ const Game = {
         const firstInput = modal.querySelector('input, select, textarea, [tabindex]:not([tabindex="-1"])');
         if(firstInput) firstInput.focus();
       }, 100);
+    }
+  },
+
+  openNewspaperPdf(file, label, trigger) {
+    const viewer = document.getElementById('newspaperViewer');
+    const title = document.getElementById('newspaperViewerTitle');
+    const originalLink = document.getElementById('newspaperOpenOriginal');
+    if(!viewer || !file) return;
+
+    viewer.src = `${file}#view=FitH`;
+    if(title) title.textContent = label || 'O Muzambinhense';
+    if(originalLink) originalLink.href = file;
+
+    document.querySelectorAll('.newspaper-record-select').forEach(button => {
+      const selected = button === trigger;
+      button.classList.toggle('is-selected', selected);
+      button.setAttribute('aria-pressed', selected ? 'true' : 'false');
+    });
+
+    if(window.matchMedia('(max-width: 700px)').matches) {
+      document.querySelector('.newspaper-reader')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   },
 

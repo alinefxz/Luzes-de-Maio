@@ -626,6 +626,314 @@ h1 { font-family: var(--font-serif); font-size: clamp(4rem, 8vw, 7.5rem); line-h
   color: var(--charcoal);
 }
 
+/* Hemeroteca de originais */
+#modal-newspapers {
+  width: min(1180px, calc(100vw - 32px));
+  max-width: none;
+  height: min(88vh, 900px);
+  max-height: none;
+  padding: 0;
+  overflow: hidden;
+}
+
+.newspaper-archive {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  color: var(--charcoal);
+  background:
+    linear-gradient(90deg, rgba(147,88,94,0.09) 1px, transparent 1px),
+    linear-gradient(rgba(147,88,94,0.07) 1px, transparent 1px),
+    #e8e1cf;
+  background-size: 34px 34px, 34px 34px, auto;
+  box-shadow: inset 12px 0 0 rgba(147,88,94,0.22);
+}
+
+.newspaper-archive-header {
+  position: relative;
+  flex: 0 0 auto;
+  padding: 32px 210px 24px 42px;
+  border-bottom: 1px solid rgba(44,44,44,0.2);
+  background: rgba(253,251,247,0.72);
+}
+
+.newspaper-archive-header .modal-title {
+  margin: 0 0 10px;
+  padding: 0 0 9px;
+  font-size: 2.35rem;
+}
+
+.newspaper-archive-header > p:last-child {
+  max-width: 720px;
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 1.04rem;
+  line-height: 1.55;
+}
+
+.newspaper-archive-stamp {
+  position: absolute;
+  top: 36px;
+  right: 64px;
+  padding: 8px 12px;
+  border: 3px double rgba(147,88,94,0.56);
+  color: var(--wine);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  transform: rotate(2deg);
+}
+
+.newspaper-library-layout {
+  display: grid;
+  grid-template-columns: minmax(270px, 340px) minmax(0, 1fr);
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.newspaper-index {
+  min-height: 0;
+  padding: 18px;
+  overflow-y: auto;
+  border-right: 1px solid rgba(44,44,44,0.2);
+  scrollbar-color: var(--wine) rgba(44,44,44,0.08);
+}
+
+.newspaper-record {
+  position: relative;
+  margin: 0 0 14px;
+  border: 1px solid rgba(44,44,44,0.22);
+  border-left: 5px solid var(--wine);
+  background: #fffdf7;
+  box-shadow: 4px 4px 0 rgba(84,85,67,0.16);
+}
+
+.newspaper-record::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  right: 20px;
+  width: 42px;
+  height: 13px;
+  background: rgba(216,195,160,0.62);
+  transform: rotate(2deg);
+  pointer-events: none;
+}
+
+.newspaper-record-select {
+  display: grid;
+  width: 100%;
+  min-height: 90px;
+  padding: 14px 15px 10px;
+  border: 0;
+  background: transparent;
+  color: var(--charcoal);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+
+.newspaper-record-select span,
+.newspaper-record-select small {
+  font-family: var(--font-mono);
+}
+
+.newspaper-record-select span {
+  color: var(--wine);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.newspaper-record-select strong {
+  margin: 4px 0;
+  font-family: var(--font-serif);
+  font-size: 1.16rem;
+  line-height: 1.12;
+}
+
+.newspaper-record-select small {
+  color: rgba(44,44,44,0.7);
+  font-size: 0.66rem;
+}
+
+.newspaper-record-select:hover,
+.newspaper-record-select:focus-visible,
+.newspaper-record-select.is-selected {
+  outline: none;
+  background: rgba(147,88,94,0.13);
+}
+
+.newspaper-record-select.is-selected {
+  box-shadow: inset 4px 0 0 var(--wine);
+}
+
+.newspaper-record > a {
+  display: block;
+  padding: 7px 15px 9px;
+  border-top: 1px dashed rgba(44,44,44,0.22);
+  color: var(--wine);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.newspaper-record > a:hover,
+.newspaper-record > a:focus-visible {
+  background: var(--wine);
+  color: var(--cream);
+}
+
+.newspaper-reader {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  padding: 18px 22px 14px;
+  background: rgba(44,44,44,0.05);
+}
+
+.newspaper-reader-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  flex: 0 0 auto;
+  min-height: 56px;
+  margin-bottom: 12px;
+  padding: 10px 13px;
+  border: 1px solid rgba(44,44,44,0.22);
+  background: #fffdf7;
+  box-shadow: 3px 3px 0 rgba(84,85,67,0.16);
+}
+
+.newspaper-reader-toolbar div {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.newspaper-reader-toolbar span {
+  color: var(--wine);
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.newspaper-reader-toolbar strong {
+  overflow-wrap: anywhere;
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+}
+
+.newspaper-reader-toolbar a {
+  flex: 0 0 auto;
+  padding: 9px 12px;
+  border: 1px solid var(--wine);
+  background: var(--wine);
+  color: var(--cream);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+#newspaperViewer {
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 420px;
+  border: 1px solid rgba(44,44,44,0.34);
+  background: #5c5b55;
+}
+
+.newspaper-reader-help {
+  flex: 0 0 auto;
+  margin: 8px 0 0;
+  color: rgba(44,44,44,0.72);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  text-align: center;
+}
+
+@media (max-width: 700px) {
+  #modal-newspapers {
+    width: 100%;
+    max-width: none;
+    height: calc(100dvh - 12px);
+    max-height: none;
+    margin: auto;
+    padding: 0;
+    overflow-y: auto;
+  }
+
+  .newspaper-archive {
+    display: block;
+    min-height: 100%;
+    height: auto;
+    box-shadow: inset 7px 0 0 rgba(147,88,94,0.22);
+  }
+
+  .newspaper-archive-header {
+    padding: 58px 20px 22px 24px;
+  }
+
+  .newspaper-archive-header .modal-title {
+    font-size: 2rem;
+  }
+
+  .newspaper-archive-stamp {
+    position: static;
+    display: inline-block;
+    margin-bottom: 12px;
+  }
+
+  .newspaper-library-layout {
+    display: block;
+  }
+
+  .newspaper-index {
+    max-height: 48vh;
+    padding: 14px;
+    border-right: 0;
+    border-bottom: 1px solid rgba(44,44,44,0.22);
+  }
+
+  .newspaper-record {
+    margin-bottom: 11px;
+  }
+
+  .newspaper-record-select {
+    min-height: 78px;
+  }
+
+  .newspaper-reader {
+    min-height: 76vh;
+    padding: 14px;
+  }
+
+  .newspaper-reader-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 9px;
+  }
+
+  .newspaper-reader-toolbar a {
+    text-align: center;
+  }
+
+  #newspaperViewer {
+    min-height: 64vh;
+  }
+}
+
 /* Ajustes finais de credencial e botoes de risco */
 .user-badge {
   overflow: visible;

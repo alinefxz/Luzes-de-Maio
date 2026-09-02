@@ -1,4 +1,7 @@
 node_modules
+.npm-cache
+dist
+mobile-audit
 server
 supabase
 verification-*.png

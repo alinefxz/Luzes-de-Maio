@@ -1023,6 +1023,26 @@ const GameLogic = {
         if(modal && overlay) { modal.classList.add('active'); overlay.classList.add('active'); }
     },
 
+    openNewspaperPdf(file, label, trigger) {
+        const viewer = document.getElementById('newspaperViewer');
+        const title = document.getElementById('newspaperViewerTitle');
+        const originalLink = document.getElementById('newspaperOpenOriginal');
+        if(!viewer || !file) return;
+
+        viewer.src = `${file}#view=FitH`;
+        if(title) title.textContent = label || 'O Muzambinhense';
+        if(originalLink) originalLink.href = file;
+
+        document.querySelectorAll('.newspaper-record-select').forEach(button => {
+            button.classList.toggle('is-selected', button === trigger);
+            button.setAttribute('aria-pressed', button === trigger ? 'true' : 'false');
+        });
+
+        if(window.matchMedia('(max-width: 700px)').matches) {
+            document.querySelector('.newspaper-reader')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    },
+
     startDialogue(lines, context) {
         this.currentLines = lines; this.currentLineIndex = 0;
         this.isDialogueActive = true; this.dialogueContext = context;
@@ -1978,6 +1998,13 @@ GameLogic.bindKeyboardShortcuts = function() {
   document.addEventListener('keydown', (event) => {
     if(event.key === 'Escape') {
       event.preventDefault();
+
+      const menuOpen = document.getElementById('fullMenu')?.classList.contains('active');
+      const modalOpen = document.getElementById('modalOverlay')?.classList.contains('active');
+      if(menuOpen || modalOpen) {
+        this.closeTopLayer();
+        return;
+      }
 
       if(this.isDialogueActive) {
         this.advanceDialogue();
