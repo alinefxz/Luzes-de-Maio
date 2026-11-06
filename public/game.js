@@ -912,7 +912,21 @@ const GameLogic = {
                 this.playSFX('stamp');
                 this.switchAuthTab('profile');
             } catch (err) {
-                alert(err.message === 'duplicate-user' ? "Este nome de usuario ja esta em uso nos arquivos. Escolha outro." : "Preencha todos os dados da credencial.");
+                const errorMessage = String(err?.message || '');
+                if (errorMessage === 'duplicate-user') {
+                    alert("Este nome de usuario ja esta em uso nos arquivos. Escolha outro.");
+                } else if (errorMessage === 'invalid-credential' || errorMessage === 'invalid-password') {
+                    alert("Confira o nome, o nome completo e use uma senha com pelo menos 4 caracteres.");
+                } else if (errorMessage === 'reserved-username') {
+                    alert("Esse nome de usuario esta reservado. Escolha outro.");
+                } else if (errorMessage === 'invalid-session' || errorMessage === 'missing-session') {
+                    this.store.clearCurrentUser();
+                    this.user = null;
+                    this.switchAuthTab('register');
+                    alert("Sua sessao expirou. Preencha a credencial novamente.");
+                } else {
+                    alert("Nao foi possivel salvar a credencial. Tente novamente.");
+                }
             }
         };
 
