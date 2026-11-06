@@ -220,7 +220,16 @@ const GameLogic = {
                 location.reload();
                 return;
             } catch (err) {
-                alert(err.message === 'duplicate-user' ? "Este nome de usuario ja esta em uso nos arquivos. Escolha outro." : "Preencha todos os dados da credencial.");
+                const errorMessage = String(err?.message || '');
+                if (errorMessage === 'duplicate-user') {
+                    alert("Este nome de usuario ja esta em uso nos arquivos. Escolha outro.");
+                } else if (errorMessage === 'invalid-credential' || errorMessage === 'invalid-password') {
+                    alert("Confira o nome, o nome completo e use uma senha com pelo menos 4 caracteres.");
+                } else if (errorMessage === 'reserved-username') {
+                    alert("Esse nome de usuario esta reservado. Escolha outro.");
+                } else {
+                    alert("Nao foi possivel salvar a credencial. Tente novamente.");
+                }
                 return;
             }
 
@@ -903,7 +912,21 @@ const GameLogic = {
                 this.playSFX('stamp');
                 this.switchAuthTab('profile');
             } catch (err) {
-                alert(err.message === 'duplicate-user' ? "Este nome de usuario ja esta em uso nos arquivos. Escolha outro." : "Preencha todos os dados da credencial.");
+                const errorMessage = String(err?.message || '');
+                if (errorMessage === 'duplicate-user') {
+                    alert("Este nome de usuario ja esta em uso nos arquivos. Escolha outro.");
+                } else if (errorMessage === 'invalid-credential' || errorMessage === 'invalid-password') {
+                    alert("Confira o nome, o nome completo e use uma senha com pelo menos 4 caracteres.");
+                } else if (errorMessage === 'reserved-username') {
+                    alert("Esse nome de usuario esta reservado. Escolha outro.");
+                } else if (errorMessage === 'invalid-session' || errorMessage === 'missing-session') {
+                    this.store.clearCurrentUser();
+                    this.user = null;
+                    this.switchAuthTab('register');
+                    alert("Sua sessao expirou. Preencha a credencial novamente.");
+                } else {
+                    alert("Nao foi possivel salvar a credencial. Tente novamente.");
+                }
             }
         };
 
@@ -1021,6 +1044,26 @@ const GameLogic = {
         const modal = document.getElementById(`modal-${id}`);
         const overlay = document.getElementById('modalOverlay');
         if(modal && overlay) { modal.classList.add('active'); overlay.classList.add('active'); }
+    },
+
+    openNewspaperPdf(file, label, trigger) {
+        const viewer = document.getElementById('newspaperViewer');
+        const title = document.getElementById('newspaperViewerTitle');
+        const originalLink = document.getElementById('newspaperOpenOriginal');
+        if(!viewer || !file) return;
+
+        viewer.src = `${file}#view=FitH`;
+        if(title) title.textContent = label || 'O Muzambinhense';
+        if(originalLink) originalLink.href = file;
+
+        document.querySelectorAll('.newspaper-record-select').forEach(button => {
+            button.classList.toggle('is-selected', button === trigger);
+            button.setAttribute('aria-pressed', button === trigger ? 'true' : 'false');
+        });
+
+        if(window.matchMedia('(max-width: 700px)').matches) {
+            document.querySelector('.newspaper-reader')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
     },
 
     startDialogue(lines, context) {
@@ -1979,6 +2022,13 @@ GameLogic.bindKeyboardShortcuts = function() {
     if(event.key === 'Escape') {
       event.preventDefault();
 
+      const menuOpen = document.getElementById('fullMenu')?.classList.contains('active');
+      const modalOpen = document.getElementById('modalOverlay')?.classList.contains('active');
+      if(menuOpen || modalOpen) {
+        this.closeTopLayer();
+        return;
+      }
+
       if(this.isDialogueActive) {
         this.advanceDialogue();
         return;
@@ -2003,9 +2053,18 @@ GameLogic.bindKeyboardShortcuts = function() {
         || investigation.querySelector('.source-reader-sheet');
       if(page) {
         event.preventDefault();
+        const dossier = investigation.querySelector('.investigation-dossier');
+        const mobileDossierLayout = window.matchMedia(
+          '(max-width: 720px), (orientation: landscape) and (max-width: 950px) and (max-height: 520px)'
+        ).matches;
+        const pageOverflow = window.getComputedStyle(page).overflowY;
+        const pageCanScroll = /(auto|scroll)/.test(pageOverflow) && page.scrollHeight > page.clientHeight + 2;
+        const scrollTarget = mobileDossierLayout && dossier
+          ? dossier
+          : (pageCanScroll || !dossier ? page : dossier);
         const direction = event.key === 'ArrowDown' ? 1 : -1;
-        const distance = this.dragScrollActive ? 108 : Math.max(180, page.clientHeight * 0.48);
-        page.scrollBy({ top: direction * distance, behavior: this.dragScrollActive ? 'auto' : 'smooth' });
+        const distance = this.dragScrollActive ? 108 : Math.max(180, scrollTarget.clientHeight * 0.48);
+        scrollTarget.scrollBy({ top: direction * distance, behavior: this.dragScrollActive ? 'auto' : 'smooth' });
       }
       return;
     }
@@ -3662,6 +3721,9 @@ GameLogic.dismissDialogueLayer = function() {
 };
 
 GameLogic.openInventoryPanel = function() {
+  if(this.notebookOverlay?.classList.contains('active')) {
+    this.notebookOverlay.classList.remove('active', 'fullscreen-mode');
+  }
   this.setFullscreenMode(this.invOverlay, false, this.inventoryExpandBtn, 'Inventário');
   this.invOverlay?.classList.add('active');
 
@@ -3694,6 +3756,9 @@ GameLogic.closeInventoryPanel = function() {
 };
 
 GameLogic.openNotebook = function() {
+  if(this.invOverlay?.classList.contains('active')) {
+    this.invOverlay.classList.remove('active', 'fullscreen-mode');
+  }
   this.renderNotebook();
   this.setFullscreenMode(this.notebookOverlay, false, this.notebookExpandBtn, 'Caderno');
   this.notebookOverlay?.classList.add('active');
@@ -4153,6 +4218,10 @@ EvidenceSystem.spawnEvidence = function(title, text, phaseData) {
   overlay.innerHTML = `
     <div class="investigation-dossier" id="dossierContainer">
       <div class="dossier-clip"></div>
+      <nav class="mobile-dossier-nav" aria-label="Navegação da fase">
+        <button type="button" class="active" data-mobile-dossier-target="source" aria-current="page">Documento</button>
+        <button type="button" data-mobile-dossier-target="activity">Atividade</button>
+      </nav>
       <div class="dossier-page page-left phase-source-page">
         <div class="dossier-paper-pad">
           <div class="form-tag">DOCUMENTO APREENDIDO</div>
@@ -4186,6 +4255,37 @@ EvidenceSystem.spawnEvidence = function(title, text, phaseData) {
     </div>`;
 
   document.body.appendChild(overlay);
+  const dossier = overlay.querySelector('.investigation-dossier');
+  const sourcePage = overlay.querySelector('.phase-source-page');
+  const activityPage = overlay.querySelector('.phase-activity-page');
+  const mobileNavButtons = Array.from(overlay.querySelectorAll('[data-mobile-dossier-target]'));
+  const setMobileNavState = (targetName) => {
+    mobileNavButtons.forEach((button) => {
+      const isCurrent = button.dataset.mobileDossierTarget === targetName;
+      button.classList.toggle('active', isCurrent);
+      if(isCurrent) button.setAttribute('aria-current', 'page');
+      else button.removeAttribute('aria-current');
+    });
+  };
+
+  mobileNavButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const targetName = button.dataset.mobileDossierTarget;
+      const target = targetName === 'activity' ? activityPage : sourcePage;
+      if(!target || !dossier) return;
+      dossier.scrollTo({ top: target.offsetTop, behavior: 'smooth' });
+      setMobileNavState(targetName);
+    });
+  });
+
+  dossier?.addEventListener('scroll', () => {
+    const mobileDossierLayout = window.matchMedia(
+      '(max-width: 720px), (orientation: landscape) and (max-width: 950px) and (max-height: 520px)'
+    ).matches;
+    if(!mobileDossierLayout || !activityPage) return;
+    const activityStartsAt = Math.max(0, activityPage.offsetTop - 110);
+    setMobileNavState(dossier.scrollTop >= activityStartsAt ? 'activity' : 'source');
+  }, { passive: true });
   this.bindActivity(overlay, title, text, phaseData);
 };
 
@@ -6258,11 +6358,11 @@ GameLogic.closeFinalLetter = function() {
 
   setTimeout(() => {
     overlay?.classList.add('leaving');
-    this.showFinalThanksPage({ fromLetter: true });
   }, 520);
 
   setTimeout(() => {
     overlay?.remove();
+    this.showFinalThanksPage({ fromLetter: true });
   }, 780);
 };
 

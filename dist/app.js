@@ -6,7 +6,6 @@ const LMProfileStore = (() => {
   const STORAGE_VERSION_KEY = 'lm_storage_version';
   const ADMIN_STORAGE_VERSION = 'supabase-session-20260818a';
   const ADMIN_USERNAME = 'admin';
-  const ADMIN_PASSWORD = 'admin';
   const remoteApi = () => window.LMSupabaseApi;
   let userSyncQueue = Promise.resolve(true);
   let reviewSyncQueue = Promise.resolve(true);
@@ -55,7 +54,6 @@ const LMProfileStore = (() => {
     name: ADMIN_USERNAME,
     username: ADMIN_USERNAME,
     fullName: 'Admin do Arquivo',
-    password: ADMIN_PASSWORD,
     knowledgeLevel: '5',
     level: '5',
     ageGroup: '25 a 34',
@@ -221,6 +219,12 @@ const LMProfileStore = (() => {
   };
 
   const registerRemote = async (payload) => {
+    const name = String(payload?.name || '').trim();
+    const fullName = String(payload?.fullName || '').trim();
+    const password = String(payload?.password || '').trim();
+    if (name.length < 2 || fullName.length < 2 || password.length < 4) {
+      throw new Error('invalid-credential');
+    }
     const user = await remoteApi().register(payload);
     return setCurrentUser(user, { sync: false });
   };
@@ -1154,7 +1158,21 @@ const Game = {
       this.closeAllModals();
       this.showToast("Credencial salva com sucesso!");
     } catch (err) {
-      this.showToast(err.message === 'duplicate-user' ? "Erro: Esse Nome de Usuario ja existe. Tente outro." : "Preencha a credencial antes de continuar.");
+      const errorMessage = String(err?.message || '');
+      if (errorMessage === 'duplicate-user') {
+        this.showToast("Erro: Esse Nome de Usuario ja existe. Tente outro.");
+      } else if (errorMessage === 'invalid-credential' || errorMessage === 'invalid-password') {
+        this.showToast("Confira o nome, o nome completo e use uma senha com pelo menos 4 caracteres.");
+      } else if (errorMessage === 'reserved-username') {
+        this.showToast("Esse nome de usuario esta reservado. Escolha outro.");
+      } else if (errorMessage === 'invalid-session' || errorMessage === 'missing-session') {
+        LMProfileStore.clearCurrentUser();
+        this.state.user = null;
+        this.switchAuthTab('register');
+        this.showToast("Sua sessao expirou. Preencha a credencial novamente.");
+      } else {
+        this.showToast("Nao foi possivel salvar a credencial. Tente novamente.");
+      }
     }
   },
 
@@ -1285,6 +1303,27 @@ const Game = {
         const firstInput = modal.querySelector('input, select, textarea, [tabindex]:not([tabindex="-1"])');
         if(firstInput) firstInput.focus();
       }, 100);
+    }
+  },
+
+  openNewspaperPdf(file, label, trigger) {
+    const viewer = document.getElementById('newspaperViewer');
+    const title = document.getElementById('newspaperViewerTitle');
+    const originalLink = document.getElementById('newspaperOpenOriginal');
+    if(!viewer || !file) return;
+
+    viewer.src = `${file}#view=FitH`;
+    if(title) title.textContent = label || 'O Muzambinhense';
+    if(originalLink) originalLink.href = file;
+
+    document.querySelectorAll('.newspaper-record-select').forEach(button => {
+      const selected = button === trigger;
+      button.classList.toggle('is-selected', selected);
+      button.setAttribute('aria-pressed', selected ? 'true' : 'false');
+    });
+
+    if(window.matchMedia('(max-width: 700px)').matches) {
+      document.querySelector('.newspaper-reader')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   },
 

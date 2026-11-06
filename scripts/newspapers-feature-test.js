@@ -31,6 +31,8 @@ assert.match(html, /id="newspaperViewer"/, 'o leitor interno de PDF deve existir
 assert.match(indexHtml, />Jornais<\/button>/, 'o indice da pagina inicial deve incluir Jornais');
 assert.match(indexHtml, /id="modal-newspapers"/, 'a pagina inicial deve conter o modal de jornais');
 assert.match(indexHtml, /id="newspaperViewer"/, 'a pagina inicial deve conter o leitor de PDF');
+assert.doesNotMatch(html, /data impressa no original/i, 'o jogo nao deve exibir a observacao sobre a data impressa');
+assert.doesNotMatch(indexHtml, /data impressa no original/i, 'a pagina inicial nao deve exibir a observacao sobre a data impressa');
 assert.match(homeCss, /\.newspaper-archive/, 'a pagina inicial deve carregar o visual da hemeroteca');
 assert.match(html, /Sobre o Luzes de Maio/, 'o novo titulo do Sobre deve existir');
 assert.match(html, /Todo arquivo guarda uma história/, 'o encerramento enviado deve ser preservado');
