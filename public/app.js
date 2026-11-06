@@ -219,6 +219,12 @@ const LMProfileStore = (() => {
   };
 
   const registerRemote = async (payload) => {
+    const name = String(payload?.name || '').trim();
+    const fullName = String(payload?.fullName || '').trim();
+    const password = String(payload?.password || '').trim();
+    if (name.length < 2 || fullName.length < 2 || password.length < 4) {
+      throw new Error('invalid-credential');
+    }
     const user = await remoteApi().register(payload);
     return setCurrentUser(user, { sync: false });
   };
@@ -1152,7 +1158,21 @@ const Game = {
       this.closeAllModals();
       this.showToast("Credencial salva com sucesso!");
     } catch (err) {
-      this.showToast(err.message === 'duplicate-user' ? "Erro: Esse Nome de Usuario ja existe. Tente outro." : "Preencha a credencial antes de continuar.");
+      const errorMessage = String(err?.message || '');
+      if (errorMessage === 'duplicate-user') {
+        this.showToast("Erro: Esse Nome de Usuario ja existe. Tente outro.");
+      } else if (errorMessage === 'invalid-credential' || errorMessage === 'invalid-password') {
+        this.showToast("Confira o nome, o nome completo e use uma senha com pelo menos 4 caracteres.");
+      } else if (errorMessage === 'reserved-username') {
+        this.showToast("Esse nome de usuario esta reservado. Escolha outro.");
+      } else if (errorMessage === 'invalid-session' || errorMessage === 'missing-session') {
+        LMProfileStore.clearCurrentUser();
+        this.state.user = null;
+        this.switchAuthTab('register');
+        this.showToast("Sua sessao expirou. Preencha a credencial novamente.");
+      } else {
+        this.showToast("Nao foi possivel salvar a credencial. Tente novamente.");
+      }
     }
   },
 
